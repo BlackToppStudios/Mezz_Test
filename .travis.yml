@@ -1,0 +1,26 @@
+sudo: required
+dist: trusty
+language: cpp
+
+compiler:
+  - clang
+  - gcc
+
+before_script:
+  - mkdir build
+  - cd build
+  - cmake .. -DMEZZ_BuildDoxygen=OFF
+
+# yes is just an application that returns true, this means perform no installation
+install: yes
+
+script: make
+
+after_success: ./StaticFoundation_Tester MEZZ_BuildDoxygen:0 MEZZ_Linux:1 MEZZ_BuildStaticLibraries:1 MEZZ_MacOSX:0 MEZZ_Windows:0 MEZZ_CompilerDesignNix:1 MEZZ_CompilerDesignMS:0
+
+notifications:
+  email:
+    recipients:
+      - contact@blacktoppstudios.com
+    on_success: change
+    on_failure: always
