@@ -1,0 +1,47 @@
+version: 0.0.{build}
+clone_folder: C:\projects\Mezz_StaticFoundation
+
+os: Visual Studio 2015
+
+platform:
+#  - Win32
+  - x64
+
+# build Configuration, i.e. Debug, Release, etc.
+configuration:
+  - Debug
+  - Release
+
+init:
+  - cmd: cmake --version
+  - cmd: msbuild /version
+
+before_build:
+  - cmd: cd C:\projects\Mezz_StaticFoundation
+  - cmd: md build
+  - cmd: cd build
+  - cmd: if "%platform%"=="Win32" set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015"
+  - cmd: if "%platform%"=="x64"   set "CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64"
+  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration% .. -DMEZZ_BuildDoxygen=OFF
+
+build:
+  project: C:\projects\Mezz_StaticFoundation\build\StaticFoundation.sln
+
+  # enable MSBuild parallel builds
+  parallel: true
+
+  # MSBuild verbosity level (quiet|minimal|normal|detailed)
+  verbosity: normal
+
+test_script:
+  - cmd: cd C:\projects\Mezz_StaticFoundation\build
+  - cmd: cd %configuration%
+  - cmd: StaticFoundation_Tester MEZZ_BuildDoxygen:0 MEZZ_Linux:0 MEZZ_BuildStaticLibraries:1 MEZZ_MacOSX:0 MEZZ_Windows:1 MEZZ_CompilerDesignNix:0 MEZZ_CompilerDesignMS:1
+
+notifications:
+- provider: Email
+  to:
+  - contact@blacktoppstudios.com
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: true
