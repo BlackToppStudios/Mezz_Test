@@ -59,18 +59,33 @@ StandardJagatiSetup()
 message(STATUS "Determining Source Files.")
 
 set(HeaderFiles
-    "${TestIncludeDir}foo.h"
+    "${TestIncludeDir}consolelogic.h"
+	"${TestIncludeDir}consolestringmanipulation.h"
+	"${TestIncludeDir}dagframescheduler.h"
+	"${TestIncludeDir}mezztest.h"
+	"${TestIncludeDir}pugiconfig.h"
+	"${TestIncludeDir}pugixml.h"
+	"${TestIncludeDir}testdata.h"
+	"${TestIncludeDir}testdatatools.h"
+	"${TestIncludeDir}testenumerations.h"
 )
 ShowList("Header Files:" "\t" "${HeaderFiles}")
 AddJagatiDoxInput("${HeaderFiles}")
 
 set(SourceFiles
-    "${TestSourceDir}foo.cpp"
+	"${TestSourceDir}consolelogic.cpp"
+	"${TestSourceDir}consolestringmanipulation.cpp"
+	"${TestSourceDir}mezztest.cpp"
+	"${TestSourceDir}pugixml.cpp"
+	"${TestSourceDir}testdata.cpp"
+	"${TestSourceDir}testdatatools.cpp"
+	"${TestSourceDir}testenumerations.cpp"
 )
 ShowList("Source Files:" "\t" "${SourceFiles}")
 
 set(TestSourceFiles
-    "${TestTestDir}foo.h"
+    "${TestTestDir}testtests.h"
+    "${TestTestDir}testtests.cpp"
 )
 ShowList("Test Source Files:" "\t" "${TestSourceFiles}")
 
