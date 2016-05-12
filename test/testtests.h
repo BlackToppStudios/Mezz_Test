@@ -43,46 +43,9 @@
 #include "staticfoundation.h"
 
 /// @file
-/// @brief Some declarations of functions for the tests Mezz_StaticFoundation.
+/// @brief
 
-/// @brief Check if the command line arguments are completely wrong. Can easily miss minor mistakes.
-/// @details If this detects a problem this will exit with a failure code and print a message to
-/// std::cerr.
-/// @param ArgCount The Argument count passed into main.
-/// @param ArgVars The argument values passed into main.
-void CheckUsage(int ArgCount, char** ArgVars);
+int main(int ArgCount, char** ArgVars);
 
-/// @brief Get the string describing how to use this
-/// @return A Mezzanine::String containing human readable, thought likely minimal, help.
-Mezzanine::String Usage(Mezzanine::String ExecutableName);
-
-/// @brief Accepts command line parameters and creates a NameValuePairMap from them.
-/// /// @details If this detects a problem this will exit with a failure code and print a message to
-/// std::cerr.
-/// @param ArgCount The Argument count passed into main.
-/// @param ArgVars The argument values passed into main.
-/// @return A NameValuePairMap With an entry for each of the ArgVars split on a ":"
-Mezzanine::NameValuePairMap CreateMapFromArgs(int ArgCount, char** ArgVars);
-
-/// @brief What values where stored at compile time.
-/// @return Mezzanine::NameValuePairMap which contains all the compiler flags set during the build.
-Mezzanine::NameValuePairMap CheckableValues();
-
-/// @brief compare two instances Mezzanine::NameValuePairMap and determine if one is a subset of the
-/// other.
-/// @param Expected The list of correct values that must be entirely contained in the other list for
-/// the test to be successful.
-/// @param Compiled The list of all values as compiled into the code.
-void DoComparisonTest(  const Mezzanine::NameValuePairMap& Expected,
-                        const Mezzanine::NameValuePairMap& Compiled);
-
-/// @param Mapping a name value pair list to turn into a String
-/// @return A String with the each name value pair on its own line seperated by ":" and preceded
-/// by two spaces.
-Mezzanine::String Stringify(const Mezzanine::NameValuePairMap& Mapping);
-
-/// @param SomeInt Any integer to be converted to a String, defaults to 0.
-/// @return A String contained the lexigraphically equivalent String to SomeInt.
-Mezzanine::String IntToString(Mezzanine::Int32 SomeInt = 0);
 
 #endif
