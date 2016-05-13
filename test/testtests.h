@@ -43,9 +43,8 @@
 #include "staticfoundation.h"
 
 /// @file
-/// @brief
+/// @brief Header for unit tests for the testing framework.
 
-int main(int ArgCount, char** ArgVars);
 
 
 #endif
