@@ -41,7 +41,7 @@
 #define _consolelogic_h
 
 /// @file
-/// @brief The definition of a few command line tools
+/// @brief The definition of a few command line tools.
 
 #include "datatypes.h"
 
@@ -51,25 +51,25 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief Print a message for the user onf the standard output that briefly describes hwo to use this.
+        /// @brief Print a message for the user onf the standard output that briefly describes how to use this.
         /// @param ThisName The name of the current executable
         /// @param TestGroups This is searched for the current list of valid test names.
         /// @return Always returns ExitInvalidArguments
         int Usage(Mezzanine::String ThisName, CoreTestGroup& TestGroups);
 
-        /// @brief Asked the user a question on the std output and get a TestResult as an answer
+        /// @brief Asked the user a question on the std output and get a TestResult as an answer.
         /// @param Question The question to ask the user.
-        /// @param FailStatusOnIncorrect Defaults to true,FailStatusOnIncorrect if true False answers with return Fail Status otherwise they will return Warnings.
+        /// @param FailStatusOnIncorrect Defaults to true, FailStatusOnIncorrect if true False answers with return Fail Status otherwise they will return Warnings.
         /// @details The following strings provide the following results.
-        ///     -  "True", "Yes" as Success
-        ///     -  "False", "No" as Failed or Warn
-        ///     -  "Cancel" as "Canceled"
-        ///     -  "Unsure", "Inconclusive" as Inconclusive
+        ///     -  "True", "Yes" as Success.
+        ///     -  "False", "No" as Failed or Warn.
+        ///     -  "Cancel" as "Cancelled".
+        ///     -  "Unsure", "Inconclusive" as Inconclusive.
         /// @return Depends on users input
         TestResult GetTestAnswerFromStdin(Mezzanine::String Question, Boole FailStatusOnIncorrect = true);
 
-        /// @brief Execute a command in a process, piping its standard output to a file
-        /// @return The contents of the file as String
+        /// @brief Execute a command in a process, piping its standard output to a file.
+        /// @return The contents of the file as String.
         String GetCommandResults(String Command);
 
         /// @brief Sleeps the current thread for an amount of microseconds.
