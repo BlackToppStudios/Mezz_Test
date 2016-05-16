@@ -38,22 +38,24 @@
 #   John Blackwood - makoenergy02@gmail.com
 
 ####################################################################################################
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#########################
-set(JagatiChecksum "da401b29af84a4b3c119a23b955e45534c4128d78baa14bf63a58d\
-8b4c11c10c1b85464dbaea68d180d2fd5f3ea43a4a2a960c7dfc3dfe0890696ee92480a280")
+#set(JagatiChecksum "da401b29af84a4b3c119a23b955e45534c4128d78baa14bf63a58d\
+#8b4c11c10c1b85464dbaea68d180d2fd5f3ea43a4a2a960c7dfc3dfe0890696ee92480a280")
 
-file(DOWNLOAD
-    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/master/Jagati.cmake"
-    "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
-    EXPECTED_HASH SHA512=${JagatiChecksum}
-)
-include("${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake")
+#file(DOWNLOAD
+#    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/master/Jagati.cmake"
+#    "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
+#    EXPECTED_HASH SHA512=${JagatiChecksum}
+#)
+#include("${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake")
 
 StandardJagatiSetup()
+
+IncludeJagatiPackage("StaticFoundation")
 
 ####################################################################################################
 message(STATUS "Determining Source Files.")
@@ -98,6 +100,7 @@ AddJagatiDoxInput("${DoxFiles}")
 ####################################################################################################
 # Set up Include Directories
 
+message("Dir: ${StaticFoundationIncludeDir}")
 include_directories(
     ${StaticFoundationIncludeDir}
     ${${PROJECT_NAME}IncludeDir}
