@@ -51,7 +51,7 @@ message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 #    "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
 #    EXPECTED_HASH SHA512=${JagatiChecksum}
 #)
-#include("${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake")
+include("${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake")
 
 StandardJagatiSetup()
 
@@ -62,26 +62,26 @@ message(STATUS "Determining Source Files.")
 
 set(HeaderFiles
     "${TestIncludeDir}consolelogic.h"
-	"${TestIncludeDir}consolestringmanipulation.h"
-	"${TestIncludeDir}dagframescheduler.h"
-	"${TestIncludeDir}mezztest.h"
-	"${TestIncludeDir}pugiconfig.h"
-	"${TestIncludeDir}pugixml.h"
-	"${TestIncludeDir}testdata.h"
-	"${TestIncludeDir}testdatatools.h"
-	"${TestIncludeDir}testenumerations.h"
+    "${TestIncludeDir}consolestringmanipulation.h"
+    "${TestIncludeDir}dagframescheduler.h"
+    "${TestIncludeDir}mezztest.h"
+    "${TestIncludeDir}pugiconfig.h"
+    "${TestIncludeDir}pugixml.h"
+    "${TestIncludeDir}testdata.h"
+    "${TestIncludeDir}testdatatools.h"
+    "${TestIncludeDir}testenumerations.h"
 )
 ShowList("Header Files:" "\t" "${HeaderFiles}")
 AddJagatiDoxInput("${HeaderFiles}")
 
 set(SourceFiles
-	"${TestSourceDir}consolelogic.cpp"
-	"${TestSourceDir}consolestringmanipulation.cpp"
-	"${TestSourceDir}mezztest.cpp"
-	"${TestSourceDir}pugixml.cpp"
-	"${TestSourceDir}testdata.cpp"
-	"${TestSourceDir}testdatatools.cpp"
-	"${TestSourceDir}testenumerations.cpp"
+    "${TestSourceDir}consolelogic.cpp"
+    "${TestSourceDir}consolestringmanipulation.cpp"
+    "${TestSourceDir}mezztest.cpp"
+    "${TestSourceDir}pugixml.cpp"
+    "${TestSourceDir}testdata.cpp"
+    "${TestSourceDir}testdatatools.cpp"
+    "${TestSourceDir}testenumerations.cpp"
 )
 ShowList("Source Files:" "\t" "${SourceFiles}")
 
