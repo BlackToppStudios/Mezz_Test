@@ -100,9 +100,11 @@ AddJagatiDoxInput("${DoxFiles}")
 ####################################################################################################
 # Set up Include Directories
 
-message("Dir: ${StaticFoundationIncludeDir}")
+message("StaticFoundationIncludeDir: ${StaticFoundationIncludeDir}")
+message("TestIncludeDir: ${TestIncludeDir}")
 include_directories(
     ${StaticFoundationIncludeDir}
+    ${StaticFoundationGenHeadersDir}
     ${${PROJECT_NAME}IncludeDir}
 )
 
