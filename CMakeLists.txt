@@ -118,4 +118,22 @@ target_link_libraries(${TestLib} ${StaticFoundationLib})
 add_executable(Test_Tester ${HeaderFiles} ${TestSourceFiles})
 target_link_libraries(Test_Tester ${StaticFoundationLib} ${TestLib})
 
+# A Project to do nothing but get All the Source files visible in IDEs
+add_custom_target(
+    ${PROJECT_NAME}_IDE_Visibility
+    DEPENDS ${PROJECT_NAME}_Tester
+            "${${PROJECT_NAME}BinaryDir}Guidelines.md"
+            ExternalProjectDownload
+    SOURCES ${HeaderFiles}
+            ${SourceFiles}
+            ${TestSourceFiles}
+            ${SwigFiles}
+            ${StaticFoundationConfigFilename}
+            README.md
+            COPYING.md
+            .travis.yml
+            appveyor.yml
+            "${DoxFiles}"
+)
+
 message(STATUS "${PROJECT_NAME} - Ending Configuration.")
