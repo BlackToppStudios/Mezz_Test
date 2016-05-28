@@ -16,7 +16,7 @@ install: yes
 
 script: make
 
-after_success: ./StaticFoundation_Tester MEZZ_BuildDoxygen:0 MEZZ_Linux:1 MEZZ_BuildStaticLibraries:1 MEZZ_MacOSX:0 MEZZ_Windows:0 MEZZ_CompilerDesignNix:1 MEZZ_CompilerDesignMS:0
+after_success: ./Test_Tester
 
 notifications:
   email:

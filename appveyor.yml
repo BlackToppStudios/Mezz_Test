@@ -1,5 +1,5 @@
 version: 0.0.{build}
-clone_folder: C:\projects\Mezz_StaticFoundation
+clone_folder: C:\projects\Mezz_Mezz_Test
 
 environment:
   matrix:
@@ -53,9 +53,9 @@ build_script:
   - cmake --build . --config %CONFIGURATION%
 
 test_script:
-  - cmd: cd C:\projects\Mezz_StaticFoundation\build
+  - cmd: cd C:\projects\Mezz_Mezz_Test\build
   - cmd: cd %TestPath%
-  - cmd: StaticFoundation_Tester
+  - cmd: Mezz_Test_Tester
 
 notifications:
 - provider: Email
