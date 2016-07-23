@@ -123,7 +123,8 @@ namespace Mezzanine
         }
 
         UnitTestGroup::UnitTestGroup()
-            :   CoutStreamBuf(0),
+            :   TestDataStorage(),
+                CoutStreamBuf(0),
                 CerrStreamBuf(0),
                 LongestNameLength(0),
                 DoSubProcessTest(false),
@@ -133,7 +134,8 @@ namespace Mezzanine
         {}
 
         UnitTestGroup::UnitTestGroup(const UnitTestGroup& OtherGroup)
-            :   TestOutput(OtherGroup.TestOutput.str()),
+            :   TestDataStorage(),
+                TestOutput(OtherGroup.TestOutput.str()),
                 TestError(OtherGroup.TestError.str()),
                 CoutStreamBuf(0),
                 CerrStreamBuf(0),
@@ -196,7 +198,10 @@ namespace Mezzanine
         }
 
         String UnitTestGroup::LaunchSubProcessTest(const String& Argument)
-            { return GetCommandResults(GetExecutableName() + String(" ") + SubTestPrefix + Name() + String(" ") + Argument); }
+        {
+            return GetCommandResults(GetExecutableName() + String(" ") +
+                                     SubTestPrefix + Name() + String(" ") + Argument);
+        }
 
         void UnitTestGroup::RunAutomaticTests()
             {}
@@ -227,16 +232,26 @@ namespace Mezzanine
             bool Added=false;
 
             if(CurrentTest.TestName.npos != CurrentTest.TestName.find(" "))
-                { throw std::invalid_argument("Invalid Test Name, contains one or more space character ( ), TestName: \"" + CurrentTest.TestName + "\""); }
+            {
+                throw std::invalid_argument("Invalid Test Name, contains one or more space character ( ), TestName: \""
+                                            + CurrentTest.TestName + "\"");
+            }
             if(CurrentTest.TestName.npos != CurrentTest.TestName.find("\""))
-                { throw std::invalid_argument("Invalid Test Name, contains one or more double quote (\") character(s), TestName: \"" + CurrentTest.TestName + "\""); }
+            {
+                throw std::invalid_argument("Invalid Test Name, contains one or more double quote (\") character(s), "
+                                            "TestName: \"" + CurrentTest.TestName + "\"");
+            }
 
             if(this->Name().length())
             {
                 if(this->Name().npos != this->Name().find(" "))
-                    { throw std::invalid_argument("Invalid UnitTestGroup Name, contains one or more space character ( ), name: \"" + this->Name() + "\""); }
+                {
+                    throw std::invalid_argument("Invalid UnitTestGroup Name, contains one or more space character ( ), "
+                                                "name: \"" + this->Name() + "\""); }
                 if(this->Name().npos != this->Name().find("\""))
-                    { throw std::invalid_argument("Invalid UnitTestGroup Name, contains one or more double quote (\"), name: \"" + this->Name() + "\""); }
+                {
+                    throw std::invalid_argument("Invalid UnitTestGroup Name, contains one or more double quote (\"), "
+                                                "name: \"" + this->Name() + "\""); }
                 CurrentTest.TestName = this->Name() + "::" + CurrentTest.TestName;
             }
 
@@ -283,7 +298,8 @@ namespace Mezzanine
 
         void UnitTestGroup::AddTestResult(const Mezzanine::String Fresh, TestResult Meat, OverWriteResults Behavior)
         {
-            this->TestOutput << "Noting result of " << this->Name() + "::" + Fresh << " as " << TestResultToString(Meat) << std::endl;
+            this->TestOutput << "Noting result of " << this->Name() + "::" + Fresh << " as "
+                             << TestResultToString(Meat) << std::endl;
             AddTestResult(TestData(Fresh,Meat),Behavior);
         }
 
@@ -302,10 +318,8 @@ namespace Mezzanine
         {
             if(!Node) //Basic Sanity Check
             {
-                throw std::invalid_argument(
-                        String("UnitTestGroup::AddTestsFromXML can only handle XML but was passed an empty file. Expected results from ")
-                        + Node.name()
-                    );
+                throw std::invalid_argument( String("UnitTestGroup::AddTestsFromXML can only handle XML but was passed "
+                                                    "an empty file. Expected results from ") + Node.name() );
             }
 
             if(String("UnitTestGroup")==Node.name())
@@ -338,10 +352,8 @@ namespace Mezzanine
             }
             else
             {
-                throw std::invalid_argument(
-                        String("UnitTestGroup::AddTestsFromXML can only handle XML with \"UnitTestGroup\" as root element.  Expected results from ")
-                        + Node.name()
-                    );
+                throw std::invalid_argument( String("UnitTestGroup::AddTestsFromXML can only handle XML with "
+                                "\"UnitTestGroup\" as root element.  Expected results from ") + Node.name() );
             }
         }
 
@@ -360,15 +372,21 @@ namespace Mezzanine
             return Results;
         }
 
-        void UnitTestGroup::DisplayResults(std::ostream& Output, std::ostream& Error, bool Summary, bool FullOutput, bool HeaderOutput)
+        void UnitTestGroup::DisplayResults(std::ostream& Output,
+                                           std::ostream& Error,
+                                           bool Summary,
+                                           bool FullOutput,
+                                           bool HeaderOutput)
         {
             std::vector<unsigned int> TestCounts; // This will store the counts of the Sucesses, failures, etc...
-            TestCounts.insert(TestCounts.end(),1+(unsigned int)NotApplicable, 0); //Fill with the exact amount of 0s
+            //Fill with the exact amount of 0s
+            TestCounts.insert(TestCounts.end(), 1+TestResultToUnsignedInt(NotApplicable), 0);
 
             if(FullOutput && HeaderOutput) // No point in displaying the header without the other content.
             {
                 Mezzanine::String TestName("Test Name");
-                Output << std::endl << " " << TestName << MakePadding(TestName, LongestNameLength) << "Result" << std::endl;
+                Output << std::endl << " " << TestName << MakePadding(TestName, LongestNameLength)
+                       << "Result" << std::endl;
             }
 
             if(FullOutput)
@@ -378,7 +396,8 @@ namespace Mezzanine
             {
                 if(FullOutput)
                 {
-                    Output << Iter->TestName << MakePadding(Iter->TestName, LongestNameLength+1) << TestResultToString(Iter->Results);
+                    Output << Iter->TestName << MakePadding(Iter->TestName, LongestNameLength+1)
+                           << TestResultToString(Iter->Results);
                     if(Iter->Results) // Not Testing::Success
                     {
                         Output << "\t";
@@ -402,7 +421,7 @@ namespace Mezzanine
                           << " in function " << Iter->FunctionName << endl;
                     Error.flush();
                 }
-                TestCounts.at((unsigned int)Iter->Results)++; // Count this test result
+                TestCounts.at(TestResultToUnsignedInt(Iter->Results))++; // Count this test result
             }
 
             if(Summary)
@@ -410,7 +429,7 @@ namespace Mezzanine
                 Output << std::endl << " Results Summary:" << std::endl;
                 for(unsigned int c=0; c<TestCounts.size();++c)
                 {
-                    Mezzanine::String ResultName(TestResultToString((TestResult)c));
+                    Mezzanine::String ResultName(TestResultToString(IntToTestResult(c)));
                     Output << "  " << ResultName << MakePadding(ResultName,16) << TestCounts.at(c) << std::endl;
                 }
                 Output << std::endl;
@@ -421,7 +440,13 @@ namespace Mezzanine
                 { Error << "Errors: " << TestError.str(); }
         }
 
-        void UnitTestGroup::Test(bool TestCondition, const String& TestName, TestResult IfFalse, TestResult IfTrue, const String& FuncName, const String& File, Whole Line )
+        void UnitTestGroup::Test(bool TestCondition,
+                                 const String& TestName,
+                                 TestResult IfFalse,
+                                 TestResult IfTrue,
+                                 const String& FuncName,
+                                 const String& File,
+                                 Whole Line )
         {
             try
             {

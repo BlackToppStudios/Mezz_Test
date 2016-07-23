@@ -19,6 +19,12 @@
 #ifndef SOURCE_PUGIXML_CPP
 #define SOURCE_PUGIXML_CPP
 
+#include "supresswarnings.h"
+
+SAVE_WARNING_STATE
+
+SUPPRESS_GCC_WARNING("-Wsign-conversion") // Supresses 33 warnings
+
 #include "pugixml.h"
 
 #include <stdlib.h>
@@ -10226,6 +10232,8 @@ namespace pugi
 #undef PUGI__ENDSEG
 #undef PUGI__THROW_ERROR
 #undef PUGI__CHECK_ERROR
+
+RESTORE_WARNING_STATE
 
 #endif
 /// @endcond

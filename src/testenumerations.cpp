@@ -127,6 +127,19 @@ namespace Mezzanine
             }
         }
 
+        Mezzanine::Int32 TestResultToInt(TestResult Convertable)
+            { return Mezzanine::Int32(Convertable); }
+
+        Mezzanine::UInt32 TestResultToUnsignedInt(TestResult Convertable)
+            { return Mezzanine::UInt32(TestResultToInt(Convertable)); }
+
+        TestResult IntToTestResult(Mezzanine::Int32 Convertable)
+            { return TestResult(Convertable); }
+
+        TestResult IntToTestResult(Mezzanine::UInt32 Convertable)
+            { return TestResult(Convertable); }
+
+
     }// Testing
 }// Mezzanine
 

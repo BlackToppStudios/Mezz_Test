@@ -37,14 +37,14 @@
 #   Joseph Toppi - toppij@gmail.com
 #   John Blackwood - makoenergy02@gmail.com
 
-####################################################################################################
+########################################################################################################################
 cmake_minimum_required(VERSION 3.0)
 project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
-##########################################################################|#########################
-#set(JagatiChecksum "da401b29af84a4b3c119a23b955e45534c4128d78baa14bf63a58d\
-#8b4c11c10c1b85464dbaea68d180d2fd5f3ea43a4a2a960c7dfc3dfe0890696ee92480a280")
+##########################################################################|#############################################
+#set(JagatiChecksum "9b715d483270eef8df5ab581bc136891c01faa0b9ee59f45150d6e\
+#347eef6a0c1c57b3a0deb2d3bbb7e5bc20919010a56effc6b7733a38489ab5da26e636955c")
 
 #file(DOWNLOAD
 #    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/master/Jagati.cmake"
@@ -57,7 +57,7 @@ StandardJagatiSetup()
 
 IncludeJagatiPackage("StaticFoundation")
 
-####################################################################################################
+########################################################################################################################
 message(STATUS "Determining Source Files.")
 
 set(HeaderFiles
@@ -65,7 +65,6 @@ set(HeaderFiles
     "${TestIncludeDir}consolestringmanipulation.h"
     "${TestIncludeDir}dagframescheduler.h"
     "${TestIncludeDir}mezztest.h"
-    "${TestIncludeDir}pugiconfig.h"
     "${TestIncludeDir}pugixml.h"
     "${TestIncludeDir}testdata.h"
     "${TestIncludeDir}testdatatools.h"
@@ -78,7 +77,6 @@ set(SourceFiles
     "${TestSourceDir}consolelogic.cpp"
     "${TestSourceDir}consolestringmanipulation.cpp"
     "${TestSourceDir}mezztest.cpp"
-    "${TestSourceDir}pugixml.cpp"
     "${TestSourceDir}testdata.cpp"
     "${TestSourceDir}testdatatools.cpp"
     "${TestSourceDir}testenumerations.cpp"
@@ -86,8 +84,8 @@ set(SourceFiles
 ShowList("Source Files:" "\t" "${SourceFiles}")
 
 set(TestSourceFiles
-    "${TestTestDir}testtests.h"
-    "${TestTestDir}testtests.cpp"
+    "${TestSourceDir}pugixml.cpp"
+    "${TestIncludeDir}pugiconfig.h"
 )
 ShowList("Test Source Files:" "\t" "${TestSourceFiles}")
 
@@ -97,25 +95,33 @@ set(DoxFiles
 ShowList("Doxygen Input Files:" "\t" "${DoxFiles}")
 AddJagatiDoxInput("${DoxFiles}")
 
-####################################################################################################
+########################################################################################################################
 # Set up Include Directories
 
 message("StaticFoundationIncludeDir: ${StaticFoundationIncludeDir}")
+message("StaticFoundationGenHeadersDir: ${StaticFoundationGenHeadersDir}")
 message("TestIncludeDir: ${TestIncludeDir}")
 include_directories(
+    ${${PROJECT_NAME}IncludeDir}
+#
     ${StaticFoundationIncludeDir}
     ${StaticFoundationGenHeadersDir}
-    ${${PROJECT_NAME}IncludeDir}
 )
 
-####################################################################################################
+########################################################################################################################
 # Set up Build targets
 
 AddJagatiLibrary("Test")
 add_library(${TestLib} ${MEZZ_LibraryBuildType} ${HeaderFiles} ${SourceFiles})
 target_link_libraries(${TestLib} ${StaticFoundationLib})
 
-add_executable(Test_Tester ${HeaderFiles} ${TestSourceFiles})
+#AddTest("Test")
+AddTestDirectory(${${PROJECT_NAME}TestDir})
+
+EmitTestCode()
+
+
+add_executable(Test_Tester ${HeaderFiles} ${TestSourceFiles} ${${PROJECT_NAME}TesterFilename})
 target_link_libraries(Test_Tester ${StaticFoundationLib} ${TestLib})
 
 # A Project to do nothing but get All the Source files visible in IDEs

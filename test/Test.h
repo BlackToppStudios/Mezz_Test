@@ -37,16 +37,18 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
+#ifndef Mezz_Test_TheActualTests_h
+#define Mezz_Test_TheActualTests_h
 
-#include <iostream>
-#include "testtests.h"
+/// @file
+/// @brief Header for unit tests for the testing framework.
 
-using std::cout;
-using std::endl;
-using Mezzanine::String;
+#include "mezztest.h"
 
-int main(int ArgCount, char** ArgVars)
+class TestTests : public Mezzanine::Testing::UnitTestGroup
 {
-    cout << "Hello World" << endl;
-    return EXIT_SUCCESS;
-}
+
+};
+
+
+#endif

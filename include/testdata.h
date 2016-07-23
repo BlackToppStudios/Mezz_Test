@@ -107,7 +107,7 @@ namespace Mezzanine
         class UnitTestGroup;
         class OutputCaptureManager;
 
-        /// @brief A group of testnames and the Actual test that implement those test(s).
+        /// @brief A group of testnames and the Actual class that implements those test(s).
         typedef std::map<Mezzanine::String, UnitTestGroup*> CoreTestGroup;
 
         /// @brief Print all the groups that exist in a given CoreTestGroup

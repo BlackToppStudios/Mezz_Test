@@ -43,6 +43,7 @@
 /// @file
 /// @brief The implementation of stuff that must be run in the context of a TestData
 
+#include "testdatatools.h"
 #include "testdata.h"
 
 #include <vector>
