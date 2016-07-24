@@ -41,7 +41,8 @@
 #define _consolelogic_cpp
 
 /// @file
-/// @brief The implementation of items important a commandline tool to work correctly without need to be available to test developers.
+/// @brief The implementation of items important a commandline tool to work correctly without need to be available to
+/// test developers.
 
 #include "consolelogic.h"
 #include "consolestringmanipulation.h"
@@ -73,22 +74,26 @@ namespace Mezzanine
     {
         int Usage(Mezzanine::String ThisName, CoreTestGroup& TestGroups)
         {
-            cout    << std::endl << "Usage: " << ThisName << " [help] [summary] [testlist] [interactive|automatic] [all]\n\t[skipfile] Test Group Names ..." << std::endl << std::endl
+            cout    << "\nUsage: " << ThisName
+                    << " [help] [summary] [testlist] [interactive|automatic] [all]\n\t[skipfile] Test Group Names ..."
+                        << std::endl << std::endl
                     << "All:         All test groups will be run." << std::endl
                     << "Interactive: Only interactive tests will be performed on specified test groups." << std::endl
                     << "Automatic:   Only automated tests will be performed on specified test groups." << std::endl
-                    //<< "Interactive and Automatic: All tests will be run on specificied test groups." << std::endl << std::endl
-                    << "Summary:     Only display a count of failures and successes." << std::endl
+                    << "Summary:     Display a count of failures and successes." << std::endl
                     << "testlist:    Output a list of all tests, one per line." << std::endl
                     << "skipfile:    Do not store a copy of the results in TestResults.txt." << std::endl
-                    << "debugtests:  Run tests in the current process. Skips crash protection, but eases test debugging." << std::endl
+                    << "debugtests:  Run tests in the current process. Skips crash protection,"
+                       << " but eases test debugging." << std::endl
                     << "Help:        Display this message." << std::endl << std::endl
                     << "If only test group names are entered, then all tests in those groups are run." << std::endl
                     << "This command is not case sensitive." << std::endl << std::endl
                     << "Current Test Groups: " << std::endl;
 
             Mezzanine::Whole LongestName = 0;
-            for(std::map<Mezzanine::String,UnitTestGroup*>::iterator Iter=TestGroups.begin(); Iter!=TestGroups.end(); ++Iter)
+            for(std::map<Mezzanine::String,UnitTestGroup*>::iterator Iter=TestGroups.begin();
+                Iter!=TestGroups.end();
+                ++Iter)
             {
                 if(Iter->first.size()>LongestName)
                     { LongestName=Iter->first.size();}
@@ -99,7 +104,9 @@ namespace Mezzanine
             Mezzanine::Whole ColumnWidth = LongestName+1;
             Mezzanine::Whole Column = 0;
             Mezzanine::Whole CurrentWidth=0;
-            for(std::map<Mezzanine::String,UnitTestGroup*>::iterator Iter=TestGroups.begin(); Iter!=TestGroups.end(); ++Iter)
+            for(std::map<Mezzanine::String,UnitTestGroup*>::iterator Iter=TestGroups.begin();
+                Iter!=TestGroups.end();
+                ++Iter)
             {
                 if(0==Column)
                 {
@@ -145,11 +152,14 @@ namespace Mezzanine
                 if (InputStream >> Answer)
                 {
                     Answer=tolower(Answer);
-                    if (Answer=='t' || Answer=='y' || Answer=='f' || Answer=='n' || Answer=='c' || Answer=='u' || Answer=='i')
+                    if (Answer=='t' || Answer=='y' || Answer=='f' || Answer=='n' ||
+                        Answer=='c' || Answer=='u' || Answer=='i')
                         { break; }
                 }
 
-                cout << std::endl << "Expected (T)rue/(Y)es for Success, (F)alse/(N)o for Failure," << std::endl << " (C)anceled to cancel this test, or (U)nsure/(I)nconclusive if you don't know." << std::endl << std::endl;
+                cout << std::endl << "Expected (T)rue/(Y)es for Success, (F)alse/(N)o for Failure," << std::endl
+                     << " (C)anceled to cancel this test, or (U)nsure/(I)nconclusive if you don't know." << std::endl
+                     << std::endl;
             }
 
             switch(Answer)

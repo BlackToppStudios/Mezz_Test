@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef _mezztests_h
-#define _mezztests_h
+#ifndef _mezztest_h
+#define _mezztest_h
 
 /// @file
 /// @brief The declaration of a number of tools to help with the main function implementation.
@@ -55,8 +55,6 @@ namespace Mezzanine
 {
     namespace Testing
     {
-
-
         /// @brief Get the argument count as it was passed into Main.
         /// @return This is returned as an int
         int GetMainArgumentCount();
@@ -97,12 +95,13 @@ namespace Mezzanine
         void WriteTempFile(const Testing::UnitTestGroup &TestsToWrite);
 
         /// @internal
-        /// @brief This will open then parse the contents of the file specified by TempFile and interpret any test results located
+        /// @brief This will open then parse the contents of the file specified by TempFile and interpret any test
+        /// results located
         /// @throw This can throw any exception that the C++ filestream classes can throw.
-        /// @return This "reads" the temp file and interprets it. It tries to extract the name of the test as the whole of a line minus
-        /// the last word. The last word is then converted into a @ref TestResult using @ref StringToTestResult . Any Whitespace between
-        /// between the end of the last word and the end of the test name is dropped. All lines are interpretted this way and returned
-        /// as a single @ref UnitTestGroup.
+        /// @return This "reads" the temp file and interprets it. It tries to extract the name of the test as the whole
+        /// of a line minus the last word. The last word is then converted into a @ref TestResult using
+        /// @ref StringToTestResult. Any Whitespace between between the end of the last word and the end of the test
+        /// name is dropped. All lines are interpretted this way and returned as a single @ref UnitTestGroup.
         UnitTestGroup GetResultsFromTempFile();
 
         /// @internal
