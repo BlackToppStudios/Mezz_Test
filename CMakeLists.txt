@@ -43,14 +43,14 @@ project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
-set(JagatiChecksum "f777be87de882500f29d3f38bc4f62bcd388ea2c49f08e12b55e03\
-aeb71788eff24a3def25ff4cd6caac76577c52939e24d41cc004ad2156184fd181dd0239e2")
+#set(JagatiChecksum "45f7b92321032fe70da5a8c6c7a2c138edb124ecc6b069999747b\
+0e6b087d183d3d73de0deca5badcf828d343df8bee9a3d345e17021886c94fe25604a9af33f")
 
-file(DOWNLOAD
-    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.3.0/Jagati.cmake"
-    "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
-    EXPECTED_HASH SHA512=${JagatiChecksum}
-)
+#file(DOWNLOAD
+#    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.3.0/Jagati.cmake"
+#    "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
+#    EXPECTED_HASH SHA512=${JagatiChecksum}
+#)
 include("${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake")
 
 StandardJagatiSetup()
@@ -59,8 +59,7 @@ IncludeJagatiPackage("StaticFoundation")
 
 ########################################################################################################################
 message(STATUS "Determining Source Files.")
-
-set(HeaderFiles
+set(TesterHeaderFiles
     "${TestIncludeDir}consolelogic.h"
     "${TestIncludeDir}consolestringmanipulation.h"
     "${TestIncludeDir}dagframescheduler.h"
@@ -69,25 +68,21 @@ set(HeaderFiles
     "${TestIncludeDir}testdata.h"
     "${TestIncludeDir}testdatatools.h"
     "${TestIncludeDir}testenumerations.h"
+    #"${TestIncludeDir}pugiconfig.h"
 )
-ShowList("Header Files:" "\t" "${HeaderFiles}")
-AddJagatiDoxInput("${HeaderFiles}")
+ShowList("Header Files:" "\t" "${TesterHeaderFiles}")
+AddJagatiDoxInput("${TesterHeaderFiles}")
 
-set(SourceFiles
+set(TesterSourceFiles
     "${TestSourceDir}consolelogic.cpp"
     "${TestSourceDir}consolestringmanipulation.cpp"
     "${TestSourceDir}mezztest.cpp"
     "${TestSourceDir}testdata.cpp"
     "${TestSourceDir}testdatatools.cpp"
     "${TestSourceDir}testenumerations.cpp"
+    #"${TestSourceDir}pugixml.cpp"
 )
-ShowList("Source Files:" "\t" "${SourceFiles}")
-
-set(TestSourceFiles
-    "${TestSourceDir}pugixml.cpp"
-    "${TestIncludeDir}pugiconfig.h"
-)
-ShowList("Test Source Files:" "\t" "${TestSourceFiles}")
+ShowList("Source Files:" "\t" "${TesterSourceFiles}")
 
 set(DoxFiles
     "${TestDoxDir}dox.h"
@@ -96,33 +91,40 @@ ShowList("Doxygen Input Files:" "\t" "${DoxFiles}")
 AddJagatiDoxInput("${DoxFiles}")
 
 ########################################################################################################################
-# Set up Include Directories
+# This setup is unusual but could be useful.
 
-message("StaticFoundationIncludeDir: ${StaticFoundationIncludeDir}")
-message("StaticFoundationGenHeadersDir: ${StaticFoundationGenHeadersDir}")
-message("TestIncludeDir: ${TestIncludeDir}")
 include_directories(
     ${${PROJECT_NAME}IncludeDir}
-#
+    ${TestIncludeDir}
     ${StaticFoundationIncludeDir}
     ${StaticFoundationGenHeadersDir}
 )
 
+# A normal project would put declaration of targets here, a really good project would house the bulk of its
+# functionality in a library so that it could easily be linked to the testing library and the final executable.
+#add_library(${YourLibraryHere} ${MEZZ_LibraryBuildType} ${YourHeaders} ${YourSources})
+
+AddJagatiLibrary("Test")
+
+# This has only one test and could be added as follows.
+# AddTest("Test")
+
+# Instead to prove it works we added all the tests in the test directory with the following:
+AddTestDirectory(${${PROJECT_NAME}TestDir})
+
+# Spit out the C++ file
+EmitTestCode()
+AddTestTarget("")
+
+# You need to link the test library to your stuff to be tested.
+#target_link_libraries(${TestLib} ${YourLibraryHere})
+
+
+
 ########################################################################################################################
 # Set up Build targets
 
-AddJagatiLibrary("Test")
-add_library(${TestLib} ${MEZZ_LibraryBuildType} ${HeaderFiles} ${SourceFiles})
-target_link_libraries(${TestLib} ${StaticFoundationLib})
 
-#AddTest("Test")
-AddTestDirectory(${${PROJECT_NAME}TestDir})
-
-EmitTestCode()
-
-
-add_executable(Test_Tester ${HeaderFiles} ${TestSourceFiles} ${${PROJECT_NAME}TesterFilename})
-target_link_libraries(Test_Tester ${StaticFoundationLib} ${TestLib})
 
 # A Project to do nothing but get All the Source files visible in IDEs
 add_custom_target(

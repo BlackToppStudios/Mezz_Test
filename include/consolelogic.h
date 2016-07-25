@@ -59,7 +59,8 @@ namespace Mezzanine
 
         /// @brief Asked the user a question on the std output and get a TestResult as an answer.
         /// @param Question The question to ask the user.
-        /// @param FailStatusOnIncorrect Defaults to true, FailStatusOnIncorrect if true False answers with return Fail Status otherwise they will return Warnings.
+        /// @param FailStatusOnIncorrect Defaults to true, FailStatusOnIncorrect if true False answers with return Fail
+        /// Status otherwise they will return Warnings.
         /// @details The following strings provide the following results.
         ///     -  "True", "Yes" as Success.
         ///     -  "False", "No" as Failed or Warn.
