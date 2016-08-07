@@ -43,7 +43,7 @@ project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
-#set(JagatiChecksum "45f7b92321032fe70da5a8c6c7a2c138edb124ecc6b069999747b\
+set(JagatiChecksum "45f7b92321032fe70da5a8c6c7a2c138edb124ecc6b069999747b\
 0e6b087d183d3d73de0deca5badcf828d343df8bee9a3d345e17021886c94fe25604a9af33f")
 
 #file(DOWNLOAD
