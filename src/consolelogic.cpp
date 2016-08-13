@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef _consolelogic_cpp
-#define _consolelogic_cpp
+#ifndef Mezz_Test_consolelogic_cpp
+#define Mezz_Test_consolelogic_cpp
 
 /// @file
 /// @brief The implementation of items important a commandline tool to work correctly without need to be available to
@@ -46,6 +46,7 @@
 
 #include "consolelogic.h"
 #include "consolestringmanipulation.h"
+#include "unittestgroup.h"
 
 #include <vector>
 #include <sstream>

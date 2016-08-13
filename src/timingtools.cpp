@@ -37,36 +37,74 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_TheActualTests_h
-#define Mezz_Test_TheActualTests_h
+#ifndef Mezz_Test_timingtools_cpp
+#define Mezz_Test_timingtools_cpp
 
 /// @file
-/// @brief Header for unit tests for the testing framework.
+/// @brief The implementation of stuff that must be run in the context of a TestData
 
-#include "mezztest.h"
+#include "testdatatools.h"
+#include "timingtools.h"
 
-class TestTests : public Mezzanine::Testing::UnitTestGroup
+#ifdef MEZZ_Windows
+    #include <windows.h>
+#else
+    #ifdef MEZZ_MacOSX
+        #include <sys/sysctl.h>
+    #endif
+    #include <sys/time.h>
+    #include <unistd.h>
+#endif
+
+using namespace Mezzanine;
+
+namespace Mezzanine
 {
-    public:
-        void RunAutomaticTests()
-        {
-            TEST(true, "Default Passing Test")
-        }
-        bool HasAutomaticTests() const
-            { return true; }
+    namespace Testing
+    {
+        #ifdef MEZZ_Windows
+            namespace
+            {
+                /// @internal
+                class Timer
+                {
+                    public:
+                        LARGE_INTEGER frequency;
 
+                        Timer()
+                            { QueryPerformanceFrequency(&frequency); }
 
-        void RunSubprocessTest(const Mezzanine::String& Arg)
-            {}
-        bool HasSubprocessTest() const
-            { return false; }
+                        MaxInt GetTimeStamp()
+                        {
+                            LARGE_INTEGER Current;
+                            QueryPerformanceCounter(&Current);
+                            return MaxInt(Current.QuadPart * (1000000.0 / frequency.QuadPart));
+                        }
+                };
 
+                static Timer ATimer;
+            }
 
-        void RunInteractiveTests()
-            {}
-        bool HasInteractiveTests() const
-            { return false; }
-};
+            MaxInt Now()
+                { return ATimer.GetTimeStamp(); }
 
+            Whole NowResolution()
+                { return Whole(ATimer.frequency.QuadPart/1000); }
+
+        #else
+            MaxInt Now()
+            {
+                timeval Now;
+                gettimeofday(&Now, NULL); // Posix says this must return 0, so it seems it can't fail
+                return (Now.tv_sec * 1000000) + Now.tv_usec;
+            }
+
+            Whole NowResolution()
+                { return 1; } // barring kernel bugs
+
+        #endif
+    }// Testing
+}// Mezzanine
 
 #endif
+

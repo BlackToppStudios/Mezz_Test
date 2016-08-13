@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef _unittestenumerations_cpp
-#define _unittestenumerations_cpp
+#ifndef Mezz_Test_unittestenumerations_cpp
+#define Mezz_Test_unittestenumerations_cpp
 
 /// @file
 /// @brief The implmentation of a few functions used with the enumuration in the unit tests

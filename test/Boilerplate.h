@@ -37,19 +37,24 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_TheActualTests_h
-#define Mezz_Test_TheActualTests_h
+#ifndef Mezz_Test_Boilerplate_h
+#define Mezz_Test_Boilerplate_h
 
 /// @file
-/// @brief Header for unit tests for the testing framework.
+/// @brief A Test header suitable for copying as a starting point for tests.
 
 #include "mezztest.h"
 
-class TestTests : public Mezzanine::Testing::UnitTestGroup
+/// @brief The test suite will find all classes identified as tests in CMake, but they need to look like this.
+/// @details This class's name is the filename + "Tests"
+class BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
 {
     public:
         void RunAutomaticTests()
         {
+            // The vast majority of tests will go here.
+
+            // They should use the macros from testdatatools.h to automatically function, filename and line number.
             TEST(true, "Default Passing Test")
         }
         bool HasAutomaticTests() const
@@ -57,13 +62,23 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
 
 
         void RunSubprocessTest(const Mezzanine::String& Arg)
-            {}
+        {
+            // Tests with a high risk of crashing can go here
+
+            // If you ever need to debug stuff in here be sure to pass "debugtests" to test executable
+
+            // To enable this test group have HasSubprocessTest() return true
+        }
         bool HasSubprocessTest() const
             { return false; }
 
 
         void RunInteractiveTests()
-            {}
+        {
+            // Tests that require the mushy and weak flesh of human (Until our machine overlords rise up).
+
+            // To enable this test group have HasInteractiveTests() return true
+        }
         bool HasInteractiveTests() const
             { return false; }
 };

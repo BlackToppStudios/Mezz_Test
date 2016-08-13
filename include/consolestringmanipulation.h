@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef _consolestringmanipulation_h
-#define _consolestringmanipulation_h
+#ifndef Mezz_Test_consolestringmanipulation_h
+#define Mezz_Test_consolestringmanipulation_h
 
 /// @file
 /// @brief Some string manipulation functions geared towards console output for use in the Unit Tests.
@@ -51,7 +51,8 @@ namespace Mezzanine
     {
         /// @brief Take the whitespace off the end of a String
         /// @param t The Text to clean up.
-        /// @param If " asdf " is passed " asdf" is returned. Also removes carriage returns, newlines and tabs. Does not use the locale.
+        /// @param If " asdf " is passed " asdf" is returned. Also removes carriage returns, newlines and tabs. Does not
+        /// use the locale.
         Mezzanine::String rtrim(const Mezzanine::String &t);
 
         /// @brief Creates some blank spaces, useful for controlling the vertical location of console text.

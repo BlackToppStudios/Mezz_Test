@@ -37,79 +37,24 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef _testdatatools_cpp
-#define _testdatatools_cpp
+#ifndef Mezz_Test_testdatatools_cpp
+#define Mezz_Test_testdatatools_cpp
 
 /// @file
-/// @brief The implementation of stuff that must be run in the context of a TestData
+/// @brief The implementation of stuff that must be run in the context of a TestData, which isn't much since its a
+/// bunch of macros.
 
 #include "testdatatools.h"
-#include "testdata.h"
-
-#include <vector>
-#include <stdexcept>
-#include <sstream>
-
-#ifdef _MEZZ_THREAD_WIN32_
-    #include <windows.h>
-#else
-    #ifdef _MEZZ_THREAD_APPLE_
-        #include <sys/sysctl.h>
-    #endif
-    #include <sys/time.h>
-    #include <unistd.h>
-#endif
 
 using namespace Mezzanine;
-using namespace std;
 
 namespace Mezzanine
 {
     namespace Testing
     {
-        #ifdef _MEZZ_THREAD_WIN32_
-            namespace
-            {
-                /// @internal
-                class Timer
-                {
-                    public:
-                        LARGE_INTEGER frequency;
 
-                        Timer()
-                            { QueryPerformanceFrequency(&frequency); }
-
-                        MaxInt GetTimeStamp()
-                        {
-                            LARGE_INTEGER Current;
-                            QueryPerformanceCounter(&Current);
-                            return MaxInt(Current.QuadPart * (1000000.0 / frequency.QuadPart));
-                        }
-                };
-
-                static Timer ATimer;
-            }
-
-            MaxInt Now()
-                { return ATimer.GetTimeStamp(); }
-
-            Whole NowResolution()
-                { return Whole(ATimer.frequency.QuadPart/1000); }
-
-        #else
-            MaxInt Now()
-            {
-                timeval Now;
-                gettimeofday(&Now, NULL); // Posix says this must return 0, so it seems it can't fail
-                return (Now.tv_sec * 1000000) + Now.tv_usec;
-            }
-
-            Whole NowResolution()
-                { return 1; } // barring kernel bugs
-
-        #endif
-    }// Testing
-}// Mezzanine
+    } // Testing
+} // Mezzanine
 
 #endif
 

@@ -43,7 +43,7 @@
 /// @file
 /// @brief The definition of the string manipulation functions the unit tests use
 
-#include "testdatagroup.h"
+#include "unittestgroup.h"
 #include "mezztest.h"
 
 #include <vector>
@@ -269,7 +269,7 @@ namespace Mezzanine
             if(!Node) //Basic Sanity Check
             {
                 throw std::invalid_argument( String("UnitTestGroup::AddTestsFromXML can only handle XML but was passed "
-                                                    "an empty file. Expected results from ") + Node.name() );
+                                                    "an empty file. Expected results from '") + Node.name() +"'." );
             }
 
             if(String("UnitTestGroup")==Node.name())

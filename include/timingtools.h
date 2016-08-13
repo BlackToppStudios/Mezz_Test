@@ -37,36 +37,52 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_TheActualTests_h
-#define Mezz_Test_TheActualTests_h
+#ifndef Mezz_Test_timingtools_h
+#define Mezz_Test_timingtools_h
 
 /// @file
-/// @brief Header for unit tests for the testing framework.
+/// @brief TestData, TestDataStorage and UnitTestGroup class definitions.
 
-#include "mezztest.h"
+#include "datatypes.h"
 
-class TestTests : public Mezzanine::Testing::UnitTestGroup
+#include <limits>
+
+namespace Mezzanine
 {
-    public:
-        void RunAutomaticTests()
+    namespace Testing
+    {
+        /// @brief Get a timestamp, in microseconds.
+        /// @details This will generally be some multiple of the GetTimeStampResolution return value.
+        /// @warning On some platforms this requires a static initialization, an can cause undefined behavior if called
+        /// before static initializations are complete, so don't use this in static contructors at all or it will break
+        /// when you move code to a new platform.
+        /// @return The largest size integer containing a timestamp that can be compared to other timestamps, but has
+        /// no guarantees for external value.
+        MaxInt Now();
+
+        /// @brief Get the resolution of the timestamp in microseconds. This is the smallest amount of time that the
+        /// function @ref GetTimeStamp can accurately track.
+        /// @return A Whole which returns in millionths of a second the smallest unit of time that GetTimeStamp can
+        /// measure.
+        Whole NowResolution();
+
+        /// @brief An easy way to get the time something took to execute.
+        class TimedTest
         {
-            TEST(true, "Default Passing Test")
-        }
-        bool HasAutomaticTests() const
-            { return true; }
+            /// @brief The time this was constructed.
+            MaxInt BeginTimer;
+            public:
+                /// @brief Simply Creating this starts the timer
+                TimedTest()
+                    : BeginTimer(Mezzanine::Testing::Now())
+                    {}
 
-
-        void RunSubprocessTest(const Mezzanine::String& Arg)
-            {}
-        bool HasSubprocessTest() const
-            { return false; }
-
-
-        void RunInteractiveTests()
-            {}
-        bool HasInteractiveTests() const
-            { return false; }
-};
-
+                /// @brief How long since this started.
+                /// @return A MaxInt containing the Now - BeginTimer.
+                MaxInt GetLength()
+                    { return Mezzanine::Testing::Now() - BeginTimer; }
+        };
+    }// Testing
+}// Mezzanine
 
 #endif

@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef _consolelogic_h
-#define _consolelogic_h
+#ifndef Mezz_Test_consolelogic_h
+#define Mezz_Test_consolelogic_h
 
 /// @file
 /// @brief The definition of a few command line tools.

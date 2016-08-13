@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef _unittestenumerations_h
-#define _unittestenumerations_h
+#ifndef Mezz_Test_unittestenumerations_h
+#define Mezz_Test_unittestenumerations_h
 
 /// @file
 /// @brief Enumerations and constant values associated with the Unit tests

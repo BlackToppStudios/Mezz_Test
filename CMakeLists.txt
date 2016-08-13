@@ -43,14 +43,14 @@ project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
-set(JagatiChecksum "45f7b92321032fe70da5a8c6c7a2c138edb124ecc6b069999747b\
-0e6b087d183d3d73de0deca5badcf828d343df8bee9a3d345e17021886c94fe25604a9af33f")
+set(JagatiChecksum "b32e9361b53338dabd55632d8c5ba14979d65613fc615e9a715b9a\
+0d4c56d5a708ddd64876a9518f30da0346d755dcd42d7c236d34e2074ff7116f559114fb1a")
 
-#file(DOWNLOAD
-#    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.3.0/Jagati.cmake"
-#    "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
-#    EXPECTED_HASH SHA512=${JagatiChecksum}
-#)
+file(DOWNLOAD
+    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.3.2/Jagati.cmake"
+    "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
+    EXPECTED_HASH SHA512=${JagatiChecksum}
+)
 include("${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake")
 
 StandardJagatiSetup()
@@ -62,16 +62,16 @@ message(STATUS "Determining Source Files.")
 set(TesterHeaderFiles
     "${TestIncludeDir}consolelogic.h"
     "${TestIncludeDir}consolestringmanipulation.h"
-    "${TestIncludeDir}dagframescheduler.h"
     "${TestIncludeDir}mezztest.h"
     "${TestIncludeDir}pugixml.h"
     "${TestIncludeDir}testdata.h"
     "${TestIncludeDir}testdatatools.h"
     "${TestIncludeDir}testenumerations.h"
-    #"${TestIncludeDir}pugiconfig.h"
+    "${TestIncludeDir}timingtools.h"
+    "${TestIncludeDir}unittestgroup.h"
+
+    "${TestIncludeDir}pugiconfig.h"
 )
-ShowList("Header Files:" "\t" "${TesterHeaderFiles}")
-AddJagatiDoxInput("${TesterHeaderFiles}")
 
 set(TesterSourceFiles
     "${TestSourceDir}consolelogic.cpp"
@@ -80,7 +80,10 @@ set(TesterSourceFiles
     "${TestSourceDir}testdata.cpp"
     "${TestSourceDir}testdatatools.cpp"
     "${TestSourceDir}testenumerations.cpp"
-    #"${TestSourceDir}pugixml.cpp"
+    "${TestSourceDir}timingtools.cpp"
+    "${TestSourceDir}unittestgroup.cpp"
+
+    "${TestSourceDir}pugixml.cpp"
 )
 ShowList("Source Files:" "\t" "${TesterSourceFiles}")
 

@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef _consolestringmanipulation_cpp
-#define _consolestringmanipulation_cpp
+#ifndef Mezz_Test_consolestringmanipulation_cpp
+#define Mezz_Test_consolestringmanipulation_cpp
 
 /// @file
 /// @brief The implementation of the string manipulation functions the unit tests use

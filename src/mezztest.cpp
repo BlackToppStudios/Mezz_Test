@@ -37,6 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
+#ifndef Mezz_Test_mezztest_cpp
+#define Mezz_Test_mezztest_cpp
 
 #include "mezztest.h"
 #include "testdata.h"
@@ -418,3 +420,5 @@ namespace Mezzanine
 
     }// Testing
 }// Mezzanine
+
+#endif
