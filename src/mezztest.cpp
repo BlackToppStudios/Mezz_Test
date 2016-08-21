@@ -238,9 +238,11 @@ namespace Mezzanine
                                                     Mezzanine::String(DoInteractiveTest?"interactive ":""));
                         if(system(SubprocessInvocation.c_str()))   // Run a single unit test as another process
                         {
+                            // Using printf because cout could be redirected here.
                             printf("%s", (SubprocessInvocation+String(" - Failure")).c_str() );
                             this->AddTestResult(String("Process::" + *CurrentTestName), Testing::Failed);
                         }else {
+                            // Using printf because cout could be redirected here.
                             printf("%s", (SubprocessInvocation+String(" - Success")).c_str() );
                             this->AddTestResult(String("Process::" + *CurrentTestName), Success);
                         }
@@ -327,7 +329,7 @@ namespace Mezzanine
             // new process.
             bool FullDisplay = true, SummaryDisplay = true;
 
-            if (argc > 0) //Not really sure how this would happen, but I would rather test for it than have it fail
+            if (argc > 0) //Not really sure how this would happen, but I would rather test and not have silent failures.
                 { CommandName=argv[0]; }
             else
                 { return Usage("UnitTestGroups", TestInstances); }
@@ -336,7 +338,8 @@ namespace Mezzanine
 
             for (int c=1; c<argc; ++c) // Check Command line for keywords and get all the test names
             {
-                String ThisArg(AllLower(argv[c]));
+                //String ThisArg(AllLower(argv[c]));
+                String ThisArg(argv[c]);
                 if(ThisArg=="help")
                     { return Usage(CommandName, TestInstances); }
                 else if(ThisArg==MemSpaceArg)        // Check to see if we do the work now or later

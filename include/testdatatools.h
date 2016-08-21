@@ -235,12 +235,14 @@ namespace Mezzanine
             /// Functions like UnitTestGroup::RunInteractiveTests or UnitTestGroup::RunAutomaticTests
             /// @param CodeToTime The code to time
             /// @param ExpectedTime The Expected amount if time in microseconds.
-            /// @param Variance A fraction 0.00 of how far off, long or short, the execution time can be and still pass. For example .02 is 2%
+            /// @param Variance A fraction 0.00 of how far off, long or short, the execution time can be and still pass.
+            /// For example .02 is 2%
             /// @param Name The name of the current test
             #ifdef __FUNCTION__
                 #define TEST_TIMED(CodeToTime, ExpectedTime, Variance, Name)                                    \
                 {                                                                                               \
-                    TimedTest TESTDuration;                                                                     \
+                    TimedTest TESTDuration;
+    {                                                                     \
                     CodeToTime;                                                                                 \
                     MaxInt TESTLength = TESTDuration.GetLength();                                               \
                     MaxInt TESTTargetTime = ExpectedTime;                                                       \
