@@ -50,12 +50,18 @@
 class BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
 {
     public:
+        /// @brief Default Constructor
+        BoilerplateTests() = default;
+
+        /// @brief Default Deconstructor
+        virtual ~BoilerplateTests() = default;
+
         void RunAutomaticTests()
         {
             // The vast majority of tests will go here.
 
             // They should use the macros from testdatatools.h to automatically function, filename and line number.
-            TEST(true, "Default Passing Test")
+            //TEST(true, "ExamplePassingTest");
         }
         bool HasAutomaticTests() const
             { return true; }
@@ -81,6 +87,8 @@ class BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
         }
         bool HasInteractiveTests() const
             { return false; }
+
+
 };
 
 

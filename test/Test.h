@@ -48,11 +48,15 @@
 class TestTests : public Mezzanine::Testing::UnitTestGroup
 {
     public:
+        TestTests() = default;
+        virtual ~TestTests() = default;
+
         void RunAutomaticTests()
         {
             //TEST(true, "Default Passing Test");
-            Test( true, "Default Passing Test", \
-            Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __func__, __FILE__, __LINE__ );
+            //Test( true, "DefaultPassingTest",
+            //Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __func__, __FILE__, __LINE__ );
+
         }
         bool HasAutomaticTests() const
             { return true; }

@@ -233,9 +233,9 @@ namespace Mezzanine
                         ++CurrentTestName)
                     {
                         ClearTempFile();
-                        String SubprocessInvocation(CommandName + " " + *CurrentTestName + " " + MemSpaceArg + " " +
-                                                    Mezzanine::String(DoAutomaticTest?"automatic ":"") +
-                                                    Mezzanine::String(DoInteractiveTest?"interactive ":""));
+                        String SubprocessInvocation(CommandName + " " + *CurrentTestName + " " + MemSpaceArg  +
+                                                    Mezzanine::String(DoAutomaticTest?" automatic":"") +
+                                                    Mezzanine::String(DoInteractiveTest?" interactive":""));
                         if(system(SubprocessInvocation.c_str()))   // Run a single unit test as another process
                         {
                             // Using printf because cout could be redirected here.
@@ -419,7 +419,7 @@ namespace Mezzanine
                     { return ExitFailure; }
             }
             return ExitSuccess;
-         }
+        }
 
     }// Testing
 }// Mezzanine

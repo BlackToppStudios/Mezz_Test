@@ -99,6 +99,9 @@ namespace Mezzanine
                 /// @brief Default constructor
                 UnitTestGroup();
 
+                /// @brief Default deconstructor
+                virtual ~UnitTestGroup() = default;
+
                 /// @brief Copy constructor
                 /// @param OtherGroup A UnitTestGroup to copy into this one. The contents of any log streams are copied and the streams themselves.
                 UnitTestGroup(const UnitTestGroup& OtherGroup);
