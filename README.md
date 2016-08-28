@@ -4,7 +4,7 @@ The Mezzanine is a set of multi platform C++ libraries designed to help create h
 videos games. The Mezzanine is focused on games requiring 3d physics, 3d graphics, 3d sounds and
 common facilities that such games need. This is just one component of several.
 
-## About ##
+## About this Library ##
 
 The current Linux/Travis build status is: 
 [![Build Status](https://travis-ci.org/BlackToppStudios/Mezz_Test.svg?branch=master)](https://travis-ci.org/BlackToppStudios/Mezz_Test)

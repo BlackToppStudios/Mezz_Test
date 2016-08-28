@@ -2,6 +2,10 @@ sudo: required
 dist: trusty
 language: cpp
 
+os:
+  - linux
+  - osx
+
 compiler:
   - clang
   - gcc
@@ -9,14 +13,18 @@ compiler:
 before_script:
   - mkdir build
   - cd build
-  - cmake .. -DMEZZ_BuildDoxygen=OFF
+  - cmake -G"Ninja" .. -DMEZZ_BuildDoxygen=OFF
 
 # yes is just an application that returns true, this means perform no installation
-install: yes
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then sudo apt-get install valgrind ninja-build -q -y; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]   ; then brew install valgrind ninja; fi
 
-script: make
-
-after_success: ./Test_Tester
+script:
+  - ninja
+  - ./Test_Tester
+  - valgrind --tool=memcheck --leak-check=full  --error-exitcode=1 ./Test_Tester
+  - valgrind --tool=memcheck --leak-check=full  --error-exitcode=1 ./Test_Tester debugtests Test
 
 notifications:
   email:
