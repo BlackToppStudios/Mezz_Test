@@ -69,9 +69,9 @@ namespace Mezzanine
         void UnitTestGroup::RestoreOutputBuffers()
         {
             assert(CoutStreamBuf);
-            assert(CoutStreamBuf);
+            assert(CerrStreamBuf);
             cout.rdbuf(CoutStreamBuf);
-            cout.rdbuf(CerrStreamBuf);
+            cerr.rdbuf(CerrStreamBuf);
         }
 
         UnitTestGroup::UnitTestGroup()
