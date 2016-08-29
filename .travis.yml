@@ -9,7 +9,7 @@ os:
 compiler:
   - clang
   - gcc
-MEZZ_JagatiPackageDirectory
+
 before_script:
   - mkdir build
   - cd build
