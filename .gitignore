@@ -50,3 +50,6 @@ doxygen_sqlite3.db
 
 # other git files
 .git/*
+
+# Build directories
+build/

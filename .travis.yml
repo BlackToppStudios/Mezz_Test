@@ -9,10 +9,12 @@ os:
 compiler:
   - clang
   - gcc
-
+MEZZ_JagatiPackageDirectory
 before_script:
   - mkdir build
   - cd build
+  - mkdir JagatiPackages
+  - export JAGATI_DIR=`pwd`/JagatiPackages
   - cmake -G"Ninja" .. -DMEZZ_BuildDoxygen=OFF
 
 # yes is just an application that returns true, this means perform no installation
