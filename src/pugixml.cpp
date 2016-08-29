@@ -24,6 +24,9 @@
 SAVE_WARNING_STATE
 
 SUPPRESS_GCC_WARNING("-Wsign-conversion") // Supresses 33 warnings
+SUPPRESS_CLANG_WARNING("-Wconversion")
+SUPPRESS_CLANG_WARNING("-Wdeprecated")
+
 
 #include "pugixml.h"
 
