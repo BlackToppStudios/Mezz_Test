@@ -41,7 +41,7 @@
 #define Mezz_Test_unittestenumerations_h
 
 /// @file
-/// @brief Enumerations and constant values associated with the Unit tests
+/// @brief Enumerations and constant values associated with the Unit tests.
 
 #include "datatypes.h"
 #include "supresswarnings.h"
