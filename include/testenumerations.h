@@ -79,7 +79,7 @@ namespace Mezzanine
 
         // These global constructors are certainly safe. These reference nothing external and that is the reason
         // for the warning.
-        SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
+        SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
             /// @brief Corresponds to TestResult::Success
             const Mezzanine::String SuccessString("Success");
             /// @brief Corresponds to TestResult::Warning
