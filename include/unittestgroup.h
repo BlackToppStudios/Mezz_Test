@@ -47,7 +47,9 @@
 #include "testdata.h"
 
 #include "testenumerations.h"
-#include "pugixml.h"
+SUPPRESS_CLANG_WARNING("-Wdeprecated")
+    #include "pugixml.h"
+RESTORE_WARNING_STATE
 
 #include <set>
 #include <map>

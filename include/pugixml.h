@@ -27,9 +27,6 @@
 #ifndef HEADER_PUGIXML_HPP
 #define HEADER_PUGIXML_HPP
 
-
-SUPPRESS_CLANG_WARNING("-Wdeprecated")
-
 // Include stddef.h for size_t and ptrdiff_t
 #include <stddef.h>
 
@@ -1244,8 +1241,6 @@ namespace std
 	std::forward_iterator_tag PUGIXML_FUNCTION __iterator_category(const pugi::xml_named_node_iterator&);
 }
 #endif
-
-RESTORE_WARNING_STATE
 
 #endif
 
