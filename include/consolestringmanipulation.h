@@ -51,8 +51,8 @@ namespace Mezzanine
     {
         /// @brief Take the whitespace off the end of a String
         /// @param t The Text to clean up.
-        /// @param If " asdf " is passed " asdf" is returned. Also removes carriage returns, newlines and tabs. Does not
-        /// use the locale.
+        /// @return If " asdf " is passed " asdf" is returned. Also removes carriage returns, newlines and tabs. Does
+        /// not use the locale.
         Mezzanine::String rtrim(const Mezzanine::String &t);
 
         /// @brief Creates some blank spaces, useful for controlling the vertical location of console text.

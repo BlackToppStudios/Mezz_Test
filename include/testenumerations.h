@@ -44,6 +44,7 @@
 /// @brief Enumerations and constant values associated with the Unit tests
 
 #include "datatypes.h"
+#include "supresswarnings.h"
 
 namespace Mezzanine
 {
@@ -76,22 +77,26 @@ namespace Mezzanine
                                         /// test, so if this winds up coming out of a test, then something has failed.
         };
 
-        /// @brief Corresponds to TestResult::Success
-        const Mezzanine::String SuccessString("Success");
-        /// @brief Corresponds to TestResult::Warning
-        const Mezzanine::String WarningString("Warning");
-        /// @brief Corresponds to TestResult::Skipped
-        const Mezzanine::String SkippedString("Skipped");
-        /// @brief Corresponds to TestResult::Cancelled
-        const Mezzanine::String CancelledString("Cancelled");
-        /// @brief Corresponds to TestResult::Inconclusive
-        const Mezzanine::String InconclusiveString("Inconclusive");
-        /// @brief Corresponds to TestResult::Failed
-        const Mezzanine::String FailedString("Failed");
-        /// @brief Corresponds to TestResult::Unknown
-        const Mezzanine::String UnknownString("Unknown");
-        /// @brief Corresponds to TestResult::NotApplicable
-        const Mezzanine::String NotApplicableString("NotApplicable");
+        // These global constructors are certainly safe. These reference nothing external and that is the reason
+        // for the warning.
+        SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
+            /// @brief Corresponds to TestResult::Success
+            const Mezzanine::String SuccessString("Success");
+            /// @brief Corresponds to TestResult::Warning
+            const Mezzanine::String WarningString("Warning");
+            /// @brief Corresponds to TestResult::Skipped
+            const Mezzanine::String SkippedString("Skipped");
+            /// @brief Corresponds to TestResult::Cancelled
+            const Mezzanine::String CancelledString("Cancelled");
+            /// @brief Corresponds to TestResult::Inconclusive
+            const Mezzanine::String InconclusiveString("Inconclusive");
+            /// @brief Corresponds to TestResult::Failed
+            const Mezzanine::String FailedString("Failed");
+            /// @brief Corresponds to TestResult::Unknown
+            const Mezzanine::String UnknownString("Unknown");
+            /// @brief Corresponds to TestResult::NotApplicable
+            const Mezzanine::String NotApplicableString("NotApplicable");
+        RESTORE_WARNING_STATE
 
         /// @brief This converts A test result enum value into a String matching the identifier name.
         /// @param Convertable A TestResult inclusively between Success and NotApplicable.

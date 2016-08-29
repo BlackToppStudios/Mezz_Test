@@ -150,7 +150,6 @@ namespace Mezzanine
                 /// @brief Does nothing by default, tests which need to run code in a subprocess should override this.
                 /// @details This will be executed in a subprocess before HasAutomaticTests() and RunInteractiveTests();
                 /// @param Arg An argument from the calling test.
-                /// @return Whatever was sent to stdout via C++ streams will be captured and sent here instead.
                 virtual void RunSubprocessTest(const Mezzanine::String& Arg);
                 /// @brief If this returns false then the test suite treats it like any other test, if true then it enables some features for launching subprocess tests
                 /// @details This will cause an extra command line option to be created (as "debug" + testname). The function SubprocessTest() will be executed in the
