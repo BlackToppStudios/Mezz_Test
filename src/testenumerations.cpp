@@ -38,7 +38,11 @@
    John Blackwood - makoenergy02@gmail.com
 */
 #ifndef Mezz_Test_unittestenumerations_cpp
+#include "supresswarnings.h"
+SAVE_WARNING_STATE
+SUPPRESS_CLANG_WARNING("-Wunused-macros")
 #define Mezz_Test_unittestenumerations_cpp
+RESTORE_WARNING_STATE
 
 /// @file
 /// @brief The implmentation of a few functions used with the enumuration in the unit tests
@@ -53,6 +57,9 @@ namespace Mezzanine
 {
     namespace Testing
     {
+        SAVE_WARNING_STATE
+        SUPPRESS_GCC_WARNING("-Wreturn-type") // Control cannot reach the end of this function, because the
+                                                    // warning for incomplete case statements will stop compilation.
         Mezzanine::String TestResultToString(TestResult Convertable)
         {
             switch(Convertable)
@@ -73,10 +80,9 @@ namespace Mezzanine
                     return UnknownString;
                 case NotApplicable:
                     return NotApplicableString;
-                default:
-                    throw std::invalid_argument("Cannot convert to String from TestResult");
             }
         }
+        RESTORE_WARNING_STATE
 
         TestResult StringToTestResult(Mezzanine::String Text)
         {

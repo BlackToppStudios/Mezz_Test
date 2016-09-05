@@ -59,7 +59,7 @@ namespace Mezzanine
         /// @param Leader The string on the beginning of the line.
         /// @param Column The desired column that the padding should lead toward
         /// @return If "asdf" and 6 are passed this will return "  " (Two spaces).
-        Mezzanine::String MakePadding(Mezzanine::String Leader, unsigned int Column);
+        Mezzanine::String MakePadding(Mezzanine::String Leader, String::size_type Column);
 
         /// @brief Makes a c style stron all lowercase with respect to the current locale
         /// @param StringToConvert This string is actually changed.

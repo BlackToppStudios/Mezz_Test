@@ -38,7 +38,11 @@
    John Blackwood - makoenergy02@gmail.com
 */
 #ifndef Mezz_Test_testdata_cpp
+#include "supresswarnings.h"
+SAVE_WARNING_STATE
+SUPPRESS_CLANG_WARNING("-Wunused-macros")
 #define Mezz_Test_testdata_cpp
+RESTORE_WARNING_STATE
 
 /// @file
 /// @brief The definition of the string manipulation functions the unit tests use
@@ -63,15 +67,15 @@ namespace Mezzanine
                  const String& FuncName,
                  const String& File,
                  Mezzanine::Whole Line)
-            : TestName(Name), Results(Result), FunctionName(FuncName), FileName(File), LineNumber(Line)
+            : TestName(Name), FunctionName(FuncName), FileName(File), LineNumber(Line), Results(Result)
         {}
 
         TestData::TestData(pugi::xml_node Node)
             : TestName( Node.attribute("TestName").as_string() ),
-              Results( StringToTestResult(Node.attribute ("Results").as_string())),
               FunctionName( Node.attribute("FunctionName").as_string() ),
               FileName( Node.attribute("FileName").as_string() ),
-              LineNumber( Node.attribute("LineNumber").as_uint() )
+              LineNumber( Node.attribute("LineNumber").as_uint() ),
+              Results( StringToTestResult(Node.attribute ("Results").as_string()) )
         {}
 
         bool TestData::operator<(const TestData& Rhs) const

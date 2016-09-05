@@ -47,7 +47,10 @@
 #include "testdata.h"
 
 #include "testenumerations.h"
+SAVE_WARNING_STATE
 SUPPRESS_CLANG_WARNING("-Wdeprecated")
+SUPPRESS_CLANG_WARNING("-Wweak-vtables")
+SUPPRESS_CLANG_WARNING("-Wpadded")
     #include "pugixml.h"
 RESTORE_WARNING_STATE
 
@@ -60,6 +63,11 @@ namespace Mezzanine
 {
     namespace Testing
     {
+
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wpadded") // Testing code is not sensitive to care about 1 byte of padding
+                                           // If we ever profile then we should disable this.
+
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests, suitable for being all the tests of a small subsystem or single class.
         class UnitTestGroup : public TestDataStorage
@@ -85,7 +93,10 @@ namespace Mezzanine
                 void RestoreOutputBuffers();
 
                 /// @brief Some basic variable for tracking simple statistics
-                unsigned int LongestNameLength;
+                String::size_type LongestNameLength;
+
+                /// @brief Used while running a test to see if
+                Int32 Completed;
 
                 /// @brief Set to false if subprocess tests should not be executed. True if they should
                 bool DoSubProcessTest;
@@ -93,9 +104,6 @@ namespace Mezzanine
                 bool DoAutomaticTest;
                 /// @brief Sets the flag to run interactive tests
                 bool DoInteractiveTest;
-
-                /// @brief Used while running a test to see if
-                Int32 Completed;
 
             public:
                 /// @brief Default constructor
@@ -225,6 +233,7 @@ namespace Mezzanine
                                     const String& File = "",
                                     Mezzanine::Whole Line = 0);
         };
+        RESTORE_WARNING_STATE
 
         /// @internal
         /// @brief Used to aplly RAII to Stdout and STDERR buffers/streams

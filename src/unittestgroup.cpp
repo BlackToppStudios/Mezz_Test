@@ -38,7 +38,11 @@
    John Blackwood - makoenergy02@gmail.com
 */
 #ifndef Mezz_Test_unittestgroup_cpp
+#include "supresswarnings.h"
+SAVE_WARNING_STATE
+SUPPRESS_CLANG_WARNING("-Wunused-macros")
 #define Mezz_Test_unittestgroup_cpp
+RESTORE_WARNING_STATE
 
 /// @file
 /// @brief The definition of the string manipulation functions the unit tests use
@@ -79,10 +83,10 @@ namespace Mezzanine
                 CoutStreamBuf(0),
                 CerrStreamBuf(0),
                 LongestNameLength(0),
+                Completed(0),
                 DoSubProcessTest(false),
                 DoAutomaticTest(false),
-                DoInteractiveTest(false),
-                Completed(0)
+                DoInteractiveTest(false)
         {}
 
         UnitTestGroup::UnitTestGroup(const UnitTestGroup& OtherGroup)
@@ -91,10 +95,10 @@ namespace Mezzanine
                 TestError(OtherGroup.TestError.str()),
                 CoutStreamBuf(0),
                 CerrStreamBuf(0),
+                Completed(0),
                 DoSubProcessTest(OtherGroup.DoSubProcessTest),
                 DoAutomaticTest(OtherGroup.DoAutomaticTest),
-                DoInteractiveTest(OtherGroup.DoInteractiveTest),
-                Completed(0)
+                DoInteractiveTest(OtherGroup.DoInteractiveTest)
         { insert(OtherGroup.begin(),OtherGroup.end()); }
 
         void UnitTestGroup::RunTests()
@@ -167,7 +171,7 @@ namespace Mezzanine
         void UnitTestGroup::ShouldRunInteractiveTests()
             { DoInteractiveTest = true; }
 
-        void UnitTestGroup::RunSubprocessTest(const String& Arg)
+        void UnitTestGroup::RunSubprocessTest(const String&)
             {}
         bool UnitTestGroup::HasSubprocessTest() const
             { return false; }

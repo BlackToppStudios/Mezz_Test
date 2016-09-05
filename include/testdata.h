@@ -46,7 +46,10 @@
 #include "datatypes.h"
 
 #include "testenumerations.h"
+SAVE_WARNING_STATE
 SUPPRESS_CLANG_WARNING("-Wdeprecated")
+SUPPRESS_CLANG_WARNING("-Wweak-vtables")
+SUPPRESS_CLANG_WARNING("-Wpadded")
     #include "pugixml.h"
 RESTORE_WARNING_STATE
 
@@ -61,20 +64,22 @@ namespace Mezzanine
     /// @brief This contains all the items (except the tests themselves) that make the unit tests work.
     namespace Testing
     {
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wpadded")
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief The information about a test and how to easily find it in the filesystem
         struct TestData
         {
             /// @brief The name of a given test
             Mezzanine::String TestName;
-            /// @brief How did the test turn out
-            TestResult Results;
             /// @brief The function the test was called from
             Mezzanine::String FunctionName;
             /// @brief The File The test happened in
             Mezzanine::String FileName;
             /// @brief What line in the file this test occurred when the test was compiled
             Mezzanine::Whole LineNumber;
+            /// @brief How did the test turn out
+            TestResult Results;
 
             /// @brief Create a TestData
             /// @param Name the name of the test, defaults to "".
@@ -102,6 +107,7 @@ namespace Mezzanine
             /// FunctionName, FileName, LineNumber
             String GetAsXML() const;
         };
+        RESTORE_WARNING_STATE
 
         /// @brief Just a map to store the content of TestData, incidentally it will lexographically sort the list of
         /// tests.

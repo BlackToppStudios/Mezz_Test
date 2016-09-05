@@ -38,7 +38,11 @@
    John Blackwood - makoenergy02@gmail.com
 */
 #ifndef Mezz_Test_mezztest_cpp
+#include "supresswarnings.h"
+SAVE_WARNING_STATE
+SUPPRESS_CLANG_WARNING("-Wunused-macros")
 #define Mezz_Test_mezztest_cpp
+RESTORE_WARNING_STATE
 
 #include "mezztest.h"
 #include "testdata.h"
@@ -59,40 +63,52 @@
 /// does so through the UnitTestGroup class via polymorphism.
 namespace Mezzanine
 {
-    namespace Testing
+    namespace
     {
-
         /// @internal
         /// @brief ArgC as it was passed into Main.
         /// @details This cannot be set statically, it must wait for main(int, char**) to
         /// be initialized
         int ArgC;
-        int GetMainArgumentCount()
-            { return ArgC; }
 
         /// @internal
         /// @brief ArgC as it was passed into Main.
         /// @details This cannot be set statically, it must wait for main(int, char**) to
         /// be initialized
         char** ArgV;
-        char** GetMainArgumentVector()
-            { return ArgV; }
-
-        /// @internal
-        /// @brief This will store the name of the command that launched this executable at run time
-        Mezzanine::String CommandName;
-        Mezzanine::String GetExecutableName()
-            { return CommandName; }
 
         /// @internal
         /// @brief The current process depth as interpretted by Main
-        ProcessDepth Depth;
+        Testing::ProcessDepth Depth;
+
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
+        SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
+            /// @internal
+            /// @brief This will store the name of the command that launched this executable at run time
+            Mezzanine::String CommandName;
+
+            /// @internal
+            /// @brief A string intended for use by any subsubprocess test
+            Mezzanine::String SubSubProcessArgument;
+        RESTORE_WARNING_STATE
+    }
+
+    namespace Testing
+    {
+
+        int GetMainArgumentCount()
+            { return ArgC; }
+
+        char** GetMainArgumentVector()
+            { return ArgV; }
+
+        Mezzanine::String GetExecutableName()
+            { return CommandName; }
+
         ProcessDepth GetCurrentProcessDepth()
             { return Depth; }
 
-        /// @internal
-        /// @brief A string intended for use by any subsubprocess test
-        Mezzanine::String SubSubProcessArgument;
         Mezzanine::String GetSubSubProcessArgument()
             { return SubSubProcessArgument; }
 
@@ -136,7 +152,8 @@ namespace Mezzanine
         void DeleteTempFile()
             { std::remove(TempFile.c_str()); }
 
-
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this is the only translation unit.
         /// @internal
         /// @brief This aggregates the results of all the other test groups.
         class AllUnitTestGroups : public UnitTestGroup
@@ -193,7 +210,7 @@ namespace Mezzanine
 
                 /// @internal
                 /// @brief Constructor
-                /// @param GlobalTestGroups The collection of tests that could be run
+                /// @param MainTestGroups The collection of tests that could be run.
                 AllUnitTestGroups(CoreTestGroup& MainTestGroups)
                     : RunAll(true),
                       TestGroups(MainTestGroups)
@@ -308,6 +325,7 @@ namespace Mezzanine
                     }
                 }
         };
+        RESTORE_WARNING_STATE
 
         int MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances)
         {

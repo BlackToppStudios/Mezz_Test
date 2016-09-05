@@ -79,6 +79,7 @@ namespace Mezzanine
 
         // These global constructors are certainly safe. These reference nothing external and that is the reason
         // for the warning.
+        SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
         SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
             /// @brief Corresponds to TestResult::Success
@@ -102,8 +103,6 @@ namespace Mezzanine
         /// @brief This converts A test result enum value into a String matching the identifier name.
         /// @param Convertable A TestResult inclusively between Success and NotApplicable.
         /// @return  A string like "Success" or "Inconclusive" or similar.
-        /// @throw std::invalid_argument If an int not in the valid range of TestResult is passed in then this will
-        /// throw and std::invalid_argument with a message describing why.
         Mezzanine::String TestResultToString(TestResult Convertable);
 
         Mezzanine::Int32 TestResultToInt(TestResult Convertable);

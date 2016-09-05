@@ -17,15 +17,30 @@
 /// @cond false
 
 #ifndef SOURCE_PUGIXML_CPP
-#define SOURCE_PUGIXML_CPP
 
 #include "supresswarnings.h"
-
 SAVE_WARNING_STATE
-
 SUPPRESS_GCC_WARNING("-Wsign-conversion") // Supresses 33 warnings
+// Clang is much more stric than GCC and Pugixml, at least this old version does not seem to care
 SUPPRESS_CLANG_WARNING("-Wconversion")
 SUPPRESS_CLANG_WARNING("-Wdeprecated")
+SUPPRESS_CLANG_WARNING("-Wreserved-id-macro")
+SUPPRESS_CLANG_WARNING("-Wpadded")
+SUPPRESS_CLANG_WARNING("-Wswitch-enum")
+SUPPRESS_CLANG_WARNING("-Wcovered-switch-default")
+SUPPRESS_CLANG_WARNING("-Wdouble-promotion")
+SUPPRESS_CLANG_WARNING("-Wfloat-equal")
+SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
+SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
+SUPPRESS_CLANG_WARNING("-Wimplicit-fallthrough")
+SUPPRESS_CLANG_WARNING("-Wmissing-noreturn")
+SUPPRESS_CLANG_WARNING("-Wweak-vtables")
+SUPPRESS_CLANG_WARNING("-Wunused-macros")
+SUPPRESS_CLANG_WARNING("-Wunused-member-function")
+
+#define SOURCE_PUGIXML_CPP
+
+
 
 #include "pugixml.h"
 

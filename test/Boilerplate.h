@@ -43,7 +43,12 @@
 /// @file
 /// @brief A Test header suitable for copying as a starting point for tests.
 
+// Add other headers you need here
 #include "mezztest.h"
+
+SAVE_WARNING_STATE
+SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this will this will be recompiled each test.
+SUPPRESS_CLANG_WARNING("-Wpadded") // Test classes will likely need to be padded and we don't care.
 
 /// @brief The test suite will find all classes identified as tests in CMake, but they need to look like this.
 /// @details This class's name is the filename + "Tests"
@@ -67,7 +72,8 @@ class BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
             { return true; }
 
 
-        void RunSubprocessTest(const Mezzanine::String& Arg)
+        //void RunSubprocessTest(const Mezzanine::String& Arg) // Add this parameter back in if you need it.
+        void RunSubprocessTest(const Mezzanine::String&)
         {
             // Tests with a high risk of crashing can go here
 
@@ -91,5 +97,5 @@ class BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
 
 };
 
-
+RESTORE_WARNING_STATE
 #endif

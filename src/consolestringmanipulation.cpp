@@ -38,7 +38,11 @@
    John Blackwood - makoenergy02@gmail.com
 */
 #ifndef Mezz_Test_consolestringmanipulation_cpp
+#include "supresswarnings.h"
+SAVE_WARNING_STATE
+SUPPRESS_CLANG_WARNING("-Wunused-macros")
 #define Mezz_Test_consolestringmanipulation_cpp
+RESTORE_WARNING_STATE
 
 /// @file
 /// @brief The implementation of the string manipulation functions the unit tests use
@@ -68,10 +72,10 @@ namespace Mezzanine
         }
 
         // Used for padding spaces, after a piece of leader text, such that it always ends at teh expected colum
-        String MakePadding(String Leader, unsigned int Column)
+        String MakePadding(String Leader, String::size_type Column)
         {
             String Spaces(" ");
-            for (unsigned int c=Leader.length(); c<Column;++c)
+            for(String::size_type c=Leader.length(); c<Column;++c)
                 { Spaces+=" "; }
             return Spaces;
         }
@@ -80,7 +84,7 @@ namespace Mezzanine
         {
             char* CharIter;
             for(CharIter = StringToConvert; 0 != *CharIter; CharIter++)
-                { *CharIter = tolower(*CharIter); }
+                { *CharIter = static_cast<char>(tolower(*CharIter)); }
             return StringToConvert;
         }
 
@@ -89,7 +93,7 @@ namespace Mezzanine
             char* temp = new char[StringToConvert.size()+1];
             char* CharIter = temp;
             for(String::iterator Iter = StringToConvert.begin(); Iter!=StringToConvert.end(); Iter++)
-                { *CharIter++ = tolower(*Iter); }
+                { *CharIter++ = static_cast<char>(tolower(*Iter)); }
             *CharIter=0;
             String Results(temp);
             delete[] temp;

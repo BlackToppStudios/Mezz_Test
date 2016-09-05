@@ -43,7 +43,12 @@
 /// @file
 /// @brief Header for unit tests for the testing framework.
 
+// Add other headers you need here
 #include "mezztest.h"
+
+SAVE_WARNING_STATE
+SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this will this will be recompiled each test.
+SUPPRESS_CLANG_WARNING("-Wpadded") // Test classes will likely need to be padded and we don't care.
 
 class TestTests : public Mezzanine::Testing::UnitTestGroup
 {
@@ -61,7 +66,8 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
             { return true; }
 
 
-        void RunSubprocessTest(const Mezzanine::String& Arg)
+        //void RunSubprocessTest(const Mezzanine::String& Arg) // Add this parameter back in if you need it.
+        void RunSubprocessTest(const Mezzanine::String&)
             {}
         bool HasSubprocessTest() const
             { return false; }
@@ -73,5 +79,5 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
             { return false; }
 };
 
-
+RESTORE_WARNING_STATE
 #endif

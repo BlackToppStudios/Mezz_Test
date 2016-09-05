@@ -131,6 +131,10 @@ namespace Mezzanine
         /// @param argv Is interpretted as the arguments passed in from the launching shell.
         int MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances);
 
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
+        SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
+
         /// @internal
         /// @brief If this is passed to the command line the test is executed without launching a separate processs.
         /// @details In most cases each test is launched as a separate process and this is passed to it.
@@ -149,6 +153,7 @@ namespace Mezzanine
         /// shouldn't be developing software until that is fixed.
         static const Mezzanine::String TempFile("UnitTestWork.txt");
 
+        RESTORE_WARNING_STATE
     }// Testing
 }// Mezzanine
 
