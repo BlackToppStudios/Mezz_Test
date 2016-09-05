@@ -241,8 +241,7 @@ namespace Mezzanine
             #ifdef __FUNCTION__
                 #define TEST_TIMED(CodeToTime, ExpectedTime, Variance, Name)                                    \
                 {                                                                                               \
-                    TimedTest TESTDuration;
-    {                                                                     \
+                    TimedTest TESTDuration;                                                                     \
                     CodeToTime;                                                                                 \
                     MaxInt TESTLength = TESTDuration.GetLength();                                               \
                     MaxInt TESTTargetTime = ExpectedTime;                                                       \
