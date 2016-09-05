@@ -59,8 +59,13 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
         void RunAutomaticTests()
         {
             TEST(true, "DefaultPassingTest");
-
-
+            // TEST_EQUAL_EPSILON
+            // TEST_EQUAL_MULTI_EPSILON
+            // TEST_WARN
+            // TEST_RESULT
+            // TEST_THROW
+            // TEST_NO_THROW
+            // TEST_TIMED
         }
         bool HasAutomaticTests() const
             { return true; }
