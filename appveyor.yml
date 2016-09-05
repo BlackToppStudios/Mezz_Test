@@ -6,29 +6,13 @@ environment:
   - GENERATOR: MinGW Makefiles
     CompilerPath: C:\msys64\mingw32\bin
     TestPath: "."
-    CompilerMS: "0"
-    CompilerNix: "1"
-    Arch64: "0"
-    Arch32: "1"
   - GENERATOR: MinGW Makefiles
     CompilerPath: C:\msys64\mingw64\bin
     TestPath: "."
-    CompilerMS: "0"
-    CompilerNix: "1"
-    Arch64: "1"
-    Arch32: "0"
 #  - GENERATOR: Visual Studio 14 2015
 #    TestPath: "./%configuration%"
-#    CompilerMS: "1"
-#    CompilerNix: "0"
-#    Arch64: "0"
-#    Arch32: "1"
   - GENERATOR: Visual Studio 14 2015 Win64
     TestPath: "./%configuration%"
-    CompilerMS: "1"
-    CompilerNix: "0"
-    Arch64: "1"
-    Arch32: "0"
 
 configuration:
   - Debug
@@ -44,18 +28,21 @@ before_build:
   - set PATH=%PATH:C:\MinGW\bin;=%
   # Ensure the appropriate install is in the PATH
   - set PATH=%CompilerPath%;%PATH%
+  # Stop useless Xamarin Build targets from making messages
+  - del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
   # Finalize build prep
   - mkdir build
   - cd build
+  - echo "Current Configuration is '%CONFIGURATION%'"
   - cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=%CONFIGURATION% .. -DMEZZ_BuildDoxygen=OFF
 
 build_script:
   - cmake --build . --config %CONFIGURATION%
 
 test_script:
-  - cmd: cd C:\projects\Mezz_Mezz_Test\build
+  - cmd: cd C:\projects\Mezz_Test\build
   - cmd: cd %TestPath%
-  - cmd: Mezz_Test_Tester
+  - cmd: Test_Tester
 
 notifications:
 - provider: Email
