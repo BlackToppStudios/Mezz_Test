@@ -37,12 +37,6 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_testdatatools_cpp
-#include "supresswarnings.h"
-SAVE_WARNING_STATE
-SUPPRESS_CLANG_WARNING("-Wunused-macros")
-#define Mezz_Test_testdatatools_cpp
-RESTORE_WARNING_STATE
 
 /// @file
 /// @brief The implementation of stuff that must be run in the context of a TestData, which isn't much since its a
@@ -59,6 +53,4 @@ namespace Mezzanine
 
     } // Testing
 } // Mezzanine
-
-#endif
 

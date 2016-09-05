@@ -37,12 +37,6 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_mezztest_cpp
-#include "supresswarnings.h"
-SAVE_WARNING_STATE
-SUPPRESS_CLANG_WARNING("-Wunused-macros")
-#define Mezz_Test_mezztest_cpp
-RESTORE_WARNING_STATE
 
 #include "mezztest.h"
 #include "testdata.h"
@@ -441,5 +435,3 @@ namespace Mezzanine
 
     }// Testing
 }// Mezzanine
-
-#endif

@@ -37,12 +37,6 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_unittestgroup_cpp
-#include "supresswarnings.h"
-SAVE_WARNING_STATE
-SUPPRESS_CLANG_WARNING("-Wunused-macros")
-#define Mezz_Test_unittestgroup_cpp
-RESTORE_WARNING_STATE
 
 /// @file
 /// @brief The definition of the string manipulation functions the unit tests use
@@ -421,5 +415,3 @@ namespace Mezzanine
 
     }// Testing
 }// Mezzanine
-
-#endif // \ _testdata_cpp

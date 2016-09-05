@@ -37,12 +37,6 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_unittestenumerations_cpp
-#include "supresswarnings.h"
-SAVE_WARNING_STATE
-SUPPRESS_CLANG_WARNING("-Wunused-macros")
-#define Mezz_Test_unittestenumerations_cpp
-RESTORE_WARNING_STATE
 
 /// @file
 /// @brief The implmentation of a few functions used with the enumuration in the unit tests
@@ -148,5 +142,3 @@ namespace Mezzanine
 
     }// Testing
 }// Mezzanine
-
-#endif

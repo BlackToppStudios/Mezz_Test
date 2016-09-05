@@ -37,12 +37,6 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_consolelogic_cpp
-#include "supresswarnings.h"
-SAVE_WARNING_STATE
-SUPPRESS_CLANG_WARNING("-Wunused-macros")
-#define Mezz_Test_consolelogic_cpp
-RESTORE_WARNING_STATE
 
 /// @file
 /// @brief The implementation of items important a commandline tool to work correctly without need to be available to
@@ -204,5 +198,3 @@ namespace Mezzanine
 
     }// Testing
 }// Mezzanine
-
-#endif
