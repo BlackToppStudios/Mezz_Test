@@ -17,7 +17,6 @@ before_script:
   - export JAGATI_DIR=`pwd`/JagatiPackages
   - cmake -G"Ninja" .. -DMEZZ_BuildDoxygen=OFF
 
-# yes is just an application that returns true, this means perform no installation
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then sudo apt-get install valgrind ninja-build -q -y; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]   ; then brew install valgrind ninja; fi
