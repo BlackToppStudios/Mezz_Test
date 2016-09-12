@@ -58,18 +58,57 @@ namespace Mezzanine
             /// @brief The easiest way to add a test to the currently running UnitTestGroup.
             /// This captures test location meta data and should be considered the default way to record tests
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
-            /// Functions
-            /// like UnitTestGroup::RunInteractiveTests or UnitTestGroup::RunAutomaticTests
-            /// @param Cond A boolean operand of some kind
+            /// Functions like UnitTestGroup::RunInteractiveTests or UnitTestGroup::RunAutomaticTests.
             /// @param Name The name of the current test
+            /// @param Conditional A boolean operand of some kind
             #ifdef __FUNCTION__
-                #define TEST(Cond, Name) \
-                    Test( (Cond), (Name), \
+                #define TEST(Name, Conditional); \
+                    Test( (Name), (Conditional), \
                     Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __FUNCTION__, __FILE__, __LINE__ );
             #else
-                #define TEST(Cond, Name); \
-                    Test( (Cond), (Name), \
+                #define TEST(Name, Conditional); \
+                    Test( (Name), (Conditional), \
                     Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __func__, __FILE__, __LINE__ );
+            #endif
+        #endif
+
+        #ifndef TEST_EQUAL
+            /// @def TEST_EQUAL
+            /// @brief The simplest test for comparing two values in a currently running UnitTestGroup.
+            /// This captures test location meta data and should be considered the default way to record equality tests.
+            /// This uses the types == operator and if inequal uses the types << operator(ostream&) to emit an error
+            /// message displaying the received results and the actual results.
+            /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
+            /// Functions like UnitTestGroup::RunInteractiveTests or UnitTestGroup::RunAutomaticTests.
+            /// @param Name The name of the current test.
+            /// @param ExpectedResults The canonical valute
+            /// @param ActualResults
+            #ifdef __FUNCTION__
+                #define TEST_EQUAL(Name, ExpectedResults, ActualResults); \
+                    { \
+                        Mezzanine::Testing::TestResult Result_ = Test( (Name), ((ExpectedResults) == (ActualResults)),\
+                         Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __FUNCTION__, __FILE__, __LINE__ ); \
+                        if(Mezzanine::Testing::Success != Result_)                                                    \
+                        {                                                                                             \
+                            std::cout << "Test - " << Name << " failed: "                                             \
+                                      << "Expected '" << ExpectedResults << "' "                                      \
+                                      << "but actually Recieved '" << ActualResults << "'."                           \
+                                      << std::endl;                                                                   \
+                        }                                                                                             \
+                    }
+            #else
+                #define TEST_EQUAL(Name, ExpectedResults, ActualResults); \
+                    { \
+                        Mezzanine::Testing::TestResult Result_ = Test( (Name), ((ExpectedResults) == (ActualResults)),\
+                         Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __func__, __FILE__, __LINE__ );     \
+                        if(Mezzanine::Testing::Success != Result_)                                                    \
+                        {                                                                                             \
+                            std::cout << "Test - " << Name << " failed: "                                             \
+                                      << "Expected '" << ExpectedResults << "' "                                      \
+                                      << "but actually Recieved '" << ActualResults << "'."                           \
+                                      << std::endl;                                                                   \
+                        }                                                                                             \
+                    }
             #endif
         #endif
 
@@ -90,18 +129,39 @@ namespace Mezzanine
 
         #ifndef TEST_EQUAL_EPSILON
             /// @def TEST_EQUAL_EPSILON
-            /// @brief Compare types that might
-            /// @param LeftValue One value to compare
-            /// @param RightValue One value to compare
-            /// @param Name The name of the current test
-            #ifdef __FUNCTION__
-                #define TEST_EQUAL_EPSILON(LeftValue, RightValue, Name) \
-                        Test( CompareEqualityWithEpsilon(LeftValue, RightValue), \
-                        (Name), Testing::Failed, Testing::Success, __FUNCTION__, __FILE__, __LINE__ );
+            /// @brief Compare types that might flucatuate because of the impreciion of floating point values.
+            /// @details
+            /// @param Name The name of the current test.
+            /// @param ExpectedResults The amount expected, plus or minus the std::numerics_limits epsilon of the type.
+            /// @param ActualResults The tested amount.
+            #ifdef __FUNCTION_
+                #define TEST_EQUAL_EPSILON(Name, ExpectedResults, ActualResults)                                      \
+                    {                                                                                                 \
+                        Mezzanine::Testing::TestResult Result_ = Test( (Name),                                        \
+                         Mezzanine::Testing::CompareEqualityWithEpsilon(ExpectedResults, ActualResults),              \
+                        Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __FUNCTION__, __FILE__, __LINE__ );  \
+                        if(Mezzanine::Testing::Success != Result_)                                                    \
+                        {                                                                                             \
+                            std::cout << "Test - " << Name << " failed: "                                             \
+                                      << "Expected '" << ExpectedResults << "' "                                      \
+                                      << "but actually Recieved '" << ActualResults << "'."                           \
+                                      << std::endl;                                                                   \
+                        }                                                                                             \
+                    }
             #else
-                #define TEST_EQUAL_EPSILON(LeftValue, RightValue, Name) \
-                        Test( CompareEqualityWithEpsilon(LeftValue, RightValue), \
-                        (Name), Testing::Failed, Testing::Success, __func__, __FILE__, __LINE__ );
+                #define TEST_EQUAL_EPSILON(Name, ExpectedResults, ActualResults)                                      \
+                    {                                                                                                 \
+                        Mezzanine::Testing::TestResult Result_ = Test( (Name),                                        \
+                         Mezzanine::Testing::CompareEqualityWithEpsilon(ExpectedResults, ActualResults),              \
+                        Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __func__, __FILE__, __LINE__ );      \
+                        if(Mezzanine::Testing::Success != Result_)                                                    \
+                        {                                                                                             \
+                            std::cout << "Test - " << Name << " failed: "                                             \
+                                      << "Expected '" << ExpectedResults << "' "                                      \
+                                      << "but actually Recieved '" << ActualResults << "'."                           \
+                                      << std::endl;                                                                   \
+                        }                                                                                             \
+                    }
             #endif
         #endif
 
@@ -135,11 +195,15 @@ namespace Mezzanine
             /// @param Cond A boolean operand of some kind
             /// @param Name The name of the current test
             #ifdef __FUNCTION__
-                #define TEST_WARN(Cond, Name) \
-                        Test( (Cond), (Name), Testing::Warning, Testing::Success, __FUNCTION__, __FILE__, __LINE__ );
+                #define TEST_WARN(Name, Conditional) \
+                        Test( (Name), (Conditional), \
+                            Mezzanine::Testing::Warning, Mezzanine::Testing::Success, \
+                            __FUNCTION__, __FILE__, __LINE__ );
             #else
-                #define TEST_WARN(Cond, Name) \
-                        Test( (Cond), (Name), Testing::Warning, Testing::Success, __func__, __FILE__, __LINE__ );
+                #define TEST_WARN(Name, Conditional) \
+                        Test( (Name), (Conditional), \
+                            Mezzanine::Testing::Warning, Mezzanine::Testing::Success, \
+                            __func__, __FILE__, __LINE__ );
             #endif
         #endif
 

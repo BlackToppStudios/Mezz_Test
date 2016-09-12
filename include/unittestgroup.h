@@ -225,13 +225,13 @@ namespace Mezzanine
                 /// be passed in, if not set an empty string is used
                 /// @param Line To make tracking down failures easier the line number of the test
                 /// can  be passed in, if not set an empty string is used
-                virtual void Test(  bool TestCondition,
-                                    const String& TestName,
-                                    TestResult IfFalse = Testing::Failed,
-                                    TestResult IfTrue = Testing::Success,
-                                    const String& FuncName = "",
-                                    const String& File = "",
-                                    Mezzanine::Whole Line = 0);
+                virtual TestResult Test(const String& TestName,
+                                        bool TestCondition,
+                                        TestResult IfFalse = Testing::Failed,
+                                        TestResult IfTrue = Testing::Success,
+                                        const String& FuncName = "",
+                                        const String& File = "",
+                                        Mezzanine::Whole Line = 0);
         };
         RESTORE_WARNING_STATE
 

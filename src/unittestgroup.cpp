@@ -388,8 +388,7 @@ namespace Mezzanine
                 { Error << "Errors: " << TestError.str(); }
         }
 
-        void UnitTestGroup::Test(bool TestCondition,
-                                 const String& TestName,
+        TestResult UnitTestGroup::Test(const String& TestName, bool TestCondition,
                                  TestResult IfFalse,
                                  TestResult IfTrue,
                                  const String& FuncName,
@@ -398,16 +397,20 @@ namespace Mezzanine
         {
             try
             {
+                TestResult Result;
                 if(TestCondition)
                 {
-                    AddTestResult( TestData(TestName, IfTrue, FuncName, File, Line) );
+                    Result = IfTrue;
                 }else{
-                    AddTestResult( TestData(TestName, IfFalse, FuncName, File, Line) );
+                    Result = IfFalse;
                 }
+                AddTestResult( TestData(TestName, Result, FuncName, File, Line) );
+                return Result;
             }catch(exception& e){
                 TestError << "Caught an unhandled exception while adding results for " << TestName << endl
                           << "Message: " << e.what() << endl;
                 AddTestResult( TestData("UnhandledException", Testing::Failed, FuncName, File, Line) );
+                return Testing::Failed;
             }
         }
 

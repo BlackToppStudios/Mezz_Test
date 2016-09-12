@@ -50,6 +50,48 @@ SAVE_WARNING_STATE
 SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this will this will be recompiled each test.
 SUPPRESS_CLANG_WARNING("-Wpadded") // Test classes will likely need to be padded and we don't care.
 
+// This class is not called directly by the Unit Test framework and is just used by
+// TestTests to verify that Failing works correctly.
+class NegativeTestTests : public Mezzanine::Testing::UnitTestGroup
+{
+     public:
+         NegativeTestTests() = default;
+         virtual ~NegativeTestTests() = default;
+
+         void RunAutomaticTests()
+         {
+             TEST("DefaultTestFailing", false);
+             TEST_EQUAL("EqualityTestFailing", 1, 2);
+             TEST_EQUAL_EPSILON("EqualEpsilonFailing",0.1,0.2);
+             //TEST_EQUAL_MULTI_EPSILON("EqualEpsilonFailing",0.1,0.1,2);
+             // TEST_EQUAL_EPSILON
+             // TEST_EQUAL_MULTI_EPSILON
+             // TEST_WARN
+             // TEST_RESULT
+             // TEST_THROW
+             // TEST_NO_THROW
+             // TEST_TIMED
+         }
+         bool HasAutomaticTests() const
+             { return true; }
+};
+
+// This class is not called directly by the Unit Test framework and is just used by
+// TestTests to verify that Warnings works correctly.
+class WarningTestTests : public Mezzanine::Testing::UnitTestGroup
+{
+    public:
+        WarningTestTests() = default;
+        virtual ~WarningTestTests() = default;
+
+        void RunAutomaticTests()
+        {
+            TEST_WARN("WarningTestFailing", false);
+        }
+        bool HasAutomaticTests() const
+            { return true; }
+};
+
 class TestTests : public Mezzanine::Testing::UnitTestGroup
 {
     public:
@@ -58,14 +100,30 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
 
         void RunAutomaticTests()
         {
-            TEST(true, "DefaultPassingTest");
-            // TEST_EQUAL_EPSILON
-            // TEST_EQUAL_MULTI_EPSILON
-            // TEST_WARN
+            // Positive tests
+            TEST("DefaultTestPassing", true);
+            TEST_EQUAL("EqualityTestPassing", 1, 1);
+            TEST_WARN("WarningTestPassing", true);
+            TEST_EQUAL_EPSILON("EqualEpsilonPassing",0.1,0.1);
+            //TEST_EQUAL_MULTI_EPSILON("EqualEpsilonPassing",0.1,0.1,2);
+
             // TEST_RESULT
             // TEST_THROW
             // TEST_NO_THROW
             // TEST_TIMED
+
+            // Negative Tests
+            class NegativeTestTests Negation;
+            Negation.RunAutomaticTests();
+            for(const Mezzanine::Testing::TestData& SingleResult : Negation)
+                { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::Failed, SingleResult.Results); }
+
+            // Warning Tests
+            class WarningTestTests Warnifier;
+            Warnifier.RunAutomaticTests();
+            for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
+                { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::Warning, SingleResult.Results); }
+
         }
         bool HasAutomaticTests() const
             { return true; }
