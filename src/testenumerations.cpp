@@ -53,79 +53,31 @@ namespace Mezzanine
     {
         SAVE_WARNING_STATE
         SUPPRESS_GCC_WARNING("-Wreturn-type") // Control cannot reach the end of this function, because the
-                                                    // warning for incomplete case statements will stop compilation.
+                                              // warning for incomplete case statements will stop compilation.
         Mezzanine::String TestResultToString(TestResult Convertable)
         {
             switch(Convertable)
             {
-                case Success:
+                case TestResult::Success:
                     return SuccessString;
-                case Warning:
+                case TestResult::Warning:
                     return WarningString;
-                case Skipped:
+                case TestResult::Skipped:
                     return SkippedString;
-                case Cancelled:
+                case TestResult::Cancelled:
                     return CancelledString;
-                case Inconclusive:
+                case TestResult::Inconclusive:
                     return InconclusiveString;
-                case Failed:
+                case TestResult::Failed:
                     return FailedString;
-                case Unknown:
+                case TestResult::Unknown:
                     return UnknownString;
-                case NotApplicable:
+                case TestResult::NotApplicable:
                     return NotApplicableString;
             }
         }
         RESTORE_WARNING_STATE
 
-        TestResult StringToTestResult(Mezzanine::String Text)
-        {
-            if(Text.size()==0)
-                { throw std::invalid_argument("Cannot convert to TestResult from empty String"); }
-
-            switch(Text.at(0))
-            {
-                case 'S':
-                    if ( SuccessString == Text )
-                        { return Success; }
-                    else if ( SkippedString == Text )
-                        { return Skipped; }
-                    else
-                        { throw std::invalid_argument("Cannot convert to TestResult from text(S) " + Text); }
-                case 'W':
-                    if ( WarningString == Text )
-                        { return Warning;}
-                    else
-                        { throw std::invalid_argument("Cannot convert to TestResult from text(W) " + Text); }
-                case 'C':
-                    if ( CancelledString == Text )
-                        { return Cancelled;}
-                    else
-                        { throw std::invalid_argument("Cannot convert to TestResult from text(C) " + Text); }
-                case 'I':
-                    if ( InconclusiveString == Text )
-                        { return Inconclusive;}
-                    else
-                        { throw std::invalid_argument("Cannot convert to TestResult from text(I) " + Text); }
-                case 'U':
-                    if ( UnknownString == Text )
-                        { return Unknown;}
-                    else
-                        { throw std::invalid_argument("Cannot convert to TestResult from text(U) " + Text); }
-                case 'F':
-                    if ( FailedString == Text )
-                        { return Failed;}
-                    else
-                        { throw std::invalid_argument("Cannot convert to TestResult from text(F) " + Text); }
-                case 'N':
-                    if ( NotApplicableString == Text )
-                        { return NotApplicable;}
-                    else
-                        { throw std::invalid_argument("Cannot convert to TestResult from text(F) " + Text); }
-                default:
-                    { throw std::invalid_argument("Cannot convert to TestResult from text() " + Text); }
-            }
-        }
 
         Mezzanine::Int32 TestResultToInt(TestResult Convertable)
             { return Mezzanine::Int32(Convertable); }
@@ -139,6 +91,57 @@ namespace Mezzanine
         TestResult IntToTestResult(Mezzanine::UInt32 Convertable)
             { return TestResult(Convertable); }
 
+        std::ostream& operator<<(std::ostream& Stream, TestResult Output)
+            { return Stream << TestResultToString(Output); }
+
+        TestResult StringToTestResult(Mezzanine::String Text)
+        {
+            if(Text.size()==0)
+                { throw std::invalid_argument("Cannot convert to TestResult from empty String"); }
+
+            switch(Text.at(0))
+            {
+                case 'S':
+                    if ( SuccessString == Text )
+                        { return TestResult::Success; }
+                    else if ( SkippedString == Text )
+                        { return TestResult::Skipped; }
+                    else
+                        { throw std::invalid_argument("Cannot convert to TestResult from text(S) " + Text); }
+                case 'W':
+                    if ( WarningString == Text )
+                        { return TestResult::Warning;}
+                    else
+                        { throw std::invalid_argument("Cannot convert to TestResult from text(W) " + Text); }
+                case 'C':
+                    if ( CancelledString == Text )
+                        { return TestResult::Cancelled;}
+                    else
+                        { throw std::invalid_argument("Cannot convert to TestResult from text(C) " + Text); }
+                case 'I':
+                    if ( InconclusiveString == Text )
+                        { return TestResult::Inconclusive;}
+                    else
+                        { throw std::invalid_argument("Cannot convert to TestResult from text(I) " + Text); }
+                case 'U':
+                    if ( UnknownString == Text )
+                        { return TestResult::Unknown;}
+                    else
+                        { throw std::invalid_argument("Cannot convert to TestResult from text(U) " + Text); }
+                case 'F':
+                    if ( FailedString == Text )
+                        { return TestResult::Failed;}
+                    else
+                        { throw std::invalid_argument("Cannot convert to TestResult from text(F) " + Text); }
+                case 'N':
+                    if ( NotApplicableString == Text )
+                        { return TestResult::NotApplicable;}
+                    else
+                        { throw std::invalid_argument("Cannot convert to TestResult from text(F) " + Text); }
+                default:
+                    { throw std::invalid_argument("Cannot convert to TestResult from text() " + Text); }
+            }
+        }
 
     }// Testing
 }// Mezzanine

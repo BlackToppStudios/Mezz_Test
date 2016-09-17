@@ -62,13 +62,15 @@ namespace Mezzanine
             /// @param Name The name of the current test
             /// @param Conditional A boolean operand of some kind
             #ifdef __FUNCTION__
-                #define TEST(Name, Conditional); \
-                    Test( (Name), (Conditional), \
-                    Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __FUNCTION__, __FILE__, __LINE__ );
+                #define TEST(Name, Conditional);                                                                       \
+                    Test((Name), (Conditional),                                                                        \
+                         Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,              \
+                         __FUNCTION__, __FILE__, __LINE__ );
             #else
-                #define TEST(Name, Conditional); \
-                    Test( (Name), (Conditional), \
-                    Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __func__, __FILE__, __LINE__ );
+                #define TEST(Name, Conditional);                                                                       \
+                    Test((Name), (Conditional),                                                                        \
+                         Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,              \
+                         __func__, __FILE__, __LINE__ );
             #endif
         #endif
 
@@ -84,48 +86,17 @@ namespace Mezzanine
             /// @param ExpectedResults The canonical valute
             /// @param ActualResults
             #ifdef __FUNCTION__
-                #define TEST_EQUAL(Name, ExpectedResults, ActualResults); \
-                    { \
-                        Mezzanine::Testing::TestResult Result_ = Test( (Name), ((ExpectedResults) == (ActualResults)),\
-                         Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __FUNCTION__, __FILE__, __LINE__ ); \
-                        if(Mezzanine::Testing::Success != Result_)                                                    \
-                        {                                                                                             \
-                            std::cout << "Test - " << Name << " failed: "                                             \
-                                      << "Expected '" << ExpectedResults << "' "                                      \
-                                      << "but actually Recieved '" << ActualResults << "'."                           \
-                                      << std::endl;                                                                   \
-                        }                                                                                             \
-                    }
+                #define TEST_EQUAL(Name, ExpectedResults, ActualResults);                                              \
+                    TestEqual((Name), (ExpectedResults), (ActualResults),                                              \
+                              Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,         \
+                              __FUNCTION__, __FILE__, __LINE__ );
             #else
-                #define TEST_EQUAL(Name, ExpectedResults, ActualResults); \
-                    { \
-                        Mezzanine::Testing::TestResult Result_ = Test( (Name), ((ExpectedResults) == (ActualResults)),\
-                         Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __func__, __FILE__, __LINE__ );     \
-                        if(Mezzanine::Testing::Success != Result_)                                                    \
-                        {                                                                                             \
-                            std::cout << "Test - " << Name << " failed: "                                             \
-                                      << "Expected '" << ExpectedResults << "' "                                      \
-                                      << "but actually Recieved '" << ActualResults << "'."                           \
-                                      << std::endl;                                                                   \
-                        }                                                                                             \
-                    }
+                #define TEST_EQUAL(Name, ExpectedResults, ActualResults);                                              \
+                    TestEqual((Name), (ExpectedResults), (ActualResults),                                              \
+                              Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,         \
+                              __func__, __FILE__, __LINE__ );
             #endif
         #endif
-
-        /// @brief Calculate if an assumption is close enough to be considered equal
-        /// @details this uses std::numeric_limits<T>::epsilon() to get the amount of round that is acceptable.
-        /// This all the Epsilon to be included multiple times if required generally once is the right amount
-        /// to include. However, sometimes an operation can cause rounding multiple times, if this is case, then
-        /// an EpsilonFactor can be passed and set to the number of times rounding can be expected.
-        /// @param Left One value to check for equality.
-        /// @param Right The other value to check.
-        /// @param EpsilonFactor How many times should the epsilon be included.
-        template <typename T>
-        bool CompareEqualityWithEpsilon(const T& Left, const T& Right, size_t EpsilonFactor = 1)
-        {
-            T Epsilon(std::numeric_limits<T>::epsilon());
-            return Right-Epsilon*PreciseReal(EpsilonFactor) <= Left && Left <= Right+Epsilon*PreciseReal(EpsilonFactor);
-        }
 
         #ifndef TEST_EQUAL_EPSILON
             /// @def TEST_EQUAL_EPSILON
@@ -133,35 +104,17 @@ namespace Mezzanine
             /// @details
             /// @param Name The name of the current test.
             /// @param ExpectedResults The amount expected, plus or minus the std::numerics_limits epsilon of the type.
-            /// @param ActualResults The tested amount.
-            #ifdef __FUNCTION_
-                #define TEST_EQUAL_EPSILON(Name, ExpectedResults, ActualResults)                                      \
-                    {                                                                                                 \
-                        Mezzanine::Testing::TestResult Result_ = Test( (Name),                                        \
-                         Mezzanine::Testing::CompareEqualityWithEpsilon(ExpectedResults, ActualResults),              \
-                        Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __FUNCTION__, __FILE__, __LINE__ );  \
-                        if(Mezzanine::Testing::Success != Result_)                                                    \
-                        {                                                                                             \
-                            std::cout << "Test - " << Name << " failed: "                                             \
-                                      << "Expected '" << ExpectedResults << "' "                                      \
-                                      << "but actually Recieved '" << ActualResults << "'."                           \
-                                      << std::endl;                                                                   \
-                        }                                                                                             \
-                    }
+            /// @param ActualResults The tested amount that the test process actually produced.
+            #ifdef __FUNCTION__
+                #define TEST_EQUAL_EPSILON(Name, ExpectedResults, ActualResults);                                      \
+                TestEqualEpsilon((Name), (ExpectedResults), (ActualResults), 1,                                        \
+                                 Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,      \
+                                 __FUNCTION__, __FILE__, __LINE__ );
             #else
-                #define TEST_EQUAL_EPSILON(Name, ExpectedResults, ActualResults)                                      \
-                    {                                                                                                 \
-                        Mezzanine::Testing::TestResult Result_ = Test( (Name),                                        \
-                         Mezzanine::Testing::CompareEqualityWithEpsilon(ExpectedResults, ActualResults),              \
-                        Mezzanine::Testing::Failed, Mezzanine::Testing::Success, __func__, __FILE__, __LINE__ );      \
-                        if(Mezzanine::Testing::Success != Result_)                                                    \
-                        {                                                                                             \
-                            std::cout << "Test - " << Name << " failed: "                                             \
-                                      << "Expected '" << ExpectedResults << "' "                                      \
-                                      << "but actually Recieved '" << ActualResults << "'."                           \
-                                      << std::endl;                                                                   \
-                        }                                                                                             \
-                    }
+                #define TEST_EQUAL_EPSILON(Name, ExpectedResults, ActualResults);                                      \
+                TestEqualEpsilon((Name), (ExpectedResults), (ActualResults), 1,                                        \
+                                 Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,      \
+                                 __func__, __FILE__, __LINE__ );
             #endif
         #endif
 
@@ -169,19 +122,21 @@ namespace Mezzanine
             /// @def TEST_EQUAL_MULTI_EPSILON
             /// @details This is only rarely required. TEST_EQUAL_EPSILON should be preferred as this can spuriously
             /// pass.
-            /// @param LeftValue One value to compare
-            /// @param RightValue One value to compare
+            /// @param Name The name of the current test
+            /// @param ExpectedResults The amount expected, plus or minus the std::numerics_limits epsilon of the type.
+            /// @param ActualResults The tested amount that the test process actually produced.
             /// @param EpsilonFactor How many times rounding could occur that could round to the epsilon, so that it
             /// can be accounted for.
-            /// @param Name The name of the current test
             #ifdef __FUNCTION__
-                #define TEST_EQUAL_MULTI_EPSILON(LeftValue, RightValue, Name, EpsilonFactor) \
-                        Test( CompareEqualityWithEpsilon(LeftValue, RightValue, EpsilonFactor), \
-                        (Name), Testing::Failed, Testing::Success, __FUNCTION__, __FILE__, __LINE__ );
+                #define TEST_EQUAL_MULTI_EPSILON(Name, ExpectedResults, ActualResults, EpsilonFactor);                 \
+                TestEqualEpsilon((Name), (ExpectedResults), (ActualResults), EpsilonFactor,                            \
+                                 Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,      \
+                                 __FUNCTION__, __FILE__, __LINE__ );
             #else
-                #define TEST_EQUAL_MULTI_EPSILON(LeftValue, RightValue, Name, EpsilonFactor) \
-                        Test( CompareEqualityWithEpsilon(LeftValue, RightValue, EpsilonFactor), \
-                        (Name), Testing::Failed, Testing::Success, __func__, __FILE__, __LINE__ );
+                #define TEST_EQUAL_MULTI_EPSILON(Name, ExpectedResults, ActualResults, EpsilonFactor);                 \
+                TestEqualEpsilon((Name), (ExpectedResults), (ActualResults), EpsilonFactor,                            \
+                                 Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,      \
+                                 __func__, __FILE__, __LINE__ );
             #endif
         #endif
 
@@ -195,14 +150,14 @@ namespace Mezzanine
             /// @param Cond A boolean operand of some kind
             /// @param Name The name of the current test
             #ifdef __FUNCTION__
-                #define TEST_WARN(Name, Conditional) \
-                        Test( (Name), (Conditional), \
-                            Mezzanine::Testing::Warning, Mezzanine::Testing::Success, \
+                #define TEST_WARN(Name, Conditional)                                                                   \
+                        Test( (Name), (Conditional),                                                                   \
+                            Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,          \
                             __FUNCTION__, __FILE__, __LINE__ );
             #else
-                #define TEST_WARN(Name, Conditional) \
-                        Test( (Name), (Conditional), \
-                            Mezzanine::Testing::Warning, Mezzanine::Testing::Success, \
+                #define TEST_WARN(Name, Conditional)                                                                   \
+                        Test( (Name), (Conditional),                                                                   \
+                            Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,          \
                             __func__, __FILE__, __LINE__ );
             #endif
         #endif
@@ -217,11 +172,13 @@ namespace Mezzanine
             /// @param ExistingResult A TestResult To be added directy
             /// @param Name The name of the current test
             #ifdef __FUNCTION__
-                #define TEST_RESULT(ExistingResult, Name) \
-                        AddTestResult( TestData( (Name), (ExistingResult), __FUNCTION__, __FILE__, __LINE__)) ;
+                #define TEST_RESULT(Name, ExistingResult)                                                              \
+                        AddTestResult( Mezzanine::Testing::TestData( (Name), (ExistingResult),                         \
+                        __FUNCTION__, __FILE__, __LINE__)) ;
             #else
-                #define TEST_RESULT(ExistingResult, Name) \
-                        AddTestResult( TestData( (Name), (ExistingResult), __func__, __FILE__, __LINE__)) ;
+                #define TEST_RESULT(Name, ExistingResult)                                                              \
+                        AddTestResult( Mezzanine::Testing::TestData( (Name), (ExistingResult),                         \
+                        __func__, __FILE__, __LINE__)) ;
             #endif
 
         #endif
@@ -235,28 +192,18 @@ namespace Mezzanine
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// Functions like UnitTestGroup::RunInteractiveTests or UnitTestGroup::RunAutomaticTests
             /// @param ExpectThrown The type of the thing that should be thrown
-            /// @param CodeThatThrows A snippet of code that throws an exception
+            /// @param CodeThatThrows A lambda or other callable code that throws an exception.
             /// @param Name The name of the current test
             #ifdef __FUNCTION__
-                #define TEST_THROW(ExpectThrown, CodeThatThrows, Name)                                      \
-                try {                                                                                       \
-                    CodeThatThrows;                                                                         \
-                    AddTestResult( TestData( (Name), Testing::Failed, __FUNCTION__, __FILE__, __LINE__)) ;  \
-                } catch (ExpectThrown) {                                                                    \
-                    AddTestResult( TestData( (Name), Testing::Success, __FUNCTION__, __FILE__, __LINE__)) ; \
-                } catch (...) {                                                                             \
-                    AddTestResult( TestData( (Name), Testing::Failed, __FUNCTION__, __FILE__, __LINE__)) ;  \
-                }
+                #define TEST_THROW(Name, ExpectThrown, CodeThatThrows);                                                \
+                    TestThrow<ExpectThrown> ((Name), (CodeThatThrows),                                                 \
+                         Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,              \
+                         __FUNCTION__, __FILE__, __LINE__ );
             #else
-                #define TEST_THROW(ExpectThrown, CodeThatThrows, Name)                                      \
-                try {                                                                                       \
-                    CodeThatThrows;                                                                         \
-                    AddTestResult( TestData( (Name), Testing::Failed, __func__, __FILE__, __LINE__)) ;      \
-                } catch (ExpectThrown) {                                                                    \
-                    AddTestResult( TestData( (Name), Testing::Success, __func__, __FILE__, __LINE__)) ;     \
-                } catch (...) {                                                                             \
-                    AddTestResult( TestData( (Name), Testing::Failed, __func__, __FILE__, __LINE__)) ;      \
-                }
+                #define TEST_THROW(Name, ExpectThrown, CodeThatThrows);                                                \
+                    TestThrow<ExpectThrown> ((Name), (CodeThatThrows),                                                 \
+                         Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,              \
+                         __func__, __FILE__, __LINE__ );
             #endif
         #endif
 
@@ -270,22 +217,16 @@ namespace Mezzanine
             /// Functions like UnitTestGroup::RunInteractiveTests or UnitTestGroup::RunAutomaticTests
             /// @param CodeThatMightThrow The type of the thing that should be thrown
             /// @param Name The name of the current test
-            #ifdef __FUNCTION__
-                #define TEST_NO_THROW(CodeThatMightThrow, Name)                                             \
-                try {                                                                                       \
-                    CodeThatMightThrow;                                                                     \
-                    AddTestResult( TestData( (Name), Testing::Success, __FUNCTION__, __FILE__, __LINE__)) ; \
-                } catch (...) {                                                                             \
-                    AddTestResult( TestData( (Name), Testing::Failed, __FUNCTION__, __FILE__, __LINE__)) ;  \
-                }
-            #else
-                #define TEST_NO_THROW(CodeThatMightThrow, Name)                                             \
-                try {                                                                                       \
-                    CodeThatMightThrow;                                                                     \
-                    AddTestResult( TestData( (Name), Testing::Success, __func__, __FILE__, __LINE__)) ;     \
-                } catch (...) {                                                                             \
-                    AddTestResult( TestData( (Name), Testing::Failed, __func__, __FILE__, __LINE__)) ;      \
-                }
+            #ifdef __FUNCTION___
+                #define TEST_NO_THROW(Name, CodeThatThrows);                                                           \
+                    TestNoThrow((Name), (CodeThatThrows),                                                              \
+                         Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,              \
+                         __FUNCTION__, __FILE__, __LINE__ );
+                #else
+                #define TEST_NO_THROW(Name, CodeThatThrows);                                                           \
+                    TestNoThrow((Name), (CodeThatThrows),                                                              \
+                         Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,              \
+                         __func__, __FILE__, __LINE__ );
             #endif
         #endif
 

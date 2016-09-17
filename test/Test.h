@@ -45,13 +45,14 @@
 
 // Add other headers you need here
 #include "mezztest.h"
+#include <stdexcept>
 
 SAVE_WARNING_STATE
 SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this will this will be recompiled each test.
 SUPPRESS_CLANG_WARNING("-Wpadded") // Test classes will likely need to be padded and we don't care.
 
 // This class is not called directly by the Unit Test framework and is just used by
-// TestTests to verify that Failing works correctly.
+// TestTests to verify that Failing works correctly. Every test here should fail.
 class NegativeTestTests : public Mezzanine::Testing::UnitTestGroup
 {
      public:
@@ -62,14 +63,11 @@ class NegativeTestTests : public Mezzanine::Testing::UnitTestGroup
          {
              TEST("DefaultTestFailing", false);
              TEST_EQUAL("EqualityTestFailing", 1, 2);
-             TEST_EQUAL_EPSILON("EqualEpsilonFailing",0.1,0.2);
-             //TEST_EQUAL_MULTI_EPSILON("EqualEpsilonFailing",0.1,0.1,2);
-             // TEST_EQUAL_EPSILON
-             // TEST_EQUAL_MULTI_EPSILON
-             // TEST_WARN
-             // TEST_RESULT
-             // TEST_THROW
-             // TEST_NO_THROW
+             TEST_EQUAL_EPSILON("EqualEpsilonFailing", 0.1, 0.2);
+             TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing", 0.1, 1.2, 2);
+             TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed);
+             TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
+             TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); });
              // TEST_TIMED
          }
          bool HasAutomaticTests() const
@@ -86,7 +84,8 @@ class WarningTestTests : public Mezzanine::Testing::UnitTestGroup
 
         void RunAutomaticTests()
         {
-            TEST_WARN("WarningTestFailing", false);
+            TEST_WARN("WarningTestWarning", false);
+            TEST_RESULT("TestResultWarning", Mezzanine::Testing::TestResult::Warning);
         }
         bool HasAutomaticTests() const
             { return true; }
@@ -104,25 +103,32 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
             TEST("DefaultTestPassing", true);
             TEST_EQUAL("EqualityTestPassing", 1, 1);
             TEST_WARN("WarningTestPassing", true);
-            TEST_EQUAL_EPSILON("EqualEpsilonPassing",0.1,0.1);
-            //TEST_EQUAL_MULTI_EPSILON("EqualEpsilonPassing",0.1,0.1,2);
+            TEST_EQUAL_EPSILON("EqualEpsilonPassing", 0.1, 0.1);
+            TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing", 0.1, 0.1*1.00, 2);
+            TEST_RESULT("TestResultPassing", Mezzanine::Testing::TestResult::Success);
 
-            // TEST_RESULT
-            // TEST_THROW
-            // TEST_NO_THROW
+            TEST_THROW("TestThrowPassing", std::invalid_argument, []{ throw std::invalid_argument("pass"); });
+
+            TEST_NO_THROW("TestNoThrowPassing", []{});
             // TEST_TIMED
 
-            // Negative Tests
+            // Tests for the priority of each TestResult
+
+            // From here down we are running the results of the other test result groups and assembling their results
+            // if we let the normal machinery of the unit test framework do this they would fail the tests, because
+            // these are supposed to fail or do other interesting things.
+
+            // Failing Tests
             class NegativeTestTests Negation;
             Negation.RunAutomaticTests();
             for(const Mezzanine::Testing::TestData& SingleResult : Negation)
-                { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::Failed, SingleResult.Results); }
+                { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Failed, SingleResult.Results); }
 
             // Warning Tests
             class WarningTestTests Warnifier;
             Warnifier.RunAutomaticTests();
             for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
-                { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::Warning, SingleResult.Results); }
+                { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
 
         }
         bool HasAutomaticTests() const

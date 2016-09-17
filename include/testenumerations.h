@@ -62,7 +62,7 @@ namespace Mezzanine
         /// @details These are loosely order from best to worse, in terms of
         /// what we want to see from our tests. This takes the midset that
         /// knowing about a failure is better than not knowing about it.
-        enum TestResult
+        enum class TestResult
         {
             Success         = 0,        ///< Test was ran and appeared to work
             Warning         = 1,        ///< Technically the test passed but there is something that is not quite right.
@@ -111,6 +111,11 @@ namespace Mezzanine
 
         TestResult IntToTestResult(Mezzanine::Int32 Convertable);
         TestResult IntToTestResult(Mezzanine::UInt32 Convertable);
+
+        /// @brief Calls TestResultToString and sends that to the output stream
+        /// @param Output The TestResult to emit.
+        /// @param Stream The outputstream to send the converted TestResult out.
+        std::ostream& operator<< (std::ostream& Stream, TestResult Output);
 
         /// @brief Roughly convert a String to a TestResult.
         /// @param Text If this matches a word like "Success", "Skipped", "Cancelled", "Inconclusive", "Failed",

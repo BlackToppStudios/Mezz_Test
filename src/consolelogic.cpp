@@ -164,18 +164,18 @@ namespace Mezzanine
             switch(Answer)
             {
                 case 't': case 'y':
-                    return Testing::Success;
+                    return Testing::TestResult::Success;
                 case 'f': case 'n':
                     if(FailStatusOnIncorrect)
-                        { return Testing::Failed; }
+                        { return Testing::TestResult::Failed; }
                     else
-                        { return Testing::Warning; }
+                        { return Testing::TestResult::Warning; }
                 case 'c':
-                    return Testing::Cancelled;
+                    return Testing::TestResult::Cancelled;
                 case 'u': case 'i':
-                    return Testing::Inconclusive;
+                    return Testing::TestResult::Inconclusive;
                 default:
-                    return Testing::Unknown;
+                    return Testing::TestResult::Unknown;
             }
         }
 

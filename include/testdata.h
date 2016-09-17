@@ -88,7 +88,7 @@ namespace Mezzanine
             /// @param File The name of the file in which the test exists, Defaults to "".
             /// @param Line The line in the file in which the test exists, Defaults to 0.
             TestData(const String& Name = "",
-                     TestResult Result = Testing::Success,
+                     TestResult Result = Testing::TestResult::Success,
                      const String& FuncName = "",
                      const String& File = "",
                      Mezzanine::Whole Line = 0);

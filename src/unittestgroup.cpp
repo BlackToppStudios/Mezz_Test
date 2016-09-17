@@ -116,11 +116,11 @@ namespace Mezzanine
                 if(DoAutomaticTest)
                     { RunAutomaticTests(); }
                 else if(HasAutomaticTests())
-                    { AddTestResult( TestData("AutomaticTests",Testing::Skipped, "RunTests") );}
+                    { AddTestResult( TestData("AutomaticTests",Testing::TestResult::Skipped, "RunTests") );}
             }catch(exception& e){
                 TestError << "Caught an unhandled exception while doing RunAutomaticTests()." << endl
                           << "Message: " << e.what() << endl;
-                AddTestResult( TestData("UnhandledException", Testing::Failed) );
+                AddTestResult( TestData("UnhandledException", Testing::TestResult::Failed) );
             }
             TestOutput << std::endl << "]]></AutomaticTestOutput>" << std::endl;
             TestError << std::endl << "]]></AutomaticTestError>" << std::endl;
@@ -135,11 +135,11 @@ namespace Mezzanine
                 if(DoInteractiveTest)
                     { RunInteractiveTests(); }
                 else if(HasInteractiveTests())
-                    { AddTestResult( TestData("InteractiveTests",Testing::Skipped, "RunTests") );}
+                    { AddTestResult( TestData("InteractiveTests",Testing::TestResult::Skipped, "RunTests") );}
             }catch(exception& e){
                 TestError << "Caught an unhandled exception while doing RunInteractiveTests()." << endl
                           << "Message: " << e.what() << endl;
-                AddTestResult( TestData("UnhandledException", Testing::Failed) );
+                AddTestResult( TestData("UnhandledException", Testing::TestResult::Failed) );
             }
             TestOutput << std::endl << "]]></InteractiveTestOutput>" << std::endl;
             TestError << std::endl << "]]></InteractiveTestError>" << std::endl;
@@ -328,7 +328,7 @@ namespace Mezzanine
         {
             std::vector<unsigned int> TestCounts; // This will store the counts of the Sucesses, failures, etc...
             //Fill with the exact amount of 0s
-            TestCounts.insert(TestCounts.end(), 1+TestResultToUnsignedInt(NotApplicable), 0);
+            TestCounts.insert(TestCounts.end(), 1+TestResultToUnsignedInt(TestResult::NotApplicable), 0);
 
             if(FullOutput && HeaderOutput) // No point in displaying the header without the other content.
             {
@@ -346,7 +346,7 @@ namespace Mezzanine
                 {
                     Output << Iter->TestName << MakePadding(Iter->TestName, LongestNameLength+1)
                            << TestResultToString(Iter->Results);
-                    if(Iter->Results) // Not Testing::Success
+                    if(Iter->Results != TestResult::Success)
                     {
                         Output << "\t";
                         if(Iter->FileName.length())
@@ -362,7 +362,8 @@ namespace Mezzanine
                     Output.flush();
                 }
 
-                if (Iter->Results && Iter->FileName.length() && Iter->FunctionName.length() && Iter->LineNumber)
+                if ( (Iter->Results != TestResult::Success) &&
+                        Iter->FileName.length() && Iter->FunctionName.length() && Iter->LineNumber)
                 {
                     Error << Iter->FileName << ":" << Iter->LineNumber
                           << " Test " << TestResultToString(Iter->Results)
@@ -409,9 +410,24 @@ namespace Mezzanine
             }catch(exception& e){
                 TestError << "Caught an unhandled exception while adding results for " << TestName << endl
                           << "Message: " << e.what() << endl;
-                AddTestResult( TestData("UnhandledException", Testing::Failed, FuncName, File, Line) );
-                return Testing::Failed;
+                AddTestResult( TestData("UnhandledException", Testing::TestResult::Failed, FuncName, File, Line) );
+                return Testing::TestResult::Failed;
             }
+        }
+
+        void UnitTestGroup::TestNoThrow(const String& TestName,
+                                        std::function<void ()> TestCallable,
+                                        TestResult IfFalse, TestResult IfTrue,
+                                        const String& FuncName, const String& File, Whole Line)
+        {
+            Boole Passed{false};
+            try
+                { TestCallable(); Passed = true;}
+            catch (const std::exception& e)
+                { std::cout << "Caught Unexpected Exception: " << e.what() << std::endl; }
+            catch (...)
+                { std::cout << "Caught Unexpected Exception not derived from std::expection." << std::endl; }
+            Test(TestName, Passed, IfFalse, IfTrue, FuncName, File, Line);
         }
 
 

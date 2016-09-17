@@ -251,11 +251,11 @@ namespace Mezzanine
                         {
                             // Using printf because cout could be redirected here.
                             printf("%s", (SubprocessInvocation+String(" - Failure")).c_str() );
-                            this->AddTestResult(String("Process::" + *CurrentTestName), Testing::Failed);
+                            this->AddTestResult(String("Process::" + *CurrentTestName), Testing::TestResult::Failed);
                         }else {
                             // Using printf because cout could be redirected here.
                             printf("%s", (SubprocessInvocation+String(" - Success")).c_str() );
-                            this->AddTestResult(String("Process::" + *CurrentTestName), Success);
+                            this->AddTestResult(String("Process::" + *CurrentTestName), Testing::TestResult::Success);
                         }
 
                         try
@@ -427,7 +427,7 @@ namespace Mezzanine
 
             for(AllUnitTestGroups::iterator Iter = Runner.begin(); Iter!=Runner.end(); Iter++)
             {
-                if(Iter->Results>Skipped)
+                if(Iter->Results > TestResult::Skipped)
                     { return ExitFailure; }
             }
             return ExitSuccess;
