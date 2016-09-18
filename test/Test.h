@@ -123,12 +123,17 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
             TEST_EQUAL_EPSILON("EqualEpsilonPassing", 0.1, 0.1);
             TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing", 0.1, 0.1*1.00, 2);
             TEST_RESULT("TestResultPassing", Mezzanine::Testing::TestResult::Success);
-
             TEST_THROW("TestThrowPassing", std::invalid_argument, []{ throw std::invalid_argument("pass"); });
-
             TEST_NO_THROW("TestNoThrowPassing", []{});
-            TEST_TIMED("TestTimedPassing", std::chrono::microseconds(5000), std::chrono::microseconds(1000),
+
+            #ifdef MEZZ_Windows
+                TEST_TIMED("TestTimedPassing", std::chrono::microseconds(200000), std::chrono::microseconds(60000),
+                       []{ std::this_thread::sleep_for( std::chrono::milliseconds(200) ); });
+            #else
+                TEST_TIMED("TestTimedPassing", std::chrono::microseconds(5000), std::chrono::microseconds(5000),
                        []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
+            #endif
+
             TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ });
 
             // From here down we are running the results of the other test result groups and assembling their results
