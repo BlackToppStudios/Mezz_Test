@@ -45,7 +45,9 @@
 
 // Add other headers you need here
 #include "mezztest.h"
+
 #include <stdexcept>
+#include <thread>
 
 SAVE_WARNING_STATE
 SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this will this will be recompiled each test.
@@ -61,6 +63,7 @@ class NegativeTestTests : public Mezzanine::Testing::UnitTestGroup
 
          void RunAutomaticTests()
          {
+             // This group should serve as examples of failing tests.
              TEST("DefaultTestFailing", false);
              TEST_EQUAL("EqualityTestFailing", 1, 2);
              TEST_EQUAL_EPSILON("EqualEpsilonFailing", 0.1, 0.2);
@@ -68,7 +71,13 @@ class NegativeTestTests : public Mezzanine::Testing::UnitTestGroup
              TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed);
              TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
              TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); });
-             // TEST_TIMED
+
+             // Verify that duplicate test results alway accept worse
+             TEST_RESULT("VerifyFailedOveridesSuccess", Mezzanine::Testing::TestResult::Success);
+             TEST_RESULT("VerifyFailedOveridesSuccess", Mezzanine::Testing::TestResult::Failed);
+
+             TEST_RESULT("VerifyFailedOveridesWarning", Mezzanine::Testing::TestResult::Warning);
+             TEST_RESULT("VerifyFailedOveridesWarning", Mezzanine::Testing::TestResult::Failed);
          }
          bool HasAutomaticTests() const
              { return true; }
@@ -84,8 +93,16 @@ class WarningTestTests : public Mezzanine::Testing::UnitTestGroup
 
         void RunAutomaticTests()
         {
+            // Here are some examples of test that should warn.
             TEST_WARN("WarningTestWarning", false);
             TEST_RESULT("TestResultWarning", Mezzanine::Testing::TestResult::Warning);
+            TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{});
+            TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
+                       []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
+
+            // Verify that duplicate test results alway accept worse
+            TEST_RESULT("VerifyWarningOveridesSuccess", Mezzanine::Testing::TestResult::Success);
+            TEST_RESULT("VerifyWarningOveridesSuccess", Mezzanine::Testing::TestResult::Warning);
         }
         bool HasAutomaticTests() const
             { return true; }
@@ -99,7 +116,7 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
 
         void RunAutomaticTests()
         {
-            // Positive tests
+            // Positive tests This should serve as examples for how to use this and get tests that passed.
             TEST("DefaultTestPassing", true);
             TEST_EQUAL("EqualityTestPassing", 1, 1);
             TEST_WARN("WarningTestPassing", true);
@@ -110,9 +127,9 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
             TEST_THROW("TestThrowPassing", std::invalid_argument, []{ throw std::invalid_argument("pass"); });
 
             TEST_NO_THROW("TestNoThrowPassing", []{});
-            // TEST_TIMED
-
-            // Tests for the priority of each TestResult
+            TEST_TIMED("TestTimedPassing", std::chrono::microseconds(5000), std::chrono::microseconds(1000),
+                       []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
+            TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ });
 
             // From here down we are running the results of the other test result groups and assembling their results
             // if we let the normal machinery of the unit test framework do this they would fail the tests, because

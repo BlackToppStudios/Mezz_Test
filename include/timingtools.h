@@ -45,42 +45,29 @@
 
 #include "datatypes.h"
 
-#include <limits>
+#include <chrono>
+
 
 namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief Get a timestamp, in microseconds.
-        /// @details This will generally be some multiple of the GetTimeStampResolution return value.
-        /// @warning On some platforms this requires a static initialization, an can cause undefined behavior if called
-        /// before static initializations are complete, so don't use this in static contructors at all or it will break
-        /// when you move code to a new platform.
-        /// @return The largest size integer containing a timestamp that can be compared to other timestamps, but has
-        /// no guarantees for external value.
-        MaxInt Now();
-
-        /// @brief Get the resolution of the timestamp in microseconds. This is the smallest amount of time that the
-        /// function @ref GetTimeStamp can accurately track.
-        /// @return A Whole which returns in millionths of a second the smallest unit of time that GetTimeStamp can
-        /// measure.
-        Whole NowResolution();
-
         /// @brief An easy way to get the time something took to execute.
         class TimedTest
         {
             /// @brief The time this was constructed.
-            MaxInt BeginTimer;
+            std::chrono::high_resolution_clock::time_point BeginTimer;
+
             public:
                 /// @brief Simply Creating this starts the timer
                 TimedTest()
-                    : BeginTimer(Mezzanine::Testing::Now())
+                    : BeginTimer(std::chrono::high_resolution_clock::now())
                     {}
 
                 /// @brief How long since this started.
-                /// @return A MaxInt containing the Now - BeginTimer.
-                MaxInt GetLength()
-                    { return Mezzanine::Testing::Now() - BeginTimer; }
+                /// @return An std::chrono::duration in microsecond containing the difference between now and when
+                /// timing was started
+                std::chrono::microseconds GetLength();
         };
     }// Testing
 }// Mezzanine

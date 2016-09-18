@@ -43,6 +43,7 @@
 
 #include "unittestgroup.h"
 #include "mezztest.h"
+#include "timingtools.h"
 
 #include <vector>
 #include <stdexcept>
@@ -428,6 +429,43 @@ namespace Mezzanine
             catch (...)
                 { std::cout << "Caught Unexpected Exception not derived from std::expection." << std::endl; }
             Test(TestName, Passed, IfFalse, IfTrue, FuncName, File, Line);
+        }
+
+        void UnitTestGroup::TestTimed(const String& TestName,
+                                      chrono::microseconds Expected,
+                                      chrono::microseconds MaxVariance,
+                                      std::function<void ()> TestCallable,
+                                      TestResult IfFalse, TestResult IfTrue,
+                                      const String& FuncName, const String& File, Whole Line)
+        {
+           TimedTest TestDuration;
+           TestCallable();
+           std::chrono::microseconds TimeTaken{TestDuration.GetLength()};
+           Boole Passed{TimeTaken-MaxVariance<Expected && Expected<TimeTaken+MaxVariance};
+           TestResult Result{Test(TestName, Passed, IfFalse, IfTrue, FuncName, File, Line)};
+           if(Mezzanine::Testing::TestResult::Success != Result)
+           {
+               std::cout << "Expected test to take " << Expected.count()
+                         << "µs with a variance of " << MaxVariance.count()
+                         << "µs, but it actually took " << TimeTaken.count() << "µs."<< std::endl;
+           }
+        }
+
+        void UnitTestGroup::TestTimedUnder(const String& TestName,
+                                           chrono::microseconds MaxAcceptable,
+                                           std::function<void ()> TestCallable,
+                                           TestResult IfFalse, TestResult IfTrue,
+                                           const String& FuncName, const String& File, Whole Line)
+        {
+           TimedTest TestDuration;
+           TestCallable();
+           std::chrono::microseconds TimeTaken{TestDuration.GetLength()};
+           TestResult Result{Test(TestName, TimeTaken < MaxAcceptable, IfFalse, IfTrue, FuncName, File, Line)};
+           if(Mezzanine::Testing::TestResult::Success != Result)
+           {
+               std::cout << "Expected test to take under " << MaxAcceptable.count()
+                         << "µs, but it actually took " << TimeTaken.count() << "µs."<< std::endl;
+           }
         }
 
 

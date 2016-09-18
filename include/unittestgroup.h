@@ -59,6 +59,7 @@ RESTORE_WARNING_STATE
 #include <iostream>
 #include <sstream>
 #include <functional>
+#include <chrono>
 
 namespace Mezzanine
 {
@@ -363,19 +364,39 @@ namespace Mezzanine
                                  const String& File = "",
                                  Mezzanine::Whole Line = 0);
 
-//  I am going to implement this later with help from std::chrono
-//                /// @copydoc Test
-//                /// @brief Tests that a thing takes a specific amount of time
-//                /// @param TestCallable A lambda or functor to call that should have predictable performance.
-//                /// @param Expected
-//                void TestTimed(const String& TestName,
-//                               MaxInt Expected
-//                               std::function<void()> TestCallable,
-//                               TestResult IfFalse = Testing::TestResult::Failed,
-//                               TestResult IfTrue = Testing::TestResult::Success,
-//                               const String& FuncName = "",
-//                               const String& File = "",
-//                               Mezzanine::Whole Line = 0);
+                /// @copydoc Test
+                /// @brief Tests that a thing takes a specific amount of time
+                /// @param TestCallable A lambda or functor to call that should have predictable performance.
+                /// @param Expected The amount of microseconds this should take.
+                /// @param How many microseconds high or low is this allowed to be.
+                void TestTimed(const String& TestName,
+                               std::chrono::microseconds Expected,
+                               std::chrono::microseconds MaxVariance,
+                               std::function<void()> TestCallable,
+                               TestResult IfFalse = Testing::TestResult::Failed,
+                               TestResult IfTrue = Testing::TestResult::Success,
+                               const String& FuncName = "",
+                               const String& File = "",
+                               Mezzanine::Whole Line = 0);
+
+                /// @copydoc Test
+                /// @brief Tests that a thing takes under a given amount of time.
+                /// @details For this to make sense (in most situations) the work actually needs to be done twice. Once
+                /// under some old algorithm and once under some new algorithm. Then you can see if your algorithm that
+                /// you worked to optimize stay optimized on new machines.
+                /// @n @n
+                /// Though less common this might make sense if trying to execute under some hard deadline.
+                /// @param TestCallable A lambda or functor to call that should have predictable performance.
+                /// @param Expected The amount of microseconds this should take.
+                /// @param How many microseconds high or low is this allowed to be.
+                void TestTimedUnder(const String& TestName,
+                                    std::chrono::microseconds MaxAcceptable,
+                                    std::function<void()> TestCallable,
+                                    TestResult IfFalse = Testing::TestResult::Failed,
+                                    TestResult IfTrue = Testing::TestResult::Success,
+                                    const String& FuncName = "",
+                                    const String& File = "",
+                                    Mezzanine::Whole Line = 0);
 
 
         };

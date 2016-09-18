@@ -41,65 +41,18 @@
 /// @file
 /// @brief The implementation of stuff that must be run in the context of a TestData
 
-#include "testdatatools.h"
 #include "timingtools.h"
-
-#ifdef MEZZ_Windows
-    #include <windows.h>
-#else
-    #ifdef MEZZ_MacOSX
-        #include <sys/sysctl.h>
-    #endif
-    #include <sys/time.h>
-    #include <unistd.h>
-#endif
-
-using namespace Mezzanine;
 
 namespace Mezzanine
 {
     namespace Testing
     {
-        #ifdef MEZZ_Windows
-            namespace
-            {
-                /// @internal
-                class Timer
-                {
-                    public:
-                        LARGE_INTEGER frequency;
 
-                        Timer()
-                            { QueryPerformanceFrequency(&frequency); }
+        std::chrono::microseconds TimedTest::GetLength()
+        {
+            return std::chrono::duration_cast<std::chrono::microseconds>
+                    (std::chrono::high_resolution_clock::now() - BeginTimer);
+        }
 
-                        MaxInt GetTimeStamp()
-                        {
-                            LARGE_INTEGER Current;
-                            QueryPerformanceCounter(&Current);
-                            return MaxInt(Current.QuadPart * (1000000.0 / frequency.QuadPart));
-                        }
-                };
-
-                static Timer ATimer;
-            }
-
-            MaxInt Now()
-                { return ATimer.GetTimeStamp(); }
-
-            Whole NowResolution()
-                { return Whole(ATimer.frequency.QuadPart/1000); }
-
-        #else
-            MaxInt Now()
-            {
-                timeval Now;
-                gettimeofday(&Now, NULL); // Posix says this must return 0, so it seems it can't fail
-                return (Now.tv_sec * 1000000) + Now.tv_usec;
-            }
-
-            Whole NowResolution()
-                { return 1; } // barring kernel bugs
-
-        #endif
     }// Testing
 }// Mezzanine

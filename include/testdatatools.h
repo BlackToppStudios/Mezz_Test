@@ -47,7 +47,6 @@
 
 #include "testdata.h"
 
-#include <limits>
 
 namespace Mezzanine
 {
@@ -234,43 +233,47 @@ namespace Mezzanine
             /// @def TEST_TIMED
             /// @brief An easy way to add a test whether or not a function/code snippet takes approximately the expected
             /// amount of time.
-            /// @details This starts a timer just before the CodeToTime is execute and stops that time right after it
+            /// @details This starts a timer just before the CodeToTime is executed and stops that time right after it
             /// finishes.
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// Functions like UnitTestGroup::RunInteractiveTests or UnitTestGroup::RunAutomaticTests
             /// @param CodeToTime The code to time
             /// @param ExpectedTime The Expected amount if time in microseconds.
-            /// @param Variance A fraction 0.00 of how far off, long or short, the execution time can be and still pass.
-            /// For example .02 is 2%
+            /// @param Variance Is an amount of microseconds this is allowed to be off in either direction.
             /// @param Name The name of the current test
             #ifdef __FUNCTION__
-                #define TEST_TIMED(CodeToTime, ExpectedTime, Variance, Name)                                    \
-                {                                                                                               \
-                    TimedTest TESTDuration;                                                                     \
-                    CodeToTime;                                                                                 \
-                    MaxInt TESTLength = TESTDuration.GetLength();                                               \
-                    MaxInt TESTTargetTime = ExpectedTime;                                                       \
-                    MaxInt TESTVariance = Variance * double(ExpectedTime);                                      \
-                    if( MaxInt(TESTTargetTime-TESTVariance) < TESTLength &&                                     \
-                        TESTLength < MaxInt(TESTTargetTime+TESTVariance))                                       \
-                    { AddTestResult( TestData( (Name), Testing::Success, __FUNCTION__, __FILE__, __LINE__) ); } \
-                    else                                                                                        \
-                    { AddTestResult( TestData( (Name), Testing::Failed, __FUNCTION__, __FILE__, __LINE__) ); }  \
-                }
+                #define TEST_TIMED(Name,  ExpectedTime, Variance, CodeToTime);                                         \
+                    TestTimed((Name), (ExpectedTime), (Variance), (CodeToTime),                                        \
+                         Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,             \
+                         __FUNCTION__, __FILE__, __LINE__ );
             #else
-                #define TEST_TIMED(CodeToTime, ExpectedTime, Variance, Name)                                \
-                {                                                                                           \
-                    TimedTest TESTDuration;                                                                 \
-                    CodeToTime;                                                                             \
-                    MaxInt TESTLength = TESTDuration.GetLength();                                           \
-                    MaxInt TESTTargetTime = ExpectedTime;                                                   \
-                    MaxInt TESTVariance = Variance * double(ExpectedTime);                                  \
-                    if( MaxInt(TESTTargetTime-TESTVariance) < TESTLength &&                                 \
-                        TESTLength < MaxInt(TESTTargetTime+TESTVariance))                                   \
-                    { AddTestResult( TestData( (Name), Testing::Success, __func__, __FILE__, __LINE__) ); } \
-                    else                                                                                    \
-                    { AddTestResult( TestData( (Name), Testing::Failed, __func__, __FILE__, __LINE__) ); }  \
-                }
+                #define TEST_TIMED(Name,  ExpectedTime, Variance, CodeToTime);                                         \
+                    TestTimed((Name), (ExpectedTime), (Variance), (CodeToTime),                                        \
+                         Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,             \
+                         __func__, __FILE__, __LINE__ );
+            #endif
+        #endif
+
+        #ifndef TEST_TIMED_UNDER
+            /// @def TEST_TIMED_UNDER
+            /// @brief Used to check the upper amount of time to should take to execute.
+            /// @details This starts a timer just before the CodeToTime is executed and stops that time right after it
+            /// finishes.
+            /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
+            /// Functions like UnitTestGroup::RunInteractiveTests or UnitTestGroup::RunAutomaticTests
+            /// @param CodeToTime The code to time.
+            /// @param MaxTime The Expected amount if time in microseconds.
+            /// @param Name The name of the current test
+            #ifdef __FUNCTION__
+                #define TEST_TIMED_UNDER(Name, MaxAcceptable, CodeToTime);                                             \
+                    TestTimedUnder((Name), (MaxAcceptable), (CodeToTime),                                              \
+                         Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,             \
+                         __FUNCTION__, __FILE__, __LINE__ );
+            #else
+                #define TEST_TIMED_UNDER(Name, MaxAcceptable, CodeToTime);                                             \
+                    TestTimedUnder((Name), (MaxAcceptable), (CodeToTime),                                              \
+                         Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,             \
+                         __func__, __FILE__, __LINE__ );
             #endif
         #endif
     }// Testing
