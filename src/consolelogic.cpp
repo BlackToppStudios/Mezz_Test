@@ -123,7 +123,7 @@ namespace Mezzanine
                 cout << Iter->second->Name() << " ";
                 CurrentWidth += Iter->first.size() + 1;
                 Column++;
-                for(Mezzanine::Whole SpaceD=Iter->first.size()+1; SpaceD<=ColumnWidth; SpaceD++)
+                for(Mezzanine::String::size_type SpaceD=Iter->first.size()+1; SpaceD<=ColumnWidth; SpaceD++)
                 {
                     cout << " ";
                     CurrentWidth++;
