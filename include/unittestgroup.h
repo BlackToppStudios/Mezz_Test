@@ -114,6 +114,9 @@ namespace Mezzanine
                 /// @brief Default deconstructor
                 virtual ~UnitTestGroup() = default;
 
+                /// @brief This operation is generally non-sensical so it was deleted.
+                UnitTestGroup& operator=(const UnitTestGroup&) = delete;
+
                 /// @brief Copy constructor
                 /// @param OtherGroup A UnitTestGroup to copy into this one. The contents of any log streams are copied
                 /// and the streams themselves.
@@ -417,8 +420,6 @@ namespace Mezzanine
                     { Target->RestoreOutputBuffers(); }
 
         };
-
-
 
     }// Testing
 }// Mezzanine

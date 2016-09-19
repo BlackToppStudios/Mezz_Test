@@ -45,7 +45,12 @@
 
 #include "testenumerations.h"
 
-#include <stdexcept>
+SAVE_WARNING_STATE
+SUPPRESS_VC_WARNING(4668)
+
+    #include <stdexcept>
+
+RESTORE_WARNING_STATE
 
 namespace Mezzanine
 {
@@ -54,6 +59,7 @@ namespace Mezzanine
         SAVE_WARNING_STATE
         SUPPRESS_GCC_WARNING("-Wreturn-type") // Control cannot reach the end of this function, because the
                                               // warning for incomplete case statements will stop compilation.
+        SUPPRESS_VC_WARNING(4715)
         Mezzanine::String TestResultToString(TestResult Convertable)
         {
             switch(Convertable)
@@ -77,7 +83,6 @@ namespace Mezzanine
             }
         }
         RESTORE_WARNING_STATE
-
 
         Mezzanine::Int32 TestResultToInt(TestResult Convertable)
             { return Mezzanine::Int32(Convertable); }

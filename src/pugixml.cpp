@@ -21,6 +21,7 @@
 #include "supresswarnings.h"
 SAVE_WARNING_STATE
 SUPPRESS_GCC_WARNING("-Wsign-conversion") // Supresses 33 warnings
+
 // Clang is much more stric than GCC and Pugixml, at least this old version does not seem to care
 SUPPRESS_CLANG_WARNING("-Wunknown-pragmas")
 SUPPRESS_CLANG_WARNING("-Wconversion")
@@ -39,9 +40,17 @@ SUPPRESS_CLANG_WARNING("-Wweak-vtables")
 SUPPRESS_CLANG_WARNING("-Wunused-macros")
 SUPPRESS_CLANG_WARNING("-Wunused-member-function")
 
+// It isn't that msvc is strict, it just has stupid warnings.
+SUPPRESS_VC_WARNING(4061) // Missing items in case
+SUPPRESS_VC_WARNING(4365) // Integer signed unsigned BS
+SUPPRESS_VC_WARNING(4711) // Crap message about automatic inlining, also know as the compiler doing its job.
+SUPPRESS_VC_WARNING(4738) // Warning about storing floats in memory may be slow. Not about using floating math is
+                          // which is the normal level of wrong I expect, but that there are too many floats to be
+                          // stored in hardware registers, as if an x64 knows what a CPU is going to do with its
+                          // umpteen million of transistors for register renaming. The fix is also stupid they suggest
+                          // using doubles instead of floats, not because they are faster but just to 'fix the warning.
+
 #define SOURCE_PUGIXML_CPP
-
-
 
 #include "pugixml.h"
 

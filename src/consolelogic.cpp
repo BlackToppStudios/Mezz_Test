@@ -46,6 +46,9 @@
 #include "consolestringmanipulation.h"
 #include "unittestgroup.h"
 
+SAVE_WARNING_STATE
+SUPPRESS_VC_WARNING(4668)
+
 #include <vector>
 #include <sstream>
 
@@ -63,6 +66,7 @@
     #include <unistd.h>
 #endif
 
+RESTORE_WARNING_STATE
 
 using namespace Mezzanine;
 using namespace std;
