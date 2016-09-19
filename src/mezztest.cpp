@@ -250,11 +250,11 @@ namespace Mezzanine
                         if(system(SubprocessInvocation.c_str()))   // Run a single unit test as another process
                         {
                             // Using printf because cout could be redirected here.
-                            printf("%s", (SubprocessInvocation+String(" - Failure")).c_str() );
+                            printf("%s", (SubprocessInvocation+String(" - Failure\n")).c_str() );
                             this->AddTestResult(String("Process::" + *CurrentTestName), Testing::TestResult::Failed);
                         }else {
                             // Using printf because cout could be redirected here.
-                            printf("%s", (SubprocessInvocation+String(" - Success")).c_str() );
+                            printf("%s", (SubprocessInvocation+String(" - Success\n")).c_str() );
                             this->AddTestResult(String("Process::" + *CurrentTestName), Testing::TestResult::Success);
                         }
 
@@ -425,9 +425,9 @@ namespace Mezzanine
             if(MainProcess == GetCurrentProcessDepth())
                 { Runner.DisplayResults(std::cout, std::cerr, SummaryDisplay, FullDisplay); }
 
-            for(AllUnitTestGroups::iterator Iter = Runner.begin(); Iter!=Runner.end(); Iter++)
+            for(TestData Results : Runner)
             {
-                if(Iter->Results > TestResult::Skipped)
+                if(TestResultToInt(Results.Results) > TestResultToInt(TestResult::Skipped) )
                     { return ExitFailure; }
             }
             return ExitSuccess;
