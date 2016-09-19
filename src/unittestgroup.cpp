@@ -146,12 +146,6 @@ namespace Mezzanine
             TestError << std::endl << "]]></InteractiveTestError>" << std::endl;
         }
 
-        String UnitTestGroup::LaunchSubProcessTest(const String& Argument)
-        {
-            return GetCommandResults(GetExecutableName() + String(" ") +
-                                     SubTestPrefix + Name() + String(" ") + Argument);
-        }
-
         void UnitTestGroup::RunAutomaticTests()
             {}
         bool UnitTestGroup::HasAutomaticTests() const

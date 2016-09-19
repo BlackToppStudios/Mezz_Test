@@ -139,13 +139,6 @@ namespace Mezzanine
                 /// and marksthem as skipped if they do.
                 void LaunchInteractiveTest();
 
-                /// @brief Tests should use this to launch things that need sheltering from
-                /// segfaults and similar faults
-                /// @param Argument A string combined with the command to be run, this must be
-                /// sanitized before being called, do not pass untrusted data.
-                /// @return The output to stdout from the subprocess.
-                String LaunchSubProcessTest(const String& Argument = String(""));
-
             public:
                 /// @brief This should be overloaded to run all tests that do require not user interaction
                 virtual void RunAutomaticTests();

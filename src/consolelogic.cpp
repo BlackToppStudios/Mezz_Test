@@ -183,22 +183,5 @@ namespace Mezzanine
             }
         }
 
-        String GetCommandResults(String Command)
-        {
-            Command += " > CommandResults.txt";
-            system(Command.c_str());
-            std::ifstream File("CommandResults.txt");
-            return String( std::istreambuf_iterator<char>(File), std::istreambuf_iterator<char>());
-        }
-
-        void sleep_for(UInt32 MicroSeconds)
-        {
-            #ifdef MEZZ_Windows
-                Sleep(MicroSeconds/1000);
-            #else
-                usleep(MicroSeconds);
-            #endif
-        }
-
     }// Testing
 }// Mezzanine
