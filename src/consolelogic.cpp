@@ -93,7 +93,7 @@ namespace Mezzanine
                     << "This command is not case sensitive." << std::endl << std::endl
                     << "Current Test Groups: " << std::endl;
 
-            Mezzanine::Whole LongestName = 0;
+            Mezzanine::String::size_type LongestName = 0;
             for(std::map<Mezzanine::String,UnitTestGroup*>::iterator Iter=TestGroups.begin();
                 Iter!=TestGroups.end();
                 ++Iter)
@@ -103,10 +103,10 @@ namespace Mezzanine
             }
 
             // This presumes the console it 80 chars wide
-            Mezzanine::Whole TargetWidth=80;
-            Mezzanine::Whole ColumnWidth = LongestName+1;
-            Mezzanine::Whole Column = 0;
-            Mezzanine::Whole CurrentWidth=0;
+            Mezzanine::String::size_type TargetWidth=80;
+            Mezzanine::String::size_type ColumnWidth = LongestName+1;
+            Mezzanine::String::size_type Column = 0;
+            Mezzanine::String::size_type CurrentWidth=0;
             for(std::map<Mezzanine::String,UnitTestGroup*>::iterator Iter=TestGroups.begin();
                 Iter!=TestGroups.end();
                 ++Iter)

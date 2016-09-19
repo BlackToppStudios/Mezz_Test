@@ -369,9 +369,9 @@ namespace Mezzanine
 
                 /// @copydoc Test
                 /// @brief Tests that a thing takes a specific amount of time
-                /// @param TestCallable A lambda or functor to call that should have predictable performance.
                 /// @param Expected The amount of microseconds this should take.
                 /// @param MaxVariance How many microseconds high or low is this allowed to be.
+                /// @param TestCallable A lambda or functor to call that should have predictable performance.
                 void TestTimed(const String& TestName,
                                std::chrono::microseconds Expected,
                                std::chrono::microseconds MaxVariance,
