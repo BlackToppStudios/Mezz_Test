@@ -90,6 +90,7 @@ namespace Mezzanine
                 TestError(OtherGroup.TestError.str()),
                 CoutStreamBuf(0),
                 CerrStreamBuf(0),
+                LongestNameLength(0),
                 Completed(0),
                 DoSubProcessTest(OtherGroup.DoSubProcessTest),
                 DoAutomaticTest(OtherGroup.DoAutomaticTest),
