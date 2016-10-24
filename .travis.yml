@@ -27,6 +27,10 @@ script:
 #  - valgrind --tool=memcheck --leak-check=full  --error-exitcode=1 ./Test_Tester
 #  - valgrind --tool=memcheck --leak-check=full  --error-exitcode=1 ./Test_Tester debugtests Test
 
+after_success:
+  - ninja TestCoverage
+  - bash <(curl -s https://codecov.io/bash)
+
 notifications:
   email:
     recipients:
