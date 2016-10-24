@@ -24,8 +24,8 @@ install:
 script:
   - ninja
   - ./Test_Tester
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; valgrind --tool=memcheck --leak-check=full  --error-exitcode=1 ./Test_Tester; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; valgrind --tool=memcheck --leak-check=full  --error-exitcode=1 ./Test_Tester debugtests Test; fi
+#  - valgrind --tool=memcheck --leak-check=full  --error-exitcode=1 ./Test_Tester
+#  - valgrind --tool=memcheck --leak-check=full  --error-exitcode=1 ./Test_Tester debugtests Test
 
 notifications:
   email:
