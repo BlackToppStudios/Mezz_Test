@@ -12,6 +12,9 @@ The current Linux/Travis build status is:
 The current Windows/Appveyor build status is:
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/BlackToppStudios/Mezz_Test?branch=master&svg=true)](https://ci.appveyor.com/project/Sqeaky/mezz-test)
 
+The current test coverage of our code on our last successful build is:
+[![codecov](https://codecov.io/gh/BlackToppStudios/Mezz_Test/branch/master/graph/badge.svg)](https://codecov.io/gh/BlackToppStudios/Mezz_Test)
+
 
 This library, Test, contains tools for unit testing, recovering from segfaults/sigaborts/crashes,
 mocking classes and possibly faciliting manual testing.
