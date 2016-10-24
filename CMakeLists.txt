@@ -120,6 +120,8 @@ AddTestDirectory(${${PROJECT_NAME}TestDir})
 EmitTestCode()
 AddTestTarget("")
 
+CreateCoverageTarget(${TestLib} ${TesterSourceFiles})
+
 # You need to link the test library to your stuff to be tested.
 #target_link_libraries(${TestLib} ${YourLibraryHere})
 
