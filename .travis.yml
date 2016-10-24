@@ -15,7 +15,7 @@ before_script:
   - cd build
   - mkdir JagatiPackages
   - export JAGATI_DIR=`pwd`/JagatiPackages
-  - cmake -G"Ninja" .. -DMEZZ_BuildDoxygen=OFF
+  - cmake -G"Ninja" .. -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON
 
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then sudo apt-get install valgrind ninja-build -q -y; fi
