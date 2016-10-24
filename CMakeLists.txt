@@ -145,6 +145,7 @@ add_custom_target(
             COPYING.md
             .travis.yml
             appveyor.yml
+            codecov.yml
             "${DoxFiles}"
 )
 
