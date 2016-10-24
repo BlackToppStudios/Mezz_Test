@@ -109,6 +109,7 @@ include_directories(
 #add_library(${YourLibraryHere} ${MEZZ_LibraryBuildType} ${YourHeaders} ${YourSources})
 
 AddJagatiLibrary("Test")
+CreateCoverageTarget(${TestLib} ${TesterSourceFiles})
 
 # This has only one test and could be added as follows.
 # AddTest("Test")
@@ -120,7 +121,6 @@ AddTestDirectory(${${PROJECT_NAME}TestDir})
 EmitTestCode()
 AddTestTarget("")
 
-CreateCoverageTarget(${TestLib} ${TesterSourceFiles})
 
 # You need to link the test library to your stuff to be tested.
 #target_link_libraries(${TestLib} ${YourLibraryHere})
