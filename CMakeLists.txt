@@ -43,11 +43,11 @@ project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
-set(JagatiChecksum "b5dd22dd0bb5cff121f7ddad116746a660a07f47d5c6a64e84cc22\
-5d0076e2e39b50971dba32b799aa67be551e396a97d358a907061d8a0198873a295b484c8c")
+set(JagatiChecksum "7eae56475154e1cbcdee6c7f677a3710ca7d24eacb523ea779d628\
+fc569ac9b6c48f42ba616070af0827704a9502c6591390a3d554b975f93998e8b6a72606da")
 
 file(DOWNLOAD
-    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.9.2/Jagati.cmake"
+    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.10.0/Jagati.cmake"
     "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
     EXPECTED_HASH SHA512=${JagatiChecksum}
 )
@@ -109,10 +109,10 @@ include_directories(
 #add_library(${YourLibraryHere} ${MEZZ_LibraryBuildType} ${YourHeaders} ${YourSources})
 
 AddJagatiLibrary("Test")
-CreateCoverageTarget(${TestLib} ${TesterSourceFiles})
+CreateCoverageTarget(${TestLib} "${TesterSourceFiles}")
 
 # This has only one test and could be added as follows.
-# AddTest("Test")
+# AddTestClass("Test")
 
 # Instead to prove it works we added all the tests in the test directory with the following:
 AddTestDirectory(${${PROJECT_NAME}TestDir})
@@ -120,7 +120,6 @@ AddTestDirectory(${${PROJECT_NAME}TestDir})
 # Spit out the C++ file
 EmitTestCode()
 AddTestTarget("")
-
 
 # You need to link the test library to your stuff to be tested.
 #target_link_libraries(${TestLib} ${YourLibraryHere})
@@ -150,5 +149,7 @@ add_custom_target(
             codecov.yml
             "${DoxFiles}"
 )
+
+SetCodeCoverage()
 
 message(STATUS "${PROJECT_NAME} - Ending Configuration.")
