@@ -18,8 +18,10 @@ before_script:
   - cmake -G"Ninja" .. -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON
 
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then sudo apt-get install valgrind ninja-build -q -y; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then sudo apt-get install valgrind ninja-build ggcov -q -y; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then ln -sf /usr/bin/gcov-4.7 /usr/bin/gcov; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]   ; then brew install valgrind ninja; fi
+  - ls /usr/bin
 
 script:
   - ninja
