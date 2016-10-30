@@ -26,4 +26,4 @@ parsers:
     enable_partials: false
 ignore:
   - test/.*
-  - pugixml.cpp
+  - src/pugixml.cpp
