@@ -56,18 +56,6 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief Get the argument count as it was passed into Main.
-        /// @return This is returned as an int
-        int GetMainArgumentCount();
-
-        /// @brief Get the argument vector as it was passed into Main.
-        /// @return This is returned as pointer to a null terminated array of pointers to null terminated characters.
-        char** GetMainArgumentVector();
-
-        /// @brief Get the command/executable name used to invoke this at the command prompt.
-        /// @return This is returned as a String.
-        Mezzanine::String GetExecutableName();
-
         /// @brief Used to indicate the current 'depth' in the subprocess tree.
         /// @details Since the caller of the unit tests can pass arbitrary gibberish
         /// It is possible to get things that should only run in subsubprocesses in the

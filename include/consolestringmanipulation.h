@@ -64,14 +64,7 @@ namespace Mezzanine
         /// @brief Makes a c style stron all lowercase with respect to the current locale
         /// @param StringToConvert This string is actually changed.
         /// @return for convience purposes the string is also returned.
-        char* AllLower(char* StringToConvert);
-        String AllLower(String StringToConvert);
-
-        /// @brief Get a String Corresponding to a passed bool
-        /// @param i A bool
-        /// @return "True" if true is passed, "False" if false is passed.
-        Mezzanine::String BoolToString(bool i);
-
+        String AllLower(const String& StringToConvert);
     }// Testing
 }// Mezzanine
 

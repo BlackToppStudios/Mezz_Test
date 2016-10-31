@@ -60,18 +60,6 @@ namespace Mezzanine
     namespace
     {
         /// @internal
-        /// @brief ArgC as it was passed into Main.
-        /// @details This cannot be set statically, it must wait for main(int, char**) to
-        /// be initialized
-        int ArgC;
-
-        /// @internal
-        /// @brief ArgC as it was passed into Main.
-        /// @details This cannot be set statically, it must wait for main(int, char**) to
-        /// be initialized
-        char** ArgV;
-
-        /// @internal
         /// @brief The current process depth as interpretted by Main
         Testing::ProcessDepth Depth;
 
@@ -90,16 +78,6 @@ namespace Mezzanine
 
     namespace Testing
     {
-
-        int GetMainArgumentCount()
-            { return ArgC; }
-
-        char** GetMainArgumentVector()
-            { return ArgV; }
-
-        Mezzanine::String GetExecutableName()
-            { return CommandName; }
-
         ProcessDepth GetCurrentProcessDepth()
             { return Depth; }
 
@@ -323,8 +301,6 @@ namespace Mezzanine
 
         int MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances)
         {
-            ArgC = argc;
-            ArgV = argv;
             Depth = MainProcess;
 
             bool WriteFile = true;
@@ -350,8 +326,7 @@ namespace Mezzanine
 
             for (int c=1; c<argc; ++c) // Check Command line for keywords and get all the test names
             {
-                //String ThisArg(AllLower(argv[c]));
-                String ThisArg(argv[c]);
+                String ThisArg(AllLower(argv[c]));
                 if(ThisArg=="help")
                     { return Usage(CommandName, TestInstances); }
                 else if(ThisArg==MemSpaceArg)        // Check to see if we do the work now or later
@@ -382,13 +357,16 @@ namespace Mezzanine
                             CoreTestGroup::iterator SearchResult = TestInstances.find(ThisArg);
                             if(TestInstances.end()==SearchResult)
                             {
-                                std::cerr << ThisArg << " appears to be a request to debug a sub-process that does not exist." << std::endl;
+                                std::cerr << ThisArg
+                                          << " appears to be a request to debug a sub-process that does not exist."
+                                          << std::endl;
                                 Usage(CommandName, TestInstances);
                                 return ExitInvalidArguments;
                             }
                             if(!SearchResult->second->HasSubprocessTest())
                             {
-                                std::cerr << ThisArg << " appears to be a request to debug a sub-process that does not have a sub process." << std::endl;
+                                std::cerr << ThisArg << " appears to be a request to debug a sub-process that does not"
+                                          << " have a sub process." << std::endl;
                                 Usage(CommandName, TestInstances);
                                 return ExitInvalidArguments;
                             }

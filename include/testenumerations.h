@@ -105,12 +105,23 @@ namespace Mezzanine
         /// @return  A string like "Success" or "Inconclusive" or similar.
         Mezzanine::String TestResultToString(TestResult Convertable);
 
+        /// @brief Convert a TestResult to a number for other processing.
+        /// @param Convertable The valid TestResults to be converted.
+        /// @return A signed integer for representing Convertable.
         Mezzanine::Int32 TestResultToInt(TestResult Convertable);
 
+        /// @brief Convert a TestResult to a number for other processing.
+        /// @param Convertable The valid TestResults to be converted.
+        /// @return An unsigned integer for representing Convertable.
         Mezzanine::UInt32 TestResultToUnsignedInt(TestResult Convertable);
 
-        TestResult IntToTestResult(Mezzanine::Int32 Convertable);
-        TestResult IntToTestResult(Mezzanine::UInt32 Convertable);
+        /// @brief Convert a nubmer to a TestResult.
+        /// @param Convertable The valid number representing a TestResult.
+        /// @return A TestResults with the same internatl representation as Convertable.
+        /// @tparam T hopefully an integer type.
+        template<typename T>
+        TestResult IntToTestResult(const T& Convertable)
+            { return TestResult(Convertable); }
 
         /// @brief Calls TestResultToString and sends that to the output stream
         /// @param Output The TestResult to emit.

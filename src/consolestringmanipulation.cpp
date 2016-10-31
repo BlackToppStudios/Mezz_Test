@@ -74,29 +74,13 @@ namespace Mezzanine
             return Spaces;
         }
 
-        char* AllLower(char* StringToConvert)
+        String AllLower(const String& StringToConvert)
         {
-            char* CharIter;
-            for(CharIter = StringToConvert; 0 != *CharIter; CharIter++)
-                { *CharIter = static_cast<char>(tolower(*CharIter)); }
-            return StringToConvert;
-        }
-
-        String AllLower(String StringToConvert)
-        {
-            char* temp = new char[StringToConvert.size()+1];
-            char* CharIter = temp;
-            for(String::iterator Iter = StringToConvert.begin(); Iter!=StringToConvert.end(); Iter++)
-                { *CharIter++ = static_cast<char>(tolower(*Iter)); }
-            *CharIter=0;
-            String Results(temp);
-            delete[] temp;
+            String Results;
+            Results.reserve(StringToConvert.size());
+            for(const char& Letter : StringToConvert)
+                { Results.push_back( static_cast<char>(tolower(Letter)) ); }
             return Results;
         }
-
-        Mezzanine::String BoolToString(bool i)
-            { return i?"True":"False" ; }
-
-
     }// Testing
 }// Mezzanine

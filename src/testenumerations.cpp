@@ -90,12 +90,6 @@ namespace Mezzanine
         Mezzanine::UInt32 TestResultToUnsignedInt(TestResult Convertable)
             { return Mezzanine::UInt32(TestResultToInt(Convertable)); }
 
-        TestResult IntToTestResult(Mezzanine::Int32 Convertable)
-            { return TestResult(Convertable); }
-
-        TestResult IntToTestResult(Mezzanine::UInt32 Convertable)
-            { return TestResult(Convertable); }
-
         std::ostream& operator<<(std::ostream& Stream, TestResult Output)
             { return Stream << TestResultToString(Output); }
 

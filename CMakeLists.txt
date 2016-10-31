@@ -43,11 +43,11 @@ project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
-set(JagatiChecksum "7eae56475154e1cbcdee6c7f677a3710ca7d24eacb523ea779d628\
-fc569ac9b6c48f42ba616070af0827704a9502c6591390a3d554b975f93998e8b6a72606da")
+set(JagatiChecksum "a6e8040746ebc1e3b17df43760872d937519ca3612069589483d83\
+827aceb80ef17b473e5dac0df3f0ecda285cb3be23461ab05e6a7feff0e8431bd9cd1a9673")
 
 file(DOWNLOAD
-    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.10.0/Jagati.cmake"
+    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.11.1/Jagati.cmake"
     "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
     EXPECTED_HASH SHA512=${JagatiChecksum}
 )
@@ -113,6 +113,7 @@ CreateCoverageTarget(${TestLib} "${TesterSourceFiles}")
 
 # This has only one test and could be added as follows.
 # AddTestClass("Test")
+# AddTestClass("Conversions")
 
 # Instead to prove it works we added all the tests in the test directory with the following:
 AddTestDirectory(${${PROJECT_NAME}TestDir})

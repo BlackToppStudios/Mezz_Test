@@ -159,9 +159,11 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
 
         //void RunSubprocessTest(const Mezzanine::String& Arg) // Add this parameter back in if you need it.
         void RunSubprocessTest(const Mezzanine::String&)
-            {}
+        {
+            TEST("IsolatedSubProcessTestPassing", true);
+        }
         bool HasSubprocessTest() const
-            { return false; }
+            { return true; }
 
 
         void RunInteractiveTests()
