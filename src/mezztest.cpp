@@ -41,7 +41,7 @@
 #include "mezztest.h"
 #include "testdata.h"
 
-#include "datatypes.h"
+#include "DataTypes.h"
 
 #include <cstdlib> // For system
 #include <fstream>

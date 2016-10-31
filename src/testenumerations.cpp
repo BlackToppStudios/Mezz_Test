@@ -41,7 +41,7 @@
 /// @file
 /// @brief The implmentation of a few functions used with the enumuration in the unit tests
 
-#include "datatypes.h"
+#include "DataTypes.h"
 
 #include "testenumerations.h"
 

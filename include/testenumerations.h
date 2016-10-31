@@ -43,8 +43,8 @@
 /// @file
 /// @brief Enumerations and constant values associated with the Unit tests.
 
-#include "datatypes.h"
-#include "supresswarnings.h"
+#include "DataTypes.h"
+#include "SuppressWarnings.h"
 
 namespace Mezzanine
 {

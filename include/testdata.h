@@ -43,7 +43,7 @@
 /// @file
 /// @brief TestData and TestDataStorage class definitions.
 
-#include "datatypes.h"
+#include "DataTypes.h"
 
 #include "testenumerations.h"
 SAVE_WARNING_STATE

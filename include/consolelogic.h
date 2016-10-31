@@ -43,7 +43,7 @@
 /// @file
 /// @brief The definition of a few command line tools.
 
-#include "datatypes.h"
+#include "DataTypes.h"
 
 #include "testdata.h"
 

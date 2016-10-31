@@ -43,7 +43,7 @@
 /// @file
 /// @brief Some string manipulation functions geared towards console output for use in the Unit Tests.
 
-#include "datatypes.h"
+#include "DataTypes.h"
 
 namespace Mezzanine
 {

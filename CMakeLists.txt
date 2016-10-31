@@ -89,7 +89,7 @@ set(TesterSourceFiles
 ShowList("Source Files:" "\t" "${TesterSourceFiles}")
 
 set(DoxFiles
-    "${TestDoxDir}dox.h"
+    "${TestDoxDir}Dox.h"
 )
 ShowList("Doxygen Input Files:" "\t" "${DoxFiles}")
 AddJagatiDoxInput("${DoxFiles}")

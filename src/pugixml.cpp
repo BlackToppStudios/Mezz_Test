@@ -18,7 +18,7 @@
 
 #ifndef SOURCE_PUGIXML_CPP
 
-#include "supresswarnings.h"
+#include "SuppressWarnings.h"
 SAVE_WARNING_STATE
 SUPPRESS_GCC_WARNING("-Wsign-conversion") // Supresses 33 warnings
 
