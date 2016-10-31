@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_mezztest_h
-#define Mezz_Test_mezztest_h
+#ifndef Mezz_Test_MezzTest_h
+#define Mezz_Test_MezzTest_h
 
 /// @file
 /// @brief The declaration of a number of tools to help with the main function implementation.
