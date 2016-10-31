@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_consolestringmanipulation_h
-#define Mezz_Test_consolestringmanipulation_h
+#ifndef Mezz_Test_ConsoleStringManipulation_h
+#define Mezz_Test_ConsoleStringManipulation_h
 
 /// @file
 /// @brief Some string manipulation functions geared towards console output for use in the Unit Tests.

@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_unittestgroup_h
-#define Mezz_Test_unittestgroup_h
+#ifndef Mezz_Test_UnitTestGroup_h
+#define Mezz_Test_UnitTestGroup_h
 
 /// @file
 /// @brief UnitTestGroup class definitions.

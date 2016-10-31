@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_testdata_h
-#define Mezz_Test_testdata_h
+#ifndef Mezz_Test_TestData_h
+#define Mezz_Test_TestData_h
 
 /// @file
 /// @brief TestData and TestDataStorage class definitions.

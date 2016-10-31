@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_timingtools_h
-#define Mezz_Test_timingtools_h
+#ifndef Mezz_Test_TimingTools_h
+#define Mezz_Test_TimingTools_h
 
 /// @file
 /// @brief TestData, TestDataStorage and UnitTestGroup class definitions.
