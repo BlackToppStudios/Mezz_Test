@@ -44,7 +44,7 @@
 /// @brief Header for unit tests for the testing framework.
 
 // Add other headers you need here
-#include "mezztest.h"
+#include "MezzTest.h"
 
 #include <stdexcept>
 #include <thread>

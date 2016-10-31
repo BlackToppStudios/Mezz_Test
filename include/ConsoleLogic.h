@@ -37,20 +37,46 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
+#ifndef Mezz_Test_consolelogic_h
+#define Mezz_Test_consolelogic_h
 
 /// @file
-/// @brief The implementation of stuff that must be run in the context of a TestData, which isn't much since its a
-/// bunch of macros.
+/// @brief The definition of a few command line tools.
 
-#include "testdatatools.h"
+#include "DataTypes.h"
 
-using namespace Mezzanine;
+#include "TestData.h"
 
 namespace Mezzanine
 {
     namespace Testing
     {
+        /// @brief Print a message for the user onf the standard output that briefly describes how to use this.
+        /// @param ThisName The name of the current executable
+        /// @param TestGroups This is searched for the current list of valid test names.
+        /// @return Always returns ExitInvalidArguments
+        int Usage(Mezzanine::String ThisName, CoreTestGroup& TestGroups);
 
-    } // Testing
-} // Mezzanine
+        /// @brief Asked the user a question on the std output and get a TestResult as an answer.
+        /// @param Question The question to ask the user.
+        /// @param FailStatusOnIncorrect Defaults to true, FailStatusOnIncorrect if true False answers with return Fail
+        /// Status otherwise they will return Warnings.
+        /// @details The following strings provide the following results.
+        ///     -  "True", "Yes" as Success.
+        ///     -  "False", "No" as Failed or Warn.
+        ///     -  "Cancel" as "Cancelled".
+        ///     -  "Unsure", "Inconclusive" as Inconclusive.
+        /// @return Depends on users input
+        TestResult GetTestAnswerFromStdin(Mezzanine::String Question, Boole FailStatusOnIncorrect = true);
 
+        /// @brief Execute a command in a process, piping its standard output to a file.
+        /// @return The contents of the file as String.
+        String GetCommandResults(String Command);
+
+        /// @brief Sleeps the current thread for an amount of microseconds.
+        /// @param MicroSeconds the amount of micro seconds.
+        void sleep_for(UInt32 MicroSeconds);
+    }// Testing
+}// Mezzanine
+
+#endif

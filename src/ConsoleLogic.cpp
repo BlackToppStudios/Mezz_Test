@@ -42,9 +42,9 @@
 /// @brief The implementation of items important a commandline tool to work correctly without need to be available to
 /// test developers.
 
-#include "consolelogic.h"
-#include "consolestringmanipulation.h"
-#include "unittestgroup.h"
+#include "ConsoleLogic.h"
+#include "ConsoleStringManipulation.h"
+#include "UnitTestGroup.h"
 
 SAVE_WARNING_STATE
 SUPPRESS_VC_WARNING(4668)

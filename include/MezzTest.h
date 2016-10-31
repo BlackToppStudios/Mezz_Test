@@ -43,12 +43,12 @@
 /// @file
 /// @brief The declaration of a number of tools to help with the main function implementation.
 
-#include "consolelogic.h"
-#include "consolestringmanipulation.h"
-#include "testdata.h"
-#include "unittestgroup.h"
-#include "testdatatools.h"
-#include "testenumerations.h"
+#include "ConsoleLogic.h"
+#include "ConsoleStringManipulation.h"
+#include "TestData.h"
+#include "UnitTestGroup.h"
+#include "TestDataTools.h"
+#include "TestEnumerations.h"
 
 #include <stdexcept> // Used to throw for TEST_THROW
 

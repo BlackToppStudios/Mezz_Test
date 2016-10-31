@@ -38,8 +38,8 @@
    John Blackwood - makoenergy02@gmail.com
 */
 
-#include "mezztest.h"
-#include "testdata.h"
+#include "MezzTest.h"
+#include "TestData.h"
 
 #include "DataTypes.h"
 

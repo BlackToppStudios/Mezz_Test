@@ -45,7 +45,8 @@
 
 #include "DataTypes.h"
 
-#include "testenumerations.h"
+#include "TestEnumerations.h"
+
 SAVE_WARNING_STATE
 SUPPRESS_CLANG_WARNING("-Wdeprecated")
 SUPPRESS_CLANG_WARNING("-Wweak-vtables")

@@ -30,4 +30,4 @@ ignore:
   - src/pugixml.cpp
   - include/pugixml.h
   # Only used in interactive tests.
-  - src/consolelogic.cpp
+  - src/ConsoleLogic.cpp

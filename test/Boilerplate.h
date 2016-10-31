@@ -44,7 +44,7 @@
 /// @brief A Test header suitable for copying as a starting point for tests.
 
 // Add other headers you need here
-#include "mezztest.h"
+#include "MezzTest.h"
 
 SAVE_WARNING_STATE
 SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this will this will be recompiled each test.

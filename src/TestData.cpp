@@ -41,7 +41,7 @@
 /// @file
 /// @brief The definition of the string manipulation functions the unit tests use
 
-#include "mezztest.h"
+#include "MezzTest.h"
 
 #include <vector>
 #include <stdexcept>

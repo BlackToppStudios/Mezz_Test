@@ -43,7 +43,7 @@
 
 #include "DataTypes.h"
 
-#include "testenumerations.h"
+#include "TestEnumerations.h"
 
 SAVE_WARNING_STATE
 SUPPRESS_VC_WARNING(4668)

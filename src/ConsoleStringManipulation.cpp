@@ -41,8 +41,8 @@
 /// @file
 /// @brief The implementation of the string manipulation functions the unit tests use
 
-#include "testenumerations.h"
-#include "consolestringmanipulation.h"
+#include "TestEnumerations.h"
+#include "ConsoleStringManipulation.h"
 
 #include <locale>
 

@@ -43,7 +43,7 @@
 /// @file
 /// @brief Tests for conversions used internally and presented as part of the Mezz Test API
 
-#include "mezztest.h"
+#include "MezzTest.h"
 
 SAVE_WARNING_STATE
 SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this will this will be recompiled each test.

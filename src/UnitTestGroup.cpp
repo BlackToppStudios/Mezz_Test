@@ -41,9 +41,9 @@
 /// @file
 /// @brief The definition of the string manipulation functions the unit tests use
 
-#include "unittestgroup.h"
-#include "mezztest.h"
-#include "timingtools.h"
+#include "UnitTestGroup.h"
+#include "MezzTest.h"
+#include "TimingTools.h"
 
 #include <vector>
 #include <stdexcept>

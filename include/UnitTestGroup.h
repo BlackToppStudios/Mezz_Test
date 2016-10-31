@@ -44,9 +44,9 @@
 /// @brief UnitTestGroup class definitions.
 
 
-#include "testdata.h"
+#include "TestData.h"
+#include "TestEnumerations.h"
 
-#include "testenumerations.h"
 SAVE_WARNING_STATE
 SUPPRESS_CLANG_WARNING("-Wdeprecated")
 SUPPRESS_CLANG_WARNING("-Wweak-vtables")

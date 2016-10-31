@@ -43,11 +43,11 @@ project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
-set(JagatiChecksum "a6e8040746ebc1e3b17df43760872d937519ca3612069589483d83\
-827aceb80ef17b473e5dac0df3f0ecda285cb3be23461ab05e6a7feff0e8431bd9cd1a9673")
+set(JagatiChecksum "14b39df7e3cebef5e1e78a1b974e52fac737f062e432666ead8155\
+414ce0591f569b108c047c4f90799c13a8574b28c4b05dadac22c4375b8f1ecc05b798bf39")
 
 file(DOWNLOAD
-    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.11.1/Jagati.cmake"
+    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.11.2/Jagati.cmake"
     "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
     EXPECTED_HASH SHA512=${JagatiChecksum}
 )
@@ -61,29 +61,31 @@ IncludeJagatiPackage("StaticFoundation")
 ########################################################################################################################
 message(STATUS "Determining Source Files.")
 set(TesterHeaderFiles
-    "${TestIncludeDir}consolelogic.h"
-    "${TestIncludeDir}consolestringmanipulation.h"
-    "${TestIncludeDir}mezztest.h"
+    "${TestIncludeDir}ConsoleLogic.h"
+    "${TestIncludeDir}ConsoleStringManipulation.h"
+    "${TestIncludeDir}MezzTest.h"
     "${TestIncludeDir}pugixml.h"
-    "${TestIncludeDir}testdata.h"
-    "${TestIncludeDir}testdatatools.h"
-    "${TestIncludeDir}testenumerations.h"
-    "${TestIncludeDir}timingtools.h"
-    "${TestIncludeDir}unittestgroup.h"
+    "${TestIncludeDir}TestData.h"
+    "${TestIncludeDir}TestDataTools.h"
+    "${TestIncludeDir}TestEnumerations.h"
+    "${TestIncludeDir}TimingTools.h"
+    "${TestIncludeDir}UnitTestGroup.h"
 
+    # External library included here for simplicity
     "${TestIncludeDir}pugiconfig.h"
 )
 
 set(TesterSourceFiles
-    "${TestSourceDir}consolelogic.cpp"
-    "${TestSourceDir}consolestringmanipulation.cpp"
-    "${TestSourceDir}mezztest.cpp"
-    "${TestSourceDir}testdata.cpp"
-    "${TestSourceDir}testdatatools.cpp"
-    "${TestSourceDir}testenumerations.cpp"
-    "${TestSourceDir}timingtools.cpp"
-    "${TestSourceDir}unittestgroup.cpp"
+    "${TestSourceDir}ConsoleLogic.cpp"
+    "${TestSourceDir}ConsoleStringManipulation.cpp"
+    "${TestSourceDir}MezzTest.cpp"
+    "${TestSourceDir}TestData.cpp"
+    "${TestSourceDir}TestDataTools.cpp"
+    "${TestSourceDir}TestEnumerations.cpp"
+    "${TestSourceDir}TimingTools.cpp"
+    "${TestSourceDir}UnitTestGroup.cpp"
 
+    # External Library, not part of the API don't use this externally.
     "${TestSourceDir}pugixml.cpp"
 )
 ShowList("Source Files:" "\t" "${TesterSourceFiles}")
