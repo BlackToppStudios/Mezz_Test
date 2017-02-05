@@ -21,6 +21,7 @@
 #include "SuppressWarnings.h"
 SAVE_WARNING_STATE
 SUPPRESS_GCC_WARNING("-Wsign-conversion") // Supresses 33 warnings
+SUPPRESS_GCC_WARNING("-Wfloat-conversion")
 
 // Clang is much more stric than GCC and Pugixml, at least this old version does not seem to care
 SUPPRESS_CLANG_WARNING("-Wunknown-pragmas")
