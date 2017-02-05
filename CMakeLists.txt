@@ -1,4 +1,4 @@
-# © Copyright 2010 - 2016 BlackTopp Studios Inc.
+# © Copyright 2010 - 2017 BlackTopp Studios Inc.
 # This file is part of The Mezzanine Engine.
 #
 #    The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -43,24 +43,23 @@ project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
-set(JagatiChecksum "ae061311fcc4ecca287e7e7df38f9f52fbacc2060946f92bdece21\
-d86584f1de152c59a7181992a30365c07bb58772f3dadef38adbb4b15c305429a1b966f314")
-
+# Download, Verify and setup the Jagati
+set(JagatiChecksum "e5282c8924cff5a620b50f8ca5fb84023d27a24f9302dbfaac055b\
+022a3a3883f4f541e071e2618edfd2f6b148b9e12823a98ca5b736e57ecf983bf6ece96de2")
 file(DOWNLOAD
-    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.12.1/Jagati.cmake"
+    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.13.1/Jagati.cmake"
     "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
     EXPECTED_HASH SHA512=${JagatiChecksum}
 )
-
 include("${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake")
 
 StandardJagatiSetup()
-
 IncludeJagatiPackage("StaticFoundation")
 
 ########################################################################################################################
+# Add Sources
 message(STATUS "Determining Source Files.")
-set(TesterHeaderFiles
+set(TestHeaderFiles
     "${TestIncludeDir}ConsoleLogic.h"
     "${TestIncludeDir}ConsoleStringManipulation.h"
     "${TestIncludeDir}MezzTest.h"
@@ -74,8 +73,9 @@ set(TesterHeaderFiles
     # External library included here for simplicity
     "${TestIncludeDir}pugiconfig.h"
 )
+ShowList("Source Files:" "\t" "${TestHeaderFiles}")
 
-set(TesterSourceFiles
+set(TestSourceFiles
     "${TestSourceDir}ConsoleLogic.cpp"
     "${TestSourceDir}ConsoleStringManipulation.cpp"
     "${TestSourceDir}MezzTest.cpp"
@@ -88,71 +88,40 @@ set(TesterSourceFiles
     # External Library, not part of the API don't use this externally.
     "${TestSourceDir}pugixml.cpp"
 )
-ShowList("Source Files:" "\t" "${TesterSourceFiles}")
+ShowList("Source Files:" "\t" "${TestSourceFiles}")
 
-set(DoxFiles
+set(TestSwigFiles
+    ""
+)
+ShowList("Swig Input Files:" "\t" "${TestSwigFiles}")
+
+set(TestDoxFiles
     "${TestDoxDir}Dox.h"
 )
-ShowList("Doxygen Input Files:" "\t" "${DoxFiles}")
-AddJagatiDoxInput("${DoxFiles}")
+ShowList("Doxygen Input Files:" "\t" "${TestDoxFiles}")
+AddJagatiDoxInput("${TestDoxFiles}")
 
 ########################################################################################################################
-# This setup is unusual but could be useful.
+# Build targets
 
-include_directories(
-    ${${PROJECT_NAME}IncludeDir}
-    ${TestIncludeDir}
-    ${StaticFoundationIncludeDir}
-    ${StaticFoundationGenHeadersDir}
-)
+# Make a library with our sources.
+AddJagatiLibrary()
+CreateCoverageTarget(${TestLib} "${TestSourceFiles}")
 
-# A normal project would put declaration of targets here, a really good project would house the bulk of its
-# functionality in a library so that it could easily be linked to the testing library and the final executable.
-#add_library(${YourLibraryHere} ${MEZZ_LibraryBuildType} ${YourHeaders} ${YourSources})
+# This has only three tests and they could  be added as follows.
+#AddTestClass("Boilerplate") # Not a real test but we want our example to build
+#AddTestClass("Conversion")
+#AddTestClass("Test")
 
-AddJagatiLibrary("Test")
-CreateCoverageTarget(${TestLib} "${TesterSourceFiles}")
-
-# This has only one test and could be added as follows.
-# AddTestClass("Test")
-# AddTestClass("Conversions")
-
-# Instead to prove it works we added all the tests in the test directory with the following:
+# Instead we can also add all the tests in the test directory with the following:
 AddTestDirectory(${${PROJECT_NAME}TestDir})
 
 # Spit out the C++ file
 EmitTestCode()
-AddTestTarget("")
+AddTestTarget()
 
-# You need to link the test library to your stuff to be tested.
-#target_link_libraries(${TestLib} ${YourLibraryHere})
-
-
-
-########################################################################################################################
-# Set up Build targets
-
-
-
-# A Project to do nothing but get All the Source files visible in IDEs
-add_custom_target(
-    ${PROJECT_NAME}_IDE_Visibility
-    DEPENDS ${PROJECT_NAME}_Tester
-            "${${PROJECT_NAME}BinaryDir}Guidelines.md"
-            ExternalProjectDownload
-    SOURCES ${HeaderFiles}
-            ${SourceFiles}
-            ${TestSourceFiles}
-            ${SwigFiles}
-            ${StaticFoundationConfigFilename}
-            README.md
-            COPYING.md
-            .travis.yml
-            appveyor.yml
-            codecov.yml
-            "${DoxFiles}"
-)
-
+# Some extra creating of targets for other development related tasks
+AddIDEVisibility("")
 SetCodeCoverage()
 
 message(STATUS "${PROJECT_NAME} - Ending Configuration.")
