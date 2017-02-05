@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2016 BlackTopp Studios Inc.
+// © Copyright 2010 - 2017 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -75,7 +75,7 @@ namespace Mezzanine
 
         /// @brief Sleeps the current thread for an amount of microseconds.
         /// @param MicroSeconds the amount of micro seconds.
-        void sleep_for(UInt32 MicroSeconds);
+        //void sleep_for(UInt32 MicroSeconds);
     }// Testing
 }// Mezzanine
 
