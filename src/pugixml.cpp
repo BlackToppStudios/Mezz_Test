@@ -21,7 +21,13 @@
 #include "SuppressWarnings.h"
 SAVE_WARNING_STATE
 SUPPRESS_GCC_WARNING("-Wsign-conversion") // Supresses 33 warnings
-SUPPRESS_GCC_WARNING("-Wfloat-conversion")
+#ifdef __GNUC__
+    #if __GNUC__ > 4
+        // This warnging was added in GCC 5 I think it might be in GCC 5.3
+        // This also only fails on 32 bit system. And in a function we don't use.
+        SUPPRESS_GCC_WARNING("-Wfloat-conversion")
+    #endif
+#endif
 
 // Clang is much more stric than GCC and Pugixml, at least this old version does not seem to care
 SUPPRESS_CLANG_WARNING("-Wunknown-pragmas")
