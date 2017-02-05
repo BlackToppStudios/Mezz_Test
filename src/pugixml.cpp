@@ -25,6 +25,7 @@ SUPPRESS_GCC_WARNING("-Wsign-conversion") // Supresses 33 warnings
 // Clang is much more stric than GCC and Pugixml, at least this old version does not seem to care
 SUPPRESS_CLANG_WARNING("-Wunknown-pragmas")
 SUPPRESS_CLANG_WARNING("-Wconversion")
+SUPPRESS_CLANG_WARNING("-Wfloat-conversion")
 SUPPRESS_CLANG_WARNING("-Wdeprecated")
 SUPPRESS_CLANG_WARNING("-Wreserved-id-macro")
 SUPPRESS_CLANG_WARNING("-Wpadded")
