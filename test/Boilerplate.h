@@ -65,19 +65,19 @@ class BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
         virtual Mezzanine::String Name() override
             { return "boilerplate"; }
 
-        void RunAutomaticTests()
+        void RunAutomaticTests() override
         {
             // The vast majority of tests will go here.
 
             // They should use the macros from testdatatools.h to automatically function, filename and line number.
             //TEST("ExamplePassingTest", true);
         }
-        bool HasAutomaticTests() const
+        bool HasAutomaticTests() const override
             { return true; }
 
 
         //void RunSubprocessTest(const Mezzanine::String& Arg) // Add this parameter back in if you need it.
-        void RunSubprocessTest(const Mezzanine::String&)
+        void RunSubprocessTest(const Mezzanine::String&) override
         {
             // Tests with a high risk of crashing can go here
 
@@ -85,17 +85,17 @@ class BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
 
             // To enable this test group have HasSubprocessTest() return true
         }
-        bool HasSubprocessTest() const
+        bool HasSubprocessTest() const override
             { return false; }
 
 
-        void RunInteractiveTests()
+        void RunInteractiveTests() override
         {
             // Tests that require the mushy and weak flesh of human (Until our machine overlords rise up).
 
             // To enable this test group have HasInteractiveTests() return true
         }
-        bool HasInteractiveTests() const
+        bool HasInteractiveTests() const override
             { return false; }
 
 

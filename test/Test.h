@@ -98,7 +98,7 @@ class WarningTestTests : public Mezzanine::Testing::UnitTestGroup
         virtual Mezzanine::String Name() override
             { return "test"; }
 
-        void RunAutomaticTests()
+        void RunAutomaticTests() override
         {
             // Here are some examples of test that should warn.
             TEST_WARN("WarningTestWarning", false);
@@ -111,7 +111,7 @@ class WarningTestTests : public Mezzanine::Testing::UnitTestGroup
             TEST_RESULT("VerifyWarningOveridesSuccess", Mezzanine::Testing::TestResult::Success);
             TEST_RESULT("VerifyWarningOveridesSuccess", Mezzanine::Testing::TestResult::Warning);
         }
-        bool HasAutomaticTests() const
+        bool HasAutomaticTests() const override
             { return true; }
 };
 
@@ -125,7 +125,7 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
         virtual Mezzanine::String Name() override
             { return "test"; }
 
-        void RunAutomaticTests()
+        void RunAutomaticTests() override
         {
             // Positive tests This should serve as examples for how to use this and get tests that passed.
             TEST("DefaultTestPassing", true);
@@ -165,22 +165,22 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
                 { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
 
         }
-        bool HasAutomaticTests() const
+        bool HasAutomaticTests() const override
             { return true; }
 
 
         //void RunSubprocessTest(const Mezzanine::String& Arg) // Add this parameter back in if you need it.
-        void RunSubprocessTest(const Mezzanine::String&)
+        void RunSubprocessTest(const Mezzanine::String&) override
         {
             TEST("IsolatedSubProcessTestPassing", true);
         }
-        bool HasSubprocessTest() const
+        bool HasSubprocessTest() const override
             { return true; }
 
 
-        void RunInteractiveTests()
+        void RunInteractiveTests() override
             {}
-        bool HasInteractiveTests() const
+        bool HasInteractiveTests() const override
             { return false; }
 };
 

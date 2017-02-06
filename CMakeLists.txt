@@ -101,6 +101,9 @@ set(TestDoxFiles
 ShowList("Doxygen Input Files:" "\t" "${TestDoxFiles}")
 AddJagatiDoxInput("${TestDoxFiles}")
 
+# Just a test to how this works now.
+add_definitions( -DEXPORTINGMEZZANINEDLL )
+
 ########################################################################################################################
 # Build targets
 
