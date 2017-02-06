@@ -63,7 +63,7 @@ class NegativeTestTests : public Mezzanine::Testing::UnitTestGroup
         virtual Mezzanine::String Name() override
             { return "negativetest"; }
 
-        void RunAutomaticTests()
+        void RunAutomaticTests() override
         {
             // This group should serve as examples of failing tests.
             TEST("DefaultTestFailing", false);
@@ -82,7 +82,7 @@ class NegativeTestTests : public Mezzanine::Testing::UnitTestGroup
             TEST_RESULT("VerifyFailedOveridesWarning", Mezzanine::Testing::TestResult::Warning);
             TEST_RESULT("VerifyFailedOveridesWarning", Mezzanine::Testing::TestResult::Failed);
         }
-        bool HasAutomaticTests() const
+        bool HasAutomaticTests() const override
             { return true; }
 };
 
