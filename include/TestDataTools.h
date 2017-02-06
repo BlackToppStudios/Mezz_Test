@@ -82,8 +82,8 @@ namespace Mezzanine
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// Functions like UnitTestGroup::RunInteractiveTests or UnitTestGroup::RunAutomaticTests.
             /// @param Name The name of the current test.
-            /// @param ExpectedResults The canonical valute
-            /// @param ActualResults
+            /// @param ExpectedResults The canonical definition of a correct value.
+            /// @param ActualResults Whatever gibberish your code actually emits.
             #ifdef __FUNCTION__
                 #define TEST_EQUAL(Name, ExpectedResults, ActualResults);                                              \
                     TestEqual((Name), (ExpectedResults), (ActualResults),                                              \
@@ -276,6 +276,30 @@ namespace Mezzanine
                          __func__, __FILE__, __LINE__ );
             #endif
         #endif
+
+        #ifndef TEST_STRING_CONTAINS
+            /// @def TEST_STRING_CONTAINS
+            /// @brief Test that one thing is contained by another.
+            /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
+            /// Functions like UnitTestGroup::RunInteractiveTests or UnitTestGroup::RunAutomaticTests.
+            /// @param Name The name of the current test.
+            /// @param ExpectedNeedle This tests searches for this needle in the ActualHaystack.
+            /// @param ActualHaystack The string like container that must container the needle or the test fails.
+            #ifdef __FUNCTION__
+                #define TEST_STRING_CONTAINS(Name, ExpectedNeedle, ActualHaystack);                                    \
+                    TestStringContains((Name), (ExpectedNeedle), (ActualHaystack),                                     \
+                                        Mezzanine::Testing::TestResult::Failed,                                        \
+                                        Mezzanine::Testing::TestResult::Success,                                       \
+                                        __FUNCTION__, __FILE__, __LINE__ );
+            #else
+                #define TEST_STRING_CONTAINS(Name, ExpectedNeedle, ActualHaystack);                                    \
+                    TestStringContains((Name), (ExpectedNeedle), (ActualHaystack),                                     \
+                                        Mezzanine::Testing::TestResult::Failed,                                        \
+                                        Mezzanine::Testing::TestResult::Success,                                       \
+                                        __func__, __FILE__, __LINE__ );
+            #endif
+        #endif
+
     }// Testing
 }// Mezzanine
 

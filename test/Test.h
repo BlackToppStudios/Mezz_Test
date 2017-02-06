@@ -57,30 +57,33 @@ SUPPRESS_CLANG_WARNING("-Wpadded") // Test classes will likely need to be padded
 // TestTests to verify that Failing works correctly. Every test here should fail.
 class NegativeTestTests : public Mezzanine::Testing::UnitTestGroup
 {
-     public:
-         NegativeTestTests() = default;
-         virtual ~NegativeTestTests() = default;
+    public:
+        NegativeTestTests() = default;
+        virtual ~NegativeTestTests() = default;
+        virtual Mezzanine::String Name() override
+            { return "negativetest"; }
 
-         void RunAutomaticTests()
-         {
-             // This group should serve as examples of failing tests.
-             TEST("DefaultTestFailing", false);
-             TEST_EQUAL("EqualityTestFailing", 1, 2);
-             TEST_EQUAL_EPSILON("EqualEpsilonFailing", 0.1, 0.2);
-             TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing", 0.1, 1.2, 2);
-             TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed);
-             TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
-             TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); });
+        void RunAutomaticTests()
+        {
+            // This group should serve as examples of failing tests.
+            TEST("DefaultTestFailing", false);
+            TEST_EQUAL("EqualityTestFailing", 1, 2);
+            TEST_EQUAL_EPSILON("EqualEpsilonFailing", 0.1, 0.2);
+            TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing", 0.1, 1.2, 2);
+            TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed);
+            TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
+            TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); });
+            TEST_STRING_CONTAINS("TestStringContainsFailing", Mezzanine::String("Foo"), Mezzanine::String("Fubar"));
 
-             // Verify that duplicate test results alway accept worse
-             TEST_RESULT("VerifyFailedOveridesSuccess", Mezzanine::Testing::TestResult::Success);
-             TEST_RESULT("VerifyFailedOveridesSuccess", Mezzanine::Testing::TestResult::Failed);
+            // Verify that duplicate test results alway accept worse
+            TEST_RESULT("VerifyFailedOveridesSuccess", Mezzanine::Testing::TestResult::Success);
+            TEST_RESULT("VerifyFailedOveridesSuccess", Mezzanine::Testing::TestResult::Failed);
 
-             TEST_RESULT("VerifyFailedOveridesWarning", Mezzanine::Testing::TestResult::Warning);
-             TEST_RESULT("VerifyFailedOveridesWarning", Mezzanine::Testing::TestResult::Failed);
-         }
-         bool HasAutomaticTests() const
-             { return true; }
+            TEST_RESULT("VerifyFailedOveridesWarning", Mezzanine::Testing::TestResult::Warning);
+            TEST_RESULT("VerifyFailedOveridesWarning", Mezzanine::Testing::TestResult::Failed);
+        }
+        bool HasAutomaticTests() const
+            { return true; }
 };
 
 // This class is not called directly by the Unit Test framework and is just used by
@@ -90,6 +93,10 @@ class WarningTestTests : public Mezzanine::Testing::UnitTestGroup
     public:
         WarningTestTests() = default;
         virtual ~WarningTestTests() = default;
+
+        // This is used as the name of the test on the command prompt
+        virtual Mezzanine::String Name() override
+            { return "test"; }
 
         void RunAutomaticTests()
         {
@@ -114,6 +121,10 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
         TestTests() = default;
         virtual ~TestTests() = default;
 
+        // This is used as the name of the test on the command prompt
+        virtual Mezzanine::String Name() override
+            { return "test"; }
+
         void RunAutomaticTests()
         {
             // Positive tests This should serve as examples for how to use this and get tests that passed.
@@ -125,6 +136,7 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
             TEST_RESULT("TestResultPassing", Mezzanine::Testing::TestResult::Success);
             TEST_THROW("TestThrowPassing", std::invalid_argument, []{ throw std::invalid_argument("pass"); });
             TEST_NO_THROW("TestNoThrowPassing", []{});
+            TEST_STRING_CONTAINS("TestStringContains", Mezzanine::String("Foo"), Mezzanine::String("Foobar"));
 
             #ifdef MEZZ_Windows
                 TEST_TIMED("TestTimedPassing", std::chrono::microseconds(200000), std::chrono::microseconds(60000),

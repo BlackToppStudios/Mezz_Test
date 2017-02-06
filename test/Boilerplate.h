@@ -61,12 +61,16 @@ class BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
         /// @brief Default Deconstructor
         virtual ~BoilerplateTests() = default;
 
+        // This is used as the name of the test on the command prompt
+        virtual Mezzanine::String Name() override
+            { return "boilerplate"; }
+
         void RunAutomaticTests()
         {
             // The vast majority of tests will go here.
 
             // They should use the macros from testdatatools.h to automatically function, filename and line number.
-            //TEST(true, "ExamplePassingTest");
+            //TEST("ExamplePassingTest", true);
         }
         bool HasAutomaticTests() const
             { return true; }

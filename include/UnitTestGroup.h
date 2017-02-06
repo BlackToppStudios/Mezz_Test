@@ -393,6 +393,34 @@ namespace Mezzanine
                                     const String& File = "",
                                     Mezzanine::Whole Line = 0);
 
+                /// @copydoc Test
+                /// @brief Test that one thing contains the other. Intended for strings.
+                /// @param ExpectedNeedle This tests searches for this needle in the ActualHaystack.
+                /// @param ActualHaystack The string like container that must container the needle or the test fails.
+                /// @tparam ExpectedNeedleType A type that can be passed to the ActualHaystackType#find method and work.
+                /// @tparam ActualHaystackType A type that implements a find method and returns ExpectedNeedleType::npos
+                /// when the ExpectedNeedleType instance passed is not found.
+                template <typename ExpectedNeedleType, typename ActualHaystackType>
+                void TestStringContains(const String& TestName,
+                                        ExpectedNeedleType ExpectedNeedle,
+                                        ActualHaystackType ActualHaystack,
+                                        TestResult IfFalse = Testing::TestResult::Failed,
+                                        TestResult IfTrue = Testing::TestResult::Success,
+                                        const String& FuncName = "",
+                                        const String& File = "",
+                                        Mezzanine::Whole Line = 0)
+                {
+                    TestResult Result = Test( TestName,
+                                              (ExpectedNeedleType::npos != ActualHaystack.find(ExpectedNeedle)),
+                                              IfFalse, IfTrue, FuncName, File, Line);
+                    if(Mezzanine::Testing::TestResult::Success != Result)
+                    {
+                        std::cout << "Test - " << TestName << " failed: "
+                                  << "Expected to find '" << ExpectedNeedle << "' "
+                                  << "but haystack was '" << ActualHaystack << "'."
+                                  << std::endl;
+                    }
+                }
 
         };
         RESTORE_WARNING_STATE

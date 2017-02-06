@@ -58,6 +58,10 @@ class ConversionTests : public Mezzanine::Testing::UnitTestGroup
         /// @brief Default Deconstructor
         virtual ~ConversionTests() = default;
 
+        // This is used as the name of the test on the command prompt
+        virtual Mezzanine::String Name() override
+            { return "conversion"; }
+
         void RunAutomaticTests()
         {
             TEST_THROW("EmptyStringsAreNotTestResults",
