@@ -29,5 +29,3 @@ ignore:
   # Not our code, the pugi guys give us this.
   - src/pugixml.cpp
   - include/pugixml.h
-  # Only used in interactive tests.
-  - src/ConsoleLogic.cpp
