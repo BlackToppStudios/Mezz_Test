@@ -109,15 +109,6 @@ class ConversionTests : public Mezzanine::Testing::UnitTestGroup
                        []{ Mezzanine::Testing::StringToTestResult("Indecipherable"); }
                        );
 
-            TEST_EQUAL("InconclusiveStringConvertsToResult",
-                       Mezzanine::Testing::TestResult::Inconclusive,
-                       Mezzanine::Testing::StringToTestResult("Inconclusive")
-                       );
-            TEST_THROW("BadIStringTestResults",
-                       std::invalid_argument,
-                       []{ Mezzanine::Testing::StringToTestResult("Indecipherable"); }
-                       );
-
             TEST_EQUAL("UnknownStringConvertsToResult",
                        Mezzanine::Testing::TestResult::Unknown,
                        Mezzanine::Testing::StringToTestResult("Unknown")

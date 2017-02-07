@@ -240,7 +240,7 @@ namespace Mezzanine
                         {
                             (*this) += GetResultsFromTempFile();
                         } catch (std::exception& e) {
-                            TestError << e.what() << std::endl;
+                            std::cerr << e.what() << std::endl;
                         }
 
                     }

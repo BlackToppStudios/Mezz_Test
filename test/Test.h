@@ -74,13 +74,6 @@ class NegativeTestTests : public Mezzanine::Testing::UnitTestGroup
             TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
             TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); });
             TEST_STRING_CONTAINS("TestStringContainsFailing", Mezzanine::String("Foo"), Mezzanine::String("Fubar"));
-
-            // Verify that duplicate test results alway accept worse
-            TEST_RESULT("VerifyFailedOveridesSuccess", Mezzanine::Testing::TestResult::Success);
-            TEST_RESULT("VerifyFailedOveridesSuccess", Mezzanine::Testing::TestResult::Failed);
-
-            TEST_RESULT("VerifyFailedOveridesWarning", Mezzanine::Testing::TestResult::Warning);
-            TEST_RESULT("VerifyFailedOveridesWarning", Mezzanine::Testing::TestResult::Failed);
         }
         bool HasAutomaticTests() const override
             { return true; }
@@ -106,10 +99,6 @@ class WarningTestTests : public Mezzanine::Testing::UnitTestGroup
             TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{});
             TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
                        []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
-
-            // Verify that duplicate test results alway accept worse
-            TEST_RESULT("VerifyWarningOveridesSuccess", Mezzanine::Testing::TestResult::Success);
-            TEST_RESULT("VerifyWarningOveridesSuccess", Mezzanine::Testing::TestResult::Warning);
         }
         bool HasAutomaticTests() const override
             { return true; }
@@ -147,6 +136,19 @@ class TestTests : public Mezzanine::Testing::UnitTestGroup
             #endif
 
             TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ });
+
+            // AddTestResult is the function that runs all these test macros. This should verify that calling those
+            // macros twice with the same name fails
+            TEST_THROW("TwoIdenticalTestNamesFail", std::runtime_error,
+                [this]{
+                    AddTestResult( Mezzanine::Testing::TestData( ("TwoIdenticalTestNamesFailImpl"),
+                                                                 (Mezzanine::Testing::TestResult::Success),
+                                                                 "RunAutomaticTests", __FILE__, __LINE__));
+                    AddTestResult( Mezzanine::Testing::TestData( ("TwoIdenticalTestNamesFailImpl"),
+                                                                 (Mezzanine::Testing::TestResult::Success),
+                                                                 "RunAutomaticTests", __FILE__, __LINE__));
+                }
+            );
 
             // From here down we are running the results of the other test result groups and assembling their results
             // if we let the normal machinery of the unit test framework do this they would fail the tests, because

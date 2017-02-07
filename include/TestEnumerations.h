@@ -136,18 +136,6 @@ namespace Mezzanine
         /// an std::invalid_argument with a message descrinbing why and some data about string parsing.
         TestResult StringToTestResult(Mezzanine::String Text);
 
-        /// @brief This is used to control the behavior of the function UnitTestGroup::AddTestResult()
-        /// @details This can optionally be passed to prioritize whether newer vs older or successful vs failing results
-        /// are more important.
-        enum OverWriteResults{
-            OverWriteIfLessSuccessful,  ///< This is the default behavior, because it is presumed failures should be
-                                        /// visible so they can be fixed.
-            OverWriteIfMoreSuccessful,  ///< Overwrite only if the result is better than the old result.
-            OverWrite,                  ///< Just Overwrite, useful if the test was defaulted to a low value
-            DoNotOverWrite              ///< This is a supplementary running a test, if a results already exists, skip
-                                        /// writing anything.
-        };
-
     }// Testing
 }// Mezzanine
 
