@@ -79,9 +79,9 @@ namespace Mezzanine
                 { RunSubprocessTest(GetSubSubProcessArgument()); }
             else
             {
-                OutputBufferGuard(std::cout);
-                OutputBufferGuard(std::cerr);
-                OutputBufferGuard(std::clog);
+                OutputBufferGuard CoutGuard(std::cout);
+                OutputBufferGuard CerrGuard(std::cerr);
+                OutputBufferGuard ClogGuard(std::clog);
                 LaunchAutomaticTest();
                 LaunchInteractiveTest();
             }

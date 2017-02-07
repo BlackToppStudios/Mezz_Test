@@ -55,41 +55,41 @@ namespace Mezzanine
         /// @brief Used to apply RAII to Stdout and STDERR buffers/streams
         class MEZZ_LIB OutputBufferGuard
         {
-            private:
-                // A place to store output that would go to the original stream;
-                std::stringstream StreamOuputSink;
+        private:
+            /// @brief A place to store output that would go to the original stream;
+            std::stringstream StreamOuputSink;
 
-                // Store a reference to the original stream so we can restore it in the end.
-                std::ostream& StreamToGaurd;
+            /// @brief Store a reference to the original stream so we can restore it in the end.
+            std::ostream& StreamToGaurd;
 
-                // Storage to hold a non-owning pointer to the original read buffer.
-                std::streambuf* OriginalStreamBuf;
-            public:
+            /// @brief Storage to hold a non-owning pointer to the original read buffer.
+            std::streambuf* OriginalStreamBuf;
+        public:
 
-                /// @brief Copying this kind of guard is insanity so the copy constructor is deleted.
-                OutputBufferGuard(const OutputBufferGuard&) = delete;
-                /// @brief Assignment of this kind of guard is insanity so the copy constructor is deleted.
-                OutputBufferGuard& operator=(const OutputBufferGuard&) = delete;
+            /// @brief Copying this kind of guard is insanity so the copy constructor is deleted.
+            OutputBufferGuard(const OutputBufferGuard&) = delete;
+            /// @brief Assignment of this kind of guard is insanity so the copy constructor is deleted.
+            OutputBufferGuard& operator=(const OutputBufferGuard&) = delete;
 
-                /// @brief Moving one of these guards is probably just fine, but it has been deleted until needed.
-                OutputBufferGuard(OutputBufferGuard&&) = delete;
-                /// @brief Move assigning one of these guards might be just fine, but it has been deleted until needed.
-                OutputBufferGuard& operator=(OutputBufferGuard&&) = delete; // WHY?
+            /// @brief Moving one of these guards is probably just fine, but it has been deleted until needed.
+            OutputBufferGuard(OutputBufferGuard&&) = delete;
+            /// @brief Move assigning one of these guards might be just fine, but it has been deleted until needed.
+            OutputBufferGuard& operator=(OutputBufferGuard&&) = delete; // WHY?
 
-                /// @brief Captures Output buffers and configures test outputs on creation.
-                /// @param StreamToSilence The stream to silence and guard from outputing anything
-                /// until the destructor is called.
-                explicit OutputBufferGuard(std::ostream& StreamToSilence);
+            /// @brief Captures Output buffers and configures test outputs on creation.
+            /// @param StreamToSilence The stream to silence and guard from outputing anything
+            /// until the destructor is called.
+            explicit OutputBufferGuard(std::ostream& StreamToSilence);
 
-                /// @brief Get anything sent to the guarded stream.
-                /// @return a String with the whole of the contents sunk into the original Stream.
-                Mezzanine::String GetSunkOutput() const;
+            /// @brief Get anything sent to the guarded stream.
+            /// @return a String with the whole of the contents sunk into the original Stream.
+            Mezzanine::String GetSunkOutput() const;
 
-                /// @brief Restores original output  buffers on creation
-                virtual ~OutputBufferGuard();
+            /// @brief Restores original output  buffers on creation
+            virtual ~OutputBufferGuard();
         };
 
-    }// Testing
+    }
 }// Mezzanine
 
 #endif

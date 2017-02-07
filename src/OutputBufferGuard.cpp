@@ -43,7 +43,6 @@
 
 #include "OutputBufferGuard.h"
 
-
 namespace Mezzanine
 {
     namespace Testing
@@ -52,7 +51,7 @@ namespace Mezzanine
         OutputBufferGuard::OutputBufferGuard(std::ostream& StreamToSilence)
             : StreamToGaurd(StreamToSilence),
               OriginalStreamBuf(StreamToSilence.rdbuf())
-        { StreamToGaurd.rdbuf(StreamOuputSink.rdbuf()); }
+            { StreamToGaurd.rdbuf(StreamOuputSink.rdbuf()); }
 
         String OutputBufferGuard::GetSunkOutput() const
             { return StreamOuputSink.str(); }

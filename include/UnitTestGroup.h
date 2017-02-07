@@ -175,7 +175,8 @@ namespace Mezzanine
                 /// @param TResult The actual TestResult
                 /// @param Behavior An OverWriteResults that defines the overwirte behavior of this function, defaults
                 /// to OverWriteIfLessSuccessful
-                void AddTestResult(const Mezzanine::String TestName, TestResult TResult);
+                void AddTestResult(const Mezzanine::String TestName,
+                                   TestResult TResult);
 
                 /// @brief Add all the items in another UnitTestGroup to this one
                 /// @param rhs The item on the right hand side of the +=.
