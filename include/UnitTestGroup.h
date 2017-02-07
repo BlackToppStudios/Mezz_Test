@@ -164,19 +164,14 @@ namespace Mezzanine
                 /// @brief Its expected that tests will be inserted using this
                 /// @details This will automate tracking of the most and least successful tests
                 /// @param CurrentTest The New test results and name
-                /// @param Behavior An OverWriteResults that defines the overwrite behavior of this function, defaults
-                /// to OverWriteIfLessSuccessful
-                void AddTestResult( TestData CurrentTest);
+                void AddTestResult(TestData CurrentTest);
 
                 /// @brief Add a test results without having to to construct a TestData first
                 /// @details This prepends the name of this UnitTestGroup and "::" to the
                 /// @warning The name of the test can have no spaces in it. An exception will be thrown if found.
                 /// @param TestName The name of the Test
                 /// @param TResult The actual TestResult
-                /// @param Behavior An OverWriteResults that defines the overwirte behavior of this function, defaults
-                /// to OverWriteIfLessSuccessful
-                void AddTestResult(const Mezzanine::String TestName,
-                                   TestResult TResult);
+                void AddTestResult(const Mezzanine::String TestName, TestResult TResult);
 
                 /// @brief Add all the items in another UnitTestGroup to this one
                 /// @param rhs The item on the right hand side of the +=.
