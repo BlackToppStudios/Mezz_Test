@@ -166,6 +166,20 @@ class ConsoleLogicTests : public Mezzanine::Testing::UnitTestGroup
             TEST_STRING_CONTAINS("GetPrintableTestList::HasConsoleLogic",
                                  Mezzanine::String("consolelogic"),
                                  Mezzanine::Testing::GetPrintableTestList(80, FakeTestGroup));
+
+            // Lets test usage, because we can
+            {
+                Mezzanine::Testing::OutputBufferGuard CerrGuard(std::cerr);
+
+                TEST_EQUAL("Usage::ReturnFailureCode",
+                           static_cast<int>(Mezzanine::Testing::ExitInvalidArguments),
+                           Mezzanine::Testing::Usage("Foo",FakeTestGroup));
+
+                TEST_STRING_CONTAINS("Usage::EmitsNameToCerr",
+                                     Mezzanine::String("Foo"),
+                                     CerrGuard.GetSunkOutput());
+
+            }
         }
         bool HasAutomaticTests() const override
             { return true; }

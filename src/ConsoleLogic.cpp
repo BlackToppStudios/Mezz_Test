@@ -95,7 +95,7 @@ namespace Mezzanine
                     "If only test group names are entered, then all tests in those groups are run.\n"
                     "This command is not case sensitive.\n\n"
                     "Current Test Groups:\n"
-            ) + GetPrintableTestList(80, TestGroups); // This presumes the console it 80 chars wide
+            ) + GetPrintableTestList(80, TestGroups); // This presumes the console is 80 chars wide
         }
 
         Mezzanine::String GetPrintableTestList(const Mezzanine::String::size_type TargetWidth,

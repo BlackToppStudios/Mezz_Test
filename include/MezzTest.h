@@ -45,6 +45,7 @@
 
 #include "ConsoleLogic.h"
 #include "ConsoleStringManipulation.h"
+#include "OutputBufferGuard.h"
 #include "TestData.h"
 #include "UnitTestGroup.h"
 #include "TestDataTools.h"

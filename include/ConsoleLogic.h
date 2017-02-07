@@ -61,8 +61,8 @@ namespace Mezzanine
         /// @param ThisName The name of the current executable
         /// @param TestGroups This is searched for the current list of valid test names.
         /// @return A human readable string suitable for explaining how to use this executable.
-        Mezzanine::String GetUsageString(const Mezzanine::String& ThisName,
-                                         const Mezzanine::Testing::CoreTestGroup& TestGroups);
+        Mezzanine::String MEZZ_LIB GetUsageString(const Mezzanine::String& ThisName,
+                                                  const Mezzanine::Testing::CoreTestGroup& TestGroups);
 
         /// @brief Print all the names of all the tests to stdout and try to keep the size under the passed width
         /// @param TargetWidth The expected width of the console. If a test name is longer than this it will print past

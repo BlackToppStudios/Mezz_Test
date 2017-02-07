@@ -72,33 +72,13 @@ namespace Mezzanine
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests, suitable for being all the tests of a small subsystem or single class.
-        class UnitTestGroup : public TestDataStorage
+        class MEZZ_LIB UnitTestGroup : public TestDataStorage
         {
             friend class OutputCaptureManager;
 
             protected:
-                /// @brief A destination for all normal ouput in the tests.
-                std::stringstream TestOutput;
-                /// @brief A destination for errors
-                std::stringstream TestError;
-
-                /// @brief Used to store the buffer connected to the stdout while it is being redirected.
-                std::streambuf* CoutStreamBuf;
-                /// @brief Used to store the buffer connected to the stderr while it is being redirected.
-                std::streambuf* CerrStreamBuf;
-
-                /// @brief This will direct any output that would have gone to an external process via cout to
-                /// TestOutput Instead
-                void CaptureOutputBuffers();
-                /// @brief This will direct any error messages that would have gone to an external process via cerr to
-                /// TestOutput Instead
-                void RestoreOutputBuffers();
-
                 /// @brief Some basic variable for tracking simple statistics
                 String::size_type LongestNameLength;
-
-                /// @brief Used while running a test to see if
-                Int32 Completed;
 
                 /// @brief Set to false if subprocess tests should not be executed. True if they should
                 bool DoSubProcessTest;
@@ -184,21 +164,14 @@ namespace Mezzanine
                 /// @brief Its expected that tests will be inserted using this
                 /// @details This will automate tracking of the most and least successful tests
                 /// @param CurrentTest The New test results and name
-                /// @param Behavior An OverWriteResults that defines the overwrite behavior of this function, defaults
-                /// to OverWriteIfLessSuccessful
-                void AddTestResult( TestData CurrentTest,
-                                    OverWriteResults Behavior=OverWriteIfLessSuccessful);
+                void AddTestResult(TestData CurrentTest);
 
                 /// @brief Add a test results without having to to construct a TestData first
                 /// @details This prepends the name of this UnitTestGroup and "::" to the
                 /// @warning The name of the test can have no spaces in it. An exception will be thrown if found.
                 /// @param TestName The name of the Test
                 /// @param TResult The actual TestResult
-                /// @param Behavior An OverWriteResults that defines the overwirte behavior of this function, defaults
-                /// to OverWriteIfLessSuccessful
-                void AddTestResult(const Mezzanine::String TestName,
-                                   TestResult TResult,
-                                   OverWriteResults Behavior=OverWriteIfLessSuccessful);
+                void AddTestResult(const Mezzanine::String TestName, TestResult TResult);
 
                 /// @brief Add all the items in another UnitTestGroup to this one
                 /// @param rhs The item on the right hand side of the +=.
@@ -215,6 +188,7 @@ namespace Mezzanine
                 /// @return A String containing some XML
                 String GetAsXML() const;
 
+
                 /// @brief Print the results or save them to a file.
                 /// @param Output the stream to send the results to.
                 /// @param Error A stream to send errors to.
@@ -230,6 +204,7 @@ namespace Mezzanine
                                             bool FullOutput = true,
                                             bool HeaderOutput = true);
 
+            public:
                 /// @brief Interpret Boolean value as a test result. Also Prepends the name of the current test, as
                 /// returned by Name() + "::", to ease test scoping.
                 /// @warning IfFalse comes first in the argument list, This is because the common test cases have
@@ -424,23 +399,6 @@ namespace Mezzanine
 
         };
         RESTORE_WARNING_STATE
-
-        /// @internal
-        /// @brief Used to apply RAII to Stdout and STDERR buffers/streams
-        class OutputCaptureManager
-        {
-            private:
-                /// @brief The Target to work with
-                UnitTestGroup* Target;
-            public:
-                /// @brief Captures Output buffers and configures test outputs on creation
-                OutputCaptureManager(UnitTestGroup* RAIITarget) : Target(RAIITarget)
-                    { Target->CaptureOutputBuffers(); }
-                /// @brief Restores original output  buffers on creation
-                ~OutputCaptureManager()
-                    { Target->RestoreOutputBuffers(); }
-
-        };
 
     }// Testing
 }// Mezzanine

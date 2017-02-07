@@ -126,6 +126,7 @@ namespace Mezzanine
 
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this is the only translation unit.
+        SUPPRESS_CLANG_WARNING("-Wpadded") // Really don't care about test group padding, it doesn't affect anything.
         /// @internal
         /// @brief This aggregates the results of all the other test groups.
         class AllUnitTestGroups : public UnitTestGroup
@@ -240,7 +241,7 @@ namespace Mezzanine
                         {
                             (*this) += GetResultsFromTempFile();
                         } catch (std::exception& e) {
-                            TestError << e.what() << std::endl;
+                            std::cerr << e.what() << std::endl;
                         }
 
                     }
