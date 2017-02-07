@@ -58,7 +58,11 @@ class ConversionTests : public Mezzanine::Testing::UnitTestGroup
         /// @brief Default Deconstructor
         virtual ~ConversionTests() = default;
 
-        void RunAutomaticTests()
+        // This is used as the name of the test on the command prompt
+        virtual Mezzanine::String Name() override
+            { return "conversion"; }
+
+        void RunAutomaticTests() override
         {
             TEST_THROW("EmptyStringsAreNotTestResults",
                        std::invalid_argument,
@@ -147,12 +151,12 @@ class ConversionTests : public Mezzanine::Testing::UnitTestGroup
             TEST_EQUAL("LineToTestDataName", "SampleTestName", FromLine.TestName);
             TEST_EQUAL("LineToTestDataResults", Mezzanine::Testing::TestResult::Success, FromLine.Results);
         }
-        bool HasAutomaticTests() const
+        bool HasAutomaticTests() const override
             { return true; }
 
 
         //void RunSubprocessTest(const Mezzanine::String& Arg) // Add this parameter back in if you need it.
-        void RunSubprocessTest(const Mezzanine::String&)
+        void RunSubprocessTest(const Mezzanine::String&) override
         {
             // Tests with a high risk of crashing can go here
 
@@ -160,17 +164,17 @@ class ConversionTests : public Mezzanine::Testing::UnitTestGroup
 
             // To enable this test group have HasSubprocessTest() return true
         }
-        bool HasSubprocessTest() const
+        bool HasSubprocessTest() const override
             { return false; }
 
 
-        void RunInteractiveTests()
+        void RunInteractiveTests() override
         {
             // Tests that require the mushy and weak flesh of human (Until our machine overlords rise up).
 
             // To enable this test group have HasInteractiveTests() return true
         }
-        bool HasInteractiveTests() const
+        bool HasInteractiveTests() const override
             { return false; }
 
 
