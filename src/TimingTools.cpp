@@ -42,16 +42,66 @@
 /// @brief The implementation of stuff that must be run in the context of a TestData
 
 #include "TimingTools.h"
+#include "MezzTest.h"
+
+#include <iomanip>
+
+using std::chrono::minutes;
+using std::chrono::seconds;
+using std::chrono::milliseconds;
+using std::chrono::microseconds;
+using std::chrono::nanoseconds;
+
+using std::chrono::duration_cast;
+
+namespace
+{
+    /// @internal
+    /// @brief Turn one part of a useless count of nanoseconds into a meaning string of minutes, seconds and subseconds.
+    /// @tparam UnitType A std::chrono::duration to break out of the nanoseconds.
+    /// @param Duration the nanoseconds to break into larger units.
+    /// @param Suffix A string to decribe the unit.
+    /// @param Stream The place to send the newly created useful string.
+    /// @return The new Duration with all of the whole instances of the specified unit removed.
+    template <class UnitType>
+    nanoseconds TruncateUnit(nanoseconds Duration, const Mezzanine::String& Suffix, std::ostream& Stream)
+    {
+        UnitType TruncateAmount = duration_cast<UnitType>(Duration);
+        Stream << std::setw(3) << TruncateAmount.count() << Suffix << ' ';
+        Duration -= TruncateAmount;
+        return Duration;
+    }
+}
 
 namespace Mezzanine
 {
     namespace Testing
     {
 
-        std::chrono::microseconds TimedTest::GetLength()
+        std::chrono::nanoseconds TestTimer::GetLength()
+            { return duration_cast<nanoseconds> (std::chrono::high_resolution_clock::now() - BeginTimer); }
+
+        NamedDuration TestTimer::GetNameDuration(const String& Name)
+            { return NamedDuration{Name, GetLength()}; }
+
+        std::ostream& operator<<(std::ostream& Stream, const NamedDuration& TimingToStream)
         {
-            return std::chrono::duration_cast<std::chrono::microseconds>
-                    (std::chrono::high_resolution_clock::now() - BeginTimer);
+            return Stream << std::right << std::setw(TimingNameColumnWidth) << TimingToStream.Name << ": "
+                          << std::left << std::setw(TimingNsColumnWidth) << TimingToStream.Duration.count()
+                          << PrettyDurationString(TimingToStream.Duration);
+        }
+
+        Mezzanine::String PrettyDurationString(nanoseconds Duration)
+        {
+            std::stringstream PrettyTimeAssembler;
+
+            Duration = TruncateUnit<minutes>(Duration, "min", PrettyTimeAssembler);
+            Duration = TruncateUnit<seconds>(Duration, "s", PrettyTimeAssembler);
+            Duration = TruncateUnit<milliseconds>(Duration, "ms", PrettyTimeAssembler);
+            Duration = TruncateUnit<microseconds>(Duration, "μs", PrettyTimeAssembler);
+            Duration = TruncateUnit<nanoseconds>(Duration, "ns", PrettyTimeAssembler);
+
+            return PrettyTimeAssembler.str();
         }
 
     }// Testing

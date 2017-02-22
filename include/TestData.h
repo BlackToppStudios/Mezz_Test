@@ -47,17 +47,7 @@
 
 #include "TestEnumerations.h"
 
-SAVE_WARNING_STATE
-SUPPRESS_CLANG_WARNING("-Wdeprecated")
-SUPPRESS_CLANG_WARNING("-Wweak-vtables")
-SUPPRESS_CLANG_WARNING("-Wpadded")
-    #include "pugixml.h"
-RESTORE_WARNING_STATE
-
-#include <set>
-#include <map>
 #include <iostream>
-#include <sstream>
 
 namespace Mezzanine
 {
@@ -65,11 +55,12 @@ namespace Mezzanine
     /// @brief This contains all the items (except the tests themselves) that make the unit tests work.
     namespace Testing
     {
+
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wpadded")
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief The information about a test and how to easily find it in the filesystem
-        struct TestData
+        struct MEZZ_LIB TestData
         {
             /// @brief The name of a given test
             Mezzanine::String TestName;
@@ -88,50 +79,60 @@ namespace Mezzanine
             /// @param FuncName The name of the function this test was called from, Defaults to "".
             /// @param File The name of the file in which the test exists, Defaults to "".
             /// @param Line The line in the file in which the test exists, Defaults to 0.
-            TestData(const String& Name = "",
-                     TestResult Result = Testing::TestResult::Success,
-                     const String& FuncName = "",
-                     const String& File = "",
-                     Mezzanine::Whole Line = 0);
+            explicit TestData(const String& Name = "",
+                              TestResult Result = Testing::TestResult::Success,
+                              const String& FuncName = "",
+                              const String& File = "",
+                              Mezzanine::Whole Line = 0);
 
-            /// @brief Create Test data from xml.
-            /// @param Node The XMl node to create this from
-            TestData(pugi::xml_node Node);
+            /// @brief Default copy constructable.
+            /// @param ToCopy Other TestDataToCopy.
+            TestData(const TestData& ToCopy) = default;
+
+            /// @brief Default move constructable.
+            /// @param ToMove Other TestDataToCopy.
+            TestData(TestData&& ToMove) = default;
+
+            /// @brief Default copy constructable.
+            /// @param ToCopy Other TestDataToCopy.
+            /// @return A reference to the assigned TestData.
+            TestData& operator=(const TestData& ToCopy) = default;
+
+            /// @brief Default move assignable.
+            /// @param ToMove Other TestDataToCopy.
+            /// @return A reference to the assigned TestData.
+            TestData& operator=(TestData&& ToMove) = default;
 
             /// @brief Used to sort TestData in std::std and other sorted containers, by TestName.
             /// @param Rhs the right hand operand when using the less than comparison operator.
             /// @return A bool with the same value as this->TestName < Rhs.TestName.
             bool operator<(const TestData& Rhs) const;
-
-            /// @brief Return a snippet of xml describing this TestData
-            /// @return A String with a single XML element with an attribute for each of the TestName, Results,
-            /// FunctionName, FileName, LineNumber
-            String GetAsXML() const;
         };
         RESTORE_WARNING_STATE
-
-        /// @brief Just a map to store the content of TestData, incidentally it will lexographically sort the list of
-        /// tests.
-        typedef std::set<TestData> TestDataStorage;
-
-        // Forward declarations.
-        class UnitTestGroup;
-        class OutputCaptureManager;
-
-        /// @brief A group of testnames and the Actual class that implements those test(s).
-        typedef std::map<Mezzanine::String, UnitTestGroup*> CoreTestGroup;
-
-        /// @brief Print all the groups that exist in a given CoreTestGroup
-        /// @param TestGroups The group whose constents names with be printed
-        /// @return ExitSuccess on success.
-        int PrintList(CoreTestGroup &TestGroups);
 
         /// @brief Trim the whitespace from a line of text and try to interpret the remains as TestResults and a
         /// testname.
         /// @param Line A line of Test that starts with whitespace, then a TestResult String, then has a whitesapce
         /// delimiter and a ends with the name of test.
         /// @return A parsed TestData.
-        TestData StringToTestData(Mezzanine::String Line);
+        TestData MEZZ_LIB StringToTestData(Mezzanine::String Line);
+
+        /// @brief Test names to to fit on a single line to be read from files, This insures they fit on one line.
+        /// @param RawName A name of test that needs to be made safe for writing to a file.
+        /// @return A String with all backslashes and carriage returns escaped with more backslashes.
+        Mezzanine::String MEZZ_LIB EscapeTestNameString(const Mezzanine::String& RawName);
+
+        /// @brief Test names in files are not suitable for reading directly, this fixes thait.
+        /// @param MungedName A name of test that needs to be made safe for human viewing.
+        /// @return A String with all backslashes and carriage returns put back how they belong.
+        Mezzanine::String MEZZ_LIB UnescapeTestNameString(const Mezzanine::String& MungedName);
+
+        /// @brief Send a TestData down a stream.
+        /// @param Stream the stream to write to.
+        /// @param ToStream The TestData to Write.
+        /// @return the stream after modification.
+        std::ostream& MEZZ_LIB operator<< (std::ostream& Stream, const TestData& ToStream);
+
     }// Testing
 }// Mezzanine
 

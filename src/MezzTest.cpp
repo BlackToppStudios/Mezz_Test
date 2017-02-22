@@ -43,10 +43,17 @@
 
 #include "DataTypes.h"
 
-#include <cstdlib> // For system
-#include <fstream>
-#include <vector>
-#include <stdexcept>
+#include <cstdlib>
+#include <iostream>
+#include <iomanip>
+#include <thread>
+#include <mutex>
+
+namespace
+{
+    /// @brief Create a type for delegating work to something dynamic based on a string based lookup.
+    typedef std::map<Mezzanine::String, std::function<void()>> CallingTableType;
+}
 
 /// @file
 /// @brief This file is the entry point for the unit test framework.
@@ -57,360 +64,263 @@
 /// does so through the UnitTestGroup class via polymorphism.
 namespace Mezzanine
 {
-    namespace
-    {
-        /// @internal
-        /// @brief The current process depth as interpretted by Main
-        Testing::ProcessDepth Depth;
-
-        SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
-        SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
-            /// @internal
-            /// @brief This will store the name of the command that launched this executable at run time
-            Mezzanine::String CommandName;
-
-            /// @internal
-            /// @brief A string intended for use by any subsubprocess test
-            Mezzanine::String SubSubProcessArgument;
-        RESTORE_WARNING_STATE
-    }
-
     namespace Testing
     {
-        ProcessDepth GetCurrentProcessDepth()
-            { return Depth; }
-
-        Mezzanine::String GetSubSubProcessArgument()
-            { return SubSubProcessArgument; }
-
-        void WriteTempFile(const Testing::UnitTestGroup &TestsToWrite)
+        ParsedCommandLineArgs DealWithdCommandLineArgs(int argc, char** argv, const CoreTestGroup& TestInstances)
         {
-            std::ofstream File(TempFile.c_str());
-            File << TestsToWrite.GetAsXML();
-            File.close();
-        }
-
-        UnitTestGroup GetResultsFromTempFile()
-        {
-            UnitTestGroup Results;
-
-            pugi::xml_document Doc;
-
-            std::ifstream InputFile(TempFile.c_str());
-            pugi::xml_parse_result LoadResults = Doc.load(InputFile);
-
-            if(LoadResults)
-            {
-                Results.AddTestsFromXML(Doc.first_child());
-            }else{
-                std::stringstream FailStream;
-                FailStream << "Failure loading tempfile from SubProcess: "
-                           << LoadResults.description() << std::endl
-                           << "At " << LoadResults.offset << " bytes into the file.";
-                throw std::runtime_error(FailStream.str());
-            }
-
-            return Results;
-        }
-
-        void ClearTempFile()
-        {
-            std::ofstream FileToClear;
-            FileToClear.open(TempFile.c_str(),std::ios_base::out|std::ios_base::trunc); // Clear the work file.
-            FileToClear.close();
-        }
-
-        void DeleteTempFile()
-            { std::remove(TempFile.c_str()); }
-
-        SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this is the only translation unit.
-        SUPPRESS_CLANG_WARNING("-Wpadded") // Really don't care about test group padding, it doesn't affect anything.
-        /// @internal
-        /// @brief This aggregates the results of all the other test groups.
-        class AllUnitTestGroups : public UnitTestGroup
-        {
-            private:
-                /// @internal
-                /// @brief So no one uses it
-                void operator=(AllUnitTestGroups&)
-                    {}
-
-                /// @internal
-                /// @brief Should all tests be run.
-                bool RunAll;
-
-            public:
-
-                /// @internal
-                /// @brief This indicates we should run automatic tests rather than than launching a subprocess for that
-                virtual void ShouldRunAutomaticTests()
-                {
-                    RunAll = false;
-                    UnitTestGroup::ShouldRunAutomaticTests();
-                }
-
-                /// @internal
-                /// @brief This indicates we should run interactive tests rather than than launching a subprocess.
-                virtual void ShouldRunInteractiveTests()
-                {
-                    RunAll = false;
-                    UnitTestGroup::ShouldRunInteractiveTests();
-                }
-
-                /// @internal
-                /// @brief Tells this whether or not it should be used to run any tests that child tests might want to
-                /// spawn in a subprocess.
-                virtual void ShouldRunSubProcessTests()
-                {
-                    RunAll = false;
-                    UnitTestGroup::ShouldRunSubProcessTests();
-                }
-
-                /// @internal
-                /// @brief Used to signal
-                virtual void ShouldRunAllTests()
-                    { RunAll = true; }
-                /// @internal
-                /// @brief Used to signal that none or only a subset of tests should run
-                virtual void DontRunAllTests()
-                    { RunAll = false; }
-
-                /// @internal
-                /// @brief A collection of all the test groups
-                CoreTestGroup& TestGroups;
-
-                /// @internal
-                /// @brief Constructor
-                /// @param MainTestGroups The collection of tests that could be run.
-                AllUnitTestGroups(CoreTestGroup& MainTestGroups)
-                    : RunAll(true),
-                      TestGroups(MainTestGroups)
-                {}
-
-                /// @internal
-                /// @brief When determining what tests to run the name are aggregated here
-                std::vector<Mezzanine::String> TestGroupsToRun;           //List of tests to run
-
-            private:
-                /// @internal
-                /// @brief This is used when the passed flags at the command prompt or when a master process is
-                /// executing a single tests.
-                void ExecuteSubTest()
-                {
-                    for(std::vector<Mezzanine::String>::iterator CurrentTestName=TestGroupsToRun.begin();
-                        CurrentTestName!=TestGroupsToRun.end();
-                        ++CurrentTestName) // Actually run the tests
-                    {
-                        if(DoInteractiveTest)
-                            { TestGroups[*CurrentTestName]->ShouldRunInteractiveTests(); }
-                        if(DoAutomaticTest)
-                            { TestGroups[*CurrentTestName]->ShouldRunAutomaticTests(); }
-                        TestGroups[*CurrentTestName]->RunTests();
-                        (*this) += *(TestGroups[*CurrentTestName]);
-                    }
-                }
-
-                /// @internal
-                /// @brief this is used when there are test to execute and we need to loop over them and run each in a
-                /// child process.
-                void IterateSubtests()
-                {
-                    setvbuf(stdout, NULL, _IONBF, 0);
-                    for(std::vector<Mezzanine::String>::iterator CurrentTestName=TestGroupsToRun.begin();
-                        CurrentTestName!=TestGroupsToRun.end();
-                        ++CurrentTestName)
-                    {
-                        ClearTempFile();
-                        String SubprocessInvocation(CommandName + " " + *CurrentTestName + " " + MemSpaceArg  +
-                                                    Mezzanine::String(DoAutomaticTest?" automatic":"") +
-                                                    Mezzanine::String(DoInteractiveTest?" interactive":""));
-                        if(system(SubprocessInvocation.c_str()))   // Run a single unit test as another process
-                        {
-                            // Using printf because cout could be redirected here.
-                            printf("%s", (SubprocessInvocation+String(" - Failure\n")).c_str() );
-                            this->AddTestResult(String("Process::" + *CurrentTestName), Testing::TestResult::Failed);
-                        }else {
-                            // Using printf because cout could be redirected here.
-                            printf("%s", (SubprocessInvocation+String(" - Success\n")).c_str() );
-                            this->AddTestResult(String("Process::" + *CurrentTestName), Testing::TestResult::Success);
-                        }
-
-                        try
-                        {
-                            (*this) += GetResultsFromTempFile();
-                        } catch (std::exception& e) {
-                            std::cerr << e.what() << std::endl;
-                        }
-
-                    }
-                    DeleteTempFile();
-                }
-            public:
-
-                /// @internal
-                /// @brief Determine which tests need to be run and run them
-                virtual void RunTests()
-                {
-                    if (DoAutomaticTest==DoInteractiveTest && DoInteractiveTest==false)
-                        { DoAutomaticTest=true; } // enforce running automatic tests if no type of test is specified
-                    if(RunAll)
-                    {
-                        // if Runall is set it is presumed that no tests have been added to list of tests to run yet.
-                        for(std::map<String,UnitTestGroup*>::iterator Iter=TestGroups.begin();
-                            Iter!=TestGroups.end();
-                            ++Iter)
-                            { TestGroupsToRun.push_back(Iter->first); }
-                    }
-
-                    if(MainProcess == GetCurrentProcessDepth())
-                    {
-                        IterateSubtests();
-                    }else{
-                        ExecuteSubTest();
-                    }
-                } // \function
-
-                /// @internal
-                /// @brief Display the results either to the console or to the temp file for the main process to pick
-                /// up later.
-                /// @param Output Where to send the output, this only works for the main process. Defaults to std::cout.
-                /// @param Error A stream to send all errors to, defailts to std::cerr
-                /// @param Summary Passed to the UnitTests UnitTestGroup::DisplayResults if run from the main process.
-                /// @param FullOutput Passed to the UnitTests UnitTestGroup::DisplayResults if run from the main
-                /// process.
-                /// @param HeaderOutput Passed to the UnitTests UnitTestGroup::DisplayResults if run from the main
-                /// process.
-                virtual void DisplayResults(std::ostream& Output=std::cout,
-                                            std::ostream& Error=std::cerr,
-                                            bool Summary = true,
-                                            bool FullOutput = true,
-                                            bool HeaderOutput = true)
-                {
-                    // Running a test in a seperate process, so we need to control the output for communcation purposes.
-                    if(DoSubProcessTest)
-                    {
-                        WriteTempFile(*this);
-                        UnitTestGroup::DisplayResults(Output, Error, Summary, FullOutput, HeaderOutput);
-                    }else{
-                        UnitTestGroup::DisplayResults(Output, Error, Summary, FullOutput, HeaderOutput);
-                    }
-                }
-        };
-        RESTORE_WARNING_STATE
-
-        int MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances)
-        {
-            Depth = MainProcess;
-
-            bool WriteFile = true;
-
-            // If this is not being run from a shell somehow, then using system() to run this task in a new process is
-            // not really possible.
-            if( !system( NULL ) )
-            {
-                std::cerr << "system() call not supported, missing command processor." << std::endl;
-                return EXIT_FAILURE;
-            }
-
-            // Display everything, or just a Summary or neither? Should this process do the work, or should we spawn a
-            // new process.
-            bool FullDisplay = true, SummaryDisplay = true;
+            ParsedCommandLineArgs Results{ {}, "Mezz_Tester", ExitCode::ExitSuccess, false, false, false};
 
             if (argc > 0) //Not really sure how this would happen, but I would rather test and not have silent failures.
-                { CommandName=argv[0]; }
+                { Results.CommandName = argv[0]; }
             else
-                { return Usage("UnitTestGroups", TestInstances); }
+                { Results.ExitWithError = ExitCode::ExitInvalidArguments; }
 
-            AllUnitTestGroups Runner(TestInstances);
+            // Construct a delegation table that can take a huge variety of actions based on strings.
+            CallingTableType CallingTable;
+
+            CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = ExitCode::ExitFailure; };
+
+            auto RunHere = [&Results](){ Results.InSubProcess = true; };
+            CallingTable[RunInThisProcessToken] = RunHere;
+            CallingTable[DebugAToken] = RunHere;
+            CallingTable[DebugBToken] = RunHere;
+
+            CallingTable[AllToken] = [&Results, &TestInstances]()
+            {
+                Results.TestsToRun.clear();
+                for(CoreTestGroup::value_type OneTest : TestInstances)
+                    { Results.TestsToRun.push_back(OneTest.second); }
+            };
+
+            CallingTable[AutomaticToken] = [&Results, &TestInstances]()
+            {
+                for(CoreTestGroup::value_type OneTest : TestInstances)
+                    { if(OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
+            };
+
+            CallingTable[InteractiveToken] = [&Results, &TestInstances]()
+            {
+                for(CoreTestGroup::value_type OneTest : TestInstances)
+                    { if(!OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
+            };
+
+            CallingTable[SkipSummaryToken] = [&Results](){ Results.SkipSummary = true; };
+            CallingTable[SkipFileToken] = [&Results](){ Results.SkipFile = true; };
 
             for (int c=1; c<argc; ++c) // Check Command line for keywords and get all the test names
             {
-                String ThisArg(AllLower(argv[c]));
-                if(ThisArg=="help")
-                    { return Usage(CommandName, TestInstances); }
-                else if(ThisArg==MemSpaceArg)        // Check to see if we do the work now or later
+                if(ExitCode::ExitSuccess != Results.ExitWithError) { break; }
+                const Mezzanine::String ThisArg(AllLower(argv[c]));
+                if(CallingTable.count(ThisArg))
                 {
-                    Runner.ShouldRunSubProcessTests();
-                    Depth = TestSubSubProcess;
-                }
-                else if(ThisArg=="testlist")
-                    { return PrintList(TestInstances); }
-                else if(ThisArg=="interactive")
-                    { Runner.ShouldRunInteractiveTests(); }
-                else if(ThisArg=="automatic")
-                    { Runner.ShouldRunAutomaticTests(); }
-                else if(ThisArg=="all")
-                    { Runner.ShouldRunAllTests(); }
-                else if(ThisArg=="summary")
-                    { FullDisplay = false, SummaryDisplay = true; }
-                else if(ThisArg=="skipfile")
-                    { WriteFile = false; }
-                else  // Wasn't a command so it is either gibberish or a test group or debug test group
-                {
-                    if(ThisArg.size() > SubTestPrefix.size())
+                    CallingTable[ThisArg](); // Handle the storing of the setting this arg requires.
+                } else {
+                    if(TestInstances.count(ThisArg))
                     {
-                        if( ThisArg.substr(0,SubTestPrefix.size()) == SubTestPrefix)
-                        {
-                            Depth = TestSubSubProcess;
-                            ThisArg = ThisArg.substr(SubTestPrefix.size(), ThisArg.size()-SubTestPrefix.size());
-                            CoreTestGroup::iterator SearchResult = TestInstances.find(ThisArg);
-                            if(TestInstances.end()==SearchResult)
-                            {
-                                std::cerr << ThisArg
-                                          << " appears to be a request to debug a sub-process that does not exist."
-                                          << std::endl;
-                                Usage(CommandName, TestInstances);
-                                return ExitInvalidArguments;
-                            }
-                            if(!SearchResult->second->HasSubprocessTest())
-                            {
-                                std::cerr << ThisArg << " appears to be a request to debug a sub-process that does not"
-                                          << " have a sub process." << std::endl;
-                                Usage(CommandName, TestInstances);
-                                return ExitInvalidArguments;
-                            }
-                            SearchResult->second->ShouldRunSubProcessTests();
-                        }
-                    }
-                    CoreTestGroup::iterator Found = TestInstances.find(String(ThisArg.c_str()));
-                    if(Found != TestInstances.end())
-                    {
-                        Runner.DontRunAllTests();
-                        Runner.TestGroupsToRun.push_back(ThisArg.c_str());
-                    }else{
-                        if(GetCurrentProcessDepth() == TestSubSubProcess)
-                        {
-                            SubSubProcessArgument = String(ThisArg);
-                        }else{
-                            std::cerr << ThisArg << " is not a valid testgroup or parameter." << std::endl;
-                            Usage(CommandName, TestInstances);
-                            return ExitInvalidArguments;
-                        }
+                        Results.TestsToRun.push_back(TestInstances.at(ThisArg)); // Handle a specific test
+                    } else {
+                        std::cerr << "Argument '" << ThisArg << "' not valid." << std::endl; // bogus
+                        Results.ExitWithError = ExitCode::ExitInvalidArguments;
                     }
                 }
             }
 
-            Runner.RunTests();
+            if(0==Results.TestsToRun.size()){ CallingTable[AllToken](); }
 
-            if(WriteFile)
-            {
-                String FileName("TestResults.txt");
-                std::ofstream OutFile(FileName.c_str());
-                Runner.DisplayResults(OutFile, OutFile, SummaryDisplay, FullDisplay);
-                OutFile.close();
-            }
-            if(MainProcess == GetCurrentProcessDepth())
-                { Runner.DisplayResults(std::cout, std::cerr, SummaryDisplay, FullDisplay); }
-
-            for(TestData Results : Runner)
-            {
-                if(TestResultToInt(Results.Results) > TestResultToInt(TestResult::Skipped) )
-                    { return ExitFailure; }
-            }
-            return ExitSuccess;
+            if(ExitCode::ExitSuccess != Results.ExitWithError) { Usage(Results.CommandName, TestInstances); }
+            return Results;
         }
 
+        //export MEZZ_PACKAGE_DIR=/home/sqeaky/Code/ && reset && touch CMakeCache.txt && rm CMakeCache.txt && cmake ../Mezz_Test -GNinja -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc && ninja && ./Test_Tester && ninja clean && cmake ../Mezz_Test -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang && ninja && ./Test_Tester
+
+        TestResult RenderTestResultSummary(const UnitTestGroup::TestDataStorageType& AllResults,
+                                           std::ostream& SummaryStream)
+        {
+            std::vector<Mezzanine::Int32> ResultsSummary(TestResultToUnsignedInt(TestResult::Highest)+1, 0);
+            for(const TestData& OneResult : AllResults)
+                { ResultsSummary[TestResultToUnsignedInt(OneResult.Results)]++; }
+
+            SummaryStream << "    --= Summary =--\n";
+            for(Mezzanine::UInt32 ResultInt = 0; IntToTestResult(ResultInt)<=TestResult::Highest; ResultInt++)
+            {
+                SummaryStream << std::right << std::setw(14) << IntToTestResult(ResultInt)
+                              << std::left << " " << ResultsSummary[ResultInt] << '\n';
+            }
+
+            TestResult Worst = GetWorstResults(AllResults);
+            SummaryStream << "\n  Out of " << AllResults.size() << " tests the worst result is: " << Worst << '\n';
+
+            return Worst;
+        }
+
+        void RenderTimingsSummary(const std::vector<NamedDuration>& AllTimings, std::ostream& SummaryStream)
+        {
+            SummaryStream << std::right << std::setw(TimingNameColumnWidth) << "--= Name"
+                          << std::left << ": Duration (ns) --- Human Readable =--\n";
+            for(const NamedDuration& OneTiming: AllTimings)
+            {
+                SummaryStream << std::right << std::setw(TimingNameColumnWidth) << OneTiming.Name << ": "
+                              << std::left << std::setw(TimingNsColumnWidth) << OneTiming.Duration.count()
+                              << PrettyDurationString(OneTiming.Duration) << '\n';
+            }
+        }
+
+        void RunSubProcessTest(const ParsedCommandLineArgs& Options,
+                               UnitTestGroup& OneTestGroup)
+        {
+// check if we are in a subprocess and run the test.
+// capture and parse the stdout if we are not in the subprocess.
+            std::cout << Options.CommandName << OneTestGroup.Name(); // temp code
+        }
+
+        void RunParallelThreads(const ParsedCommandLineArgs& Options,
+                                UnitTestGroup::TestDataStorageType& AllResults,
+                                std::vector<NamedDuration>& TestTimings)
+        {
+            std::mutex ResultsMutex;
+            std::vector<std::thread> TestThreads;
+
+            for(UnitTestGroup* OneTestGroup : Options.TestsToRun)
+            {
+                UnitTestGroup& TestGroupForThread = *(OneTestGroup);
+
+                // Skip the ones that cannot be run here. Run only the tests that love massive parrellelism.
+                if(!TestGroupForThread.IsMultiProcessSafe()) { continue; }
+                TestThreads.emplace_back(
+                    [&]()
+                    {
+                        // Multithreaded part
+                        TestTimer SingleThreadTimer;
+                        if(TestGroupForThread.IsMultiThreadSafe())
+                        {
+                            TestGroupForThread.operator()();
+                        } else {
+                            std::cout << ("Subprocess Test not run " + TestGroupForThread.Name() + "\n");
+                            RunCommand(Options.CommandName + TestGroupForThread.Name(),
+                                       TestGroupForThread.Name() + "_SubProcess.log");
+                        }
+
+                        // Synchronize with single threaded part.
+                        std::lock_guard<std::mutex> Lock(ResultsMutex);
+                        AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
+                        std::cout << TestGroupForThread.GetTestLog(); // Publish the Thread Specific TestLogs.
+                        TestTimings.emplace_back
+                            (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
+                    }
+                );
+            }
+            for(std::thread& OneTestThread : TestThreads) { OneTestThread.join(); }
+        }
+
+        void RunSerializedTests(const ParsedCommandLineArgs& Options,
+                                UnitTestGroup::TestDataStorageType& AllResults,
+                                std::vector<NamedDuration>& TestTimings)
+        {
+            for(UnitTestGroup* OneTestGroup : Options.TestsToRun)
+            {
+                UnitTestGroup& TestGroupForThread = *(OneTestGroup);
+
+                // skip the ones that cannot be run here because they can't stand parrellelism.
+                if(TestGroupForThread.IsMultiProcessSafe()) { continue; }
+
+
+                TestTimer SingleThreadTimer;
+                if(TestGroupForThread.IsMultiThreadSafe())
+                {
+                    TestGroupForThread.operator()();
+                } else {
+                    std::cout << ("Subprocess Test not run " + TestGroupForThread.Name() + "\n");
+                    RunCommand(Options.CommandName + TestGroupForThread.Name(),
+                               TestGroupForThread.Name() + "_SubProcess.log");
+                }
+
+                // Synchronize with single threaded part.
+                AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
+                std::cout << TestGroupForThread.GetTestLog(); // Publish the Thread Specific TestLogs.
+                TestTimings.emplace_back
+                    (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
+
+            }
+        }
+
+        UnitTestGroup::TestDataStorageType RunTests(const ParsedCommandLineArgs& Options,
+                                                    std::vector<NamedDuration>& TestTimings)
+        {
+            UnitTestGroup::TestDataStorageType AllResults;
+
+            RunParallelThreads(Options, AllResults, TestTimings);
+            RunSerializedTests(Options, AllResults, TestTimings);
+
+//                if(TestInstance.RequiresSubProcess())
+//                {
+//                    //
+//                } else {
+
+//                }
+
+
+
+
+            return AllResults;
+        }
+
+        ExitCode MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances)
+        {
+            // Start by timing everything, because somehow that is important.
+            TestTimer TotalTimer;
+
+            // If a shell is not supported, then using system() to run this task in a new process won't work.
+            if( !system(nullptr) )
+            {
+                std::cerr << "system() call not supported, missing command processor." << std::endl;
+                return ExitCode::ExitFailure;
+            }
+
+            // Handle the command line arguments.
+            ParsedCommandLineArgs Options = DealWithdCommandLineArgs(argc, argv, TestInstances);
+            if(ExitCode::ExitSuccess != Options.ExitWithError)
+                { return Options.ExitWithError; }
+
+            // Reserve a fairly arbitrary amount of space for storing the timings of the work to be done, make sure it
+            // is a power of two for maximum legitimacy.
+            std::vector<NamedDuration> VariousTimings;
+            VariousTimings.reserve(32);
+            VariousTimings.push_back(TotalTimer.GetNameDuration("Initial Setup"));
+
+            // Run the tests that need to be run.
+            TestTimer TestExecutionTimer;
+            UnitTestGroup::TestDataStorageType AllResults = RunTests(Options, VariousTimings);
+            VariousTimings.emplace_back(TestExecutionTimer.GetNameDuration("Test Execution Time"));
+
+            TestResult Worst;
+            if(!Options.SkipSummary)
+            {
+                // Handle formatting test results.
+                TestTimer SummaryTimer;
+                std::stringstream SummaryStream;
+                Worst = RenderTestResultSummary(AllResults, SummaryStream);
+                VariousTimings.push_back(SummaryTimer.GetNameDuration("Summary Reporting Time"));
+
+                // Handle Formatting Times.
+                TestTimer TimingsTimer;
+                std::stringstream TimingsStream;
+                RenderTimingsSummary(VariousTimings, TimingsStream);
+                NamedDuration TimeTime = TimingsTimer.GetNameDuration(" + Time Spent Reporting Time");
+
+                // Actually display it all.
+                NamedDuration TotalTime = TotalTimer.GetNameDuration(" ≈ Total Run Time");
+                std::cout << "\n\n" << TimingsStream.str() << TimeTime << "\n "
+                          << Mezzanine::String(78, '_') << "\n  "
+                          << TotalTime << "\n\n"
+                          << SummaryStream.str() << std::endl;
+            } else {
+                Worst = GetWorstResults(AllResults);
+            }
+
+            // Return Strongly typed success or error code, and let the autogenerated main deal with it.
+            if(TestResult::Success == Worst)
+                { return ExitCode::ExitSuccess; }
+            return ExitCode::ExitFailure;
+        }
     }// Testing
 }// Mezzanine

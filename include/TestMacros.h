@@ -37,8 +37,8 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_TestDataTools_h
-#define Mezz_Test_TestDataTools_h
+#ifndef Mezz_Test_TestMacros_h
+#define Mezz_Test_TestMacros_h
 
 /// @file
 /// @brief TestData, TestDataStorage and UnitTestGroup class definitions.
@@ -52,6 +52,90 @@ namespace Mezzanine
 {
     namespace Testing
     {
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Helper Macros
+
+        /// @def Q
+        /// @brief Used in the implementation of appending quotes.
+        #define Q(x) #x
+
+        /// @def Q
+        /// @brief Call this to wrap a preprocessor token in quotes.
+        /// @details Used with written permission from Stack overflow,
+        /// http://stackoverflow.com/questions/6671698/adding-quotes-to-argument-in-c-preprocessor
+        #define QUOTE(x) Q(x)
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Test Macros
+
+        /// @def DEFAULT_TEST_GROUP
+        /// @brief The easiest way to declare a test group. This keeps whatever policy settings are in the default
+        /// policy settings in the class Mezzanine::Testing::UnitTestGroup
+        #ifndef DEFAULT_TEST_GROUP
+            #define DEFAULT_TEST_GROUP(FileName, TestName)                                                             \
+                class MEZZ_LIB FileName : public Mezzanine::Testing::UnitTestGroup                                     \
+                {                                                                                                      \
+                    public:                                                                                            \
+                        virtual ~FileName() = default;                                                                 \
+                        virtual void operator ()() override;                                                           \
+                        virtual Mezzanine::String Name() const override                                                \
+                            { return QUOTE(TestName); }                                                                \
+                };                                                                                                     \
+                void FileName ::operator ()()
+        #endif
+
+        /// @def AUTOMATIC_TEST_GROUP
+        /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::UnitTestGroup
+        #ifndef AUTOMATIC_TEST_GROUP
+            #define AUTOMATIC_TEST_GROUP(FileName, TestName)                                                           \
+                class MEZZ_LIB FileName : public Mezzanine::Testing::AutomaticTestGroup                                \
+                {                                                                                                      \
+                    public:                                                                                            \
+                        virtual ~FileName() = default;                                                                 \
+                        virtual void operator ()() override;                                                           \
+                        virtual Mezzanine::String Name() const override                                                \
+                            { return QUOTE(TestName); }                                                                \
+                };                                                                                                     \
+                void FileName ::operator ()()
+        #endif
+
+        /// @def BENCHMARK_TEST_GROUP
+        /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::UnitTestGroup so it will
+        /// not run parralel to any other tests and will get its own process.
+        #ifndef BENCHMARK_TEST_GROUP
+            #define BENCHMARK_TEST_GROUP(FileName, TestName)                                                           \
+                class MEZZ_LIB FileName : public Mezzanine::Testing::BenchmarkTestGroup                                \
+                {                                                                                                      \
+                    public:                                                                                            \
+                        virtual ~FileName() = default;                                                                 \
+                        virtual void operator ()() override;                                                           \
+                        virtual Mezzanine::String Name() const override                                                \
+                            { return QUOTE(TestName); }                                                                \
+                };                                                                                                     \
+                void FileName ::operator ()()
+        #endif
+
+        /// @def SILENT_TEST_GROUP
+        /// @brief Defines a test group that uses policy settings in the class
+        /// Mezzanine::Testing::UnitTestGroup so it will not emit normal test reporting until the summary.
+        #ifndef SILENT_TEST_GROUP
+            #define SILENT_TEST_GROUP(FileName, TestName)                                                           \
+                class MEZZ_LIB FileName : public Mezzanine::Testing::SilentTestGroup                                \
+                {                                                                                                      \
+                    public:                                                                                            \
+                        virtual ~FileName() = default;                                                                 \
+                        virtual void operator ()() override;                                                           \
+                        virtual Mezzanine::String Name() const override                                                \
+                            { return QUOTE(TestName); }                                                                \
+                };                                                                                                     \
+                void FileName ::operator ()()
+        #endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Tests to use in UnitTestGroupo
+
         #ifndef TEST
             /// @def TEST
             /// @brief The easiest way to add a test to the currently running UnitTestGroup.

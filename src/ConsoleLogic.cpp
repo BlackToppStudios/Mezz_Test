@@ -43,7 +43,7 @@
 /// test developers.
 
 #include "ConsoleLogic.h"
-#include "ConsoleStringManipulation.h"
+#include "StringManipulation.h"
 #include "UnitTestGroup.h"
 
 SAVE_WARNING_STATE
@@ -72,11 +72,8 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        int Usage(const String& ThisName, const Mezzanine::Testing::CoreTestGroup& TestGroups)
-        {
-            std::cerr << GetUsageString(ThisName, TestGroups) << std::endl;
-            return ExitInvalidArguments;
-        }
+        void Usage(const String& ThisName, const Mezzanine::Testing::CoreTestGroup& TestGroups)
+            { std::cerr << GetUsageString(ThisName, TestGroups) << std::endl; }
 
         Mezzanine::String GetUsageString(const Mezzanine::String& ThisName,
                                          const Mezzanine::Testing::CoreTestGroup& TestGroups)
@@ -87,9 +84,8 @@ namespace Mezzanine
                     "Interactive: Only interactive tests will be performed on specified test groups.\n"
                     "Automatic:   Only automated tests will be performed on specified test groups.\n"
                     "Summary:     Display a count of failures and successes.\n"
-                    "testlist:    Output a list of all tests, one per line.\n"
-                    "skipfile:    Do not store a copy of the results in TestResults.txt.\n"
-                    "debugtests:  Run tests in the current process. Skips crash protection,\n"
+                    "SkipFile:    Do not store a copy of the results in TestResults.txt.\n"
+                    "DebugTests:  Run tests in the current process. Skips crash protection,\n"
                     "             but eases test debugging.\n"
                     "Help:        Display this message.\n\n"
                     "If only test group names are entered, then all tests in those groups are run.\n"
@@ -146,7 +142,7 @@ namespace Mezzanine
             Assembler << '\n';
             return Assembler.str();
         }
-
+/*
         TestResult GetTestAnswerFromStdin(Mezzanine::String Question)
         {
             Mezzanine::String Input;
@@ -171,7 +167,7 @@ namespace Mezzanine
             }
             return Char8ToTestResults(Answer);
         }
-
+*/
         TestResult Char8ToTestResults(Mezzanine::Char8 Answer)
         {
             switch(static_cast<Mezzanine::Char8>(tolower(Answer)))

@@ -37,20 +37,48 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
+#ifndef Mezz_Test_TimedTests_h
+#define Mezz_Test_TimedTests_h
 
 /// @file
-/// @brief The implementation of stuff that must be run in the context of a TestData, which isn't much since its a
-/// bunch of macros.
+/// @brief Header for unit tests for the testing framework, but only the time sensitive parts
 
-#include "TestDataTools.h"
+#include "MezzTest.h"
 
-using namespace Mezzanine;
+#include <stdexcept>
+#include <thread>
 
-namespace Mezzanine
+
+/// @brief TestTests to verify that Warnings works correctly.
+/// @details This class is not called directly by the Unit Test framework and is just used by
+SILENT_TEST_GROUP(WarningTimedTestTests, WarningTimedTest)
 {
-    namespace Testing
-    {
+    // Here are some examples of test that should warn.
+    TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{});
+    TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
+               []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
+}
 
-    } // Testing
-} // Mezzanine
+/// @brief This is the actual Test class. This tests our Test Macros that are time sensitive.
+BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
+{
+    // Positive tests This should serve as examples for how to use this and get tests that passed.
+    #ifdef MEZZ_Windows
+        TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(200), std::chrono::milliseconds(60),
+               []{ std::this_thread::sleep_for( std::chrono::milliseconds(200) ); });
+    #else
+        TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(5), std::chrono::milliseconds(2),
+               []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
+    #endif
 
+    TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ });
+
+    // Warning Timed Tests
+    class WarningTimedTestTests Warnifier;
+    Warnifier();
+    for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
+        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
+
+}
+
+#endif

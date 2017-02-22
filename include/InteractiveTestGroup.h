@@ -37,50 +37,25 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
+#ifndef Mezz_Test_InteractiveTestGroup_h
+#define Mezz_Test_InteractiveTestGroup_h
 
 /// @file
-/// @brief The implementation of the string manipulation functions the unit tests use
+/// @brief The declaration of the a group of tests that need human discretion and judgement.
 
-#include "TestEnumerations.h"
-#include "ConsoleStringManipulation.h"
-
-#include <locale>
-
-using namespace Mezzanine;
+#include "UnitTestGroup.h"
 
 namespace Mezzanine
 {
     namespace Testing
     {
-        String rtrim(const String &t)
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        /// @brief A single group of tests that all run entirely Interactively.
+        class MEZZ_LIB InteractiveTestGroup : public UnitTestGroup
         {
-            String str = t;
-            size_t found;
-            found = str.find_last_not_of(" \n\r\t");
-            if (found != String::npos)
-                { str.erase(found+1); }
-            else
-                { str.clear(); }            // str is all whitespace
 
-            return str;
-        }
-
-        // Used for padding spaces, after a piece of leader text, such that it always ends at teh expected colum
-        String MakePadding(String Leader, String::size_type Column)
-        {
-            String Spaces(" ");
-            for(String::size_type c=Leader.length(); c<Column;++c)
-                { Spaces+=" "; }
-            return Spaces;
-        }
-
-        String AllLower(const String& StringToConvert)
-        {
-            String Results;
-            Results.reserve(StringToConvert.size());
-            for(const char& Letter : StringToConvert)
-                { Results.push_back( static_cast<char>(tolower(Letter)) ); }
-            return Results;
-        }
+        };
     }// Testing
 }// Mezzanine
+
+#endif

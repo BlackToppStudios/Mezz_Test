@@ -51,7 +51,7 @@ namespace Mezzanine
     namespace Testing
     {
         /// @brief Possible ways to exit the UnitTestGroup Program
-        enum ExitCodes
+        enum class ExitCode
         {
             ExitSuccess             = 0,    ///< Normal exit all tests skipped or better
             ExitInvalidArguments    = 1,    ///< At least some invalid args were passed on the command line
@@ -73,8 +73,10 @@ namespace Mezzanine
                                         /// interaction, The user knows there is a potential issue.
             Failed          = 5,        ///< Known failure
             Unknown         = 6,        ///< Since we don't know what happened this is the worst kind of failure.
-            NotApplicable   = 7         ///< This is not even a kind of failure, This is used to when referencing a
+            NotApplicable   = 7,        ///< This is not even a kind of failure, This is used to when referencing a
                                         /// test, so if this winds up coming out of a test, then something has failed.
+            Highest = TestResult::NotApplicable  ///< Highest will always match the highest value of the class enum,
+                                                 /// to make it easier to inspect.
         };
 
         // These global constructors are certainly safe. These reference nothing external and that is the reason
@@ -103,17 +105,22 @@ namespace Mezzanine
         /// @brief This converts A test result enum value into a String matching the identifier name.
         /// @param Convertable A TestResult inclusively between Success and NotApplicable.
         /// @return  A string like "Success" or "Inconclusive" or similar.
-        Mezzanine::String TestResultToString(TestResult Convertable);
+        Mezzanine::String MEZZ_LIB TestResultToString(TestResult Convertable);
+
+        /// @brief This converts A test result into a String matching the in a fixed width box.
+        /// @param Convertable A TestResult inclusively between Success and NotApplicable.
+        /// @return  A string like "[    Success    ]" or "[    Warning    ]" or similar.
+        Mezzanine::String MEZZ_LIB TestResultToFixedBoxString(TestResult Convertable);
 
         /// @brief Convert a TestResult to a number for other processing.
         /// @param Convertable The valid TestResults to be converted.
         /// @return A signed integer for representing Convertable.
-        Mezzanine::Int32 TestResultToInt(TestResult Convertable);
+        Mezzanine::Int32 MEZZ_LIB TestResultToInt(TestResult Convertable);
 
         /// @brief Convert a TestResult to a number for other processing.
         /// @param Convertable The valid TestResults to be converted.
         /// @return An unsigned integer for representing Convertable.
-        Mezzanine::UInt32 TestResultToUnsignedInt(TestResult Convertable);
+        Mezzanine::UInt32 MEZZ_LIB TestResultToUnsignedInt(TestResult Convertable);
 
         /// @brief Convert a nubmer to a TestResult.
         /// @param Convertable The valid number representing a TestResult.
@@ -126,7 +133,7 @@ namespace Mezzanine
         /// @brief Calls TestResultToString and sends that to the output stream
         /// @param Output The TestResult to emit.
         /// @param Stream The outputstream to send the converted TestResult out.
-        std::ostream& operator<< (std::ostream& Stream, TestResult Output);
+        std::ostream& MEZZ_LIB operator<< (std::ostream& Stream, TestResult Output);
 
         /// @brief Roughly convert a String to a TestResult.
         /// @param Text If this matches a word like "Success", "Skipped", "Cancelled", "Inconclusive", "Failed",
@@ -134,7 +141,7 @@ namespace Mezzanine
         /// @return The @ref TestResult corresponding to the String passed in.
         /// @throw std::invalid_argument If the string passed in does not match a valid TestResult then this will throw
         /// an std::invalid_argument with a message descrinbing why and some data about string parsing.
-        TestResult StringToTestResult(Mezzanine::String Text);
+        TestResult MEZZ_LIB StringToTestResult(Mezzanine::String Text);
 
     }// Testing
 }// Mezzanine

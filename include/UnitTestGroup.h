@@ -47,18 +47,7 @@
 #include "TestData.h"
 #include "TestEnumerations.h"
 
-SAVE_WARNING_STATE
-SUPPRESS_CLANG_WARNING("-Wdeprecated")
-SUPPRESS_CLANG_WARNING("-Wweak-vtables")
-SUPPRESS_CLANG_WARNING("-Wpadded")
-    #include "pugixml.h"
-RESTORE_WARNING_STATE
-
-#include <set>
-#include <map>
-#include <iostream>
-#include <sstream>
-#include <functional>
+#include <vector>
 #include <chrono>
 
 namespace Mezzanine
@@ -66,16 +55,130 @@ namespace Mezzanine
     namespace Testing
     {
 
+
+        //SAVE_WARNING_STATE
+        //SUPPRESS_CLANG_WARNING("-Wpadded")
+        //RESTORE_WARNING_STATE
+
+        // @brief Print all the groups that exist in a given CoreTestGroup
+        // @param TestGroups The group whose constents names with be printed
+        // @return ExitSuccess on success.
+        //int PrintList(CoreTestGroup &TestGroups);
+
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wpadded") // Testing code is not sensitive to care about 1 byte of padding
                                            // If we ever profile then we should disable this.
+        SUPPRESS_CLANG_WARNING("-Wweak-vtables")
 
-        ///////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests, suitable for being all the tests of a small subsystem or single class.
-        class MEZZ_LIB UnitTestGroup : public TestDataStorage
+        class MEZZ_LIB UnitTestGroup
         {
-            friend class OutputCaptureManager;
+            public:
+                /// @brief The type use to store the results of tests, largely used to clarify derived types.
+                typedef std::vector<TestData> TestDataStorageType;
 
+            private:
+                /// @brief The test macros will all store their data here.
+                TestDataStorageType TestDataStorage;
+
+            protected:
+                /// @brief A place for each test to send its logs.
+                /// @detail This should be strictly preferred to cout because this is thread safe.
+                static thread_local std::stringstream TestLog;
+
+            public:
+                /// @brief Default virtual deconstructor to allow for inheritance.
+                virtual ~UnitTestGroup() = default;
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // Test class methods, Every test class must implement these.
+
+                /// @brief Execution operator runs tests in derived classes.
+                virtual void operator()() = 0;
+
+                /// @brief Get the name of the test group for command line args and other uesr interaction.
+                /// @return Any string that uniquely identifies a test.
+                virtual Mezzanine::String Name() const = 0;
+
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // Policy class methods, Test policy classes will implement these. 90% of tests classes ignore these.
+
+                /// @brief Tell Test macros and AddResult whether or not to print immediately when called.
+                /// @return Defaults to true, but can be set to false to prevent printing of intermediary results, that
+                /// might not be useful. For example TestTests sets this to false when testing Test macro failures.
+                virtual Boole EmitIntermediaryTestResults() const;
+
+                /// @brief Some things must be run in a subprocess all on their own. Override this if you need it.
+                /// @return False by default, a test class should override this if it might divide by zero, segfault or
+                /// otherwise take down the test suite as a whole.
+                virtual Boole RequiresSubProcess() const;
+
+                /// @brief Is this safe to run alongside a trillion other tests?
+                /// @details To be MultiThreadSafe a test suite needs to access no singletons, the test suite must
+                /// access no globals, must not be time sensitive, must not create an undue number of threads, must not
+                /// call any function with a static variable or use a class with static variable unless whatever shared
+                /// mutable state somehow has its access synchronized.
+                /// @return Defaults to true, anything tinkering with time or other not thread safe should override this
+                /// to return false.
+                virtual Boole IsMultiThreadSafe() const;
+
+                /// @brief Is it safe to run this test class in parrelel to other tests if done so in a process.
+                /// @details If your test grabs a GPU, Sound card or other hardware context, it is probably not
+                /// multiprocess safe. If you just spawn a bunch of thread or might segfault this should be safe.
+                /// @return defaults to true. All tests that aren't should override this and return false.
+                virtual Boole IsMultiProcessSafe() const;
+
+                /// @brief Decides it the test should run as part of a default invocation of the test suite.
+                /// @return defaults to true. All tests that are interactive or take an inordinate amount of time should
+                /// override this and return false.
+                virtual Boole ShouldRunAutomatically() const;
+
+                //////////////////////////////////////////////////////
+                // MetaPolicy methods, don't override these, they use the policy methods.
+
+                /// @brief Must this test run while nothing else is running?
+                /// @return True if the process is not thread or process safe or
+                /// (!IsMultiThreadSafe() && !IsMultiThreadSafe()).
+                Boole MustBeSerialized() const;
+
+                /// @brief CAn this be run while other tests are running?
+                /// @return True if the process is either thread or process safe or
+                /// (IsMultiThreadSafe() || IsMultiThreadSafe()).
+                Boole CanBeParrale() const;
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // Make all UnitTestGroups look like a container of TestDatas
+
+                /// @brief A mutable iterator type suitable for use
+                typedef TestDataStorageType::iterator iterator;
+                /// @brief A Immutable iterator type suitable for use
+                typedef TestDataStorageType::const_iterator const_iterator;
+
+                /// @return A mutable iterator to the beginning of the TestData.
+                iterator begin();
+                /// @return A Immutable iterator to the beginning of the TestData.
+                const_iterator begin() const;
+                /// @return Be absolutely certian to get an Immutable iterator to the beginning of the TestData.
+                const_iterator cbegin() const;
+
+                /// @return A mutable iterator to the beginning of the TestData.
+                iterator end();
+                /// @return A Immutable iterator to the beginning of the TestData.
+                const_iterator end() const;
+                /// @return Be absolutely certian to get an Immutable iterator to the beginning of the TestData.
+                const_iterator cend() const;
+
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // Other useful stuff.
+
+                /// @return Scan every test and find the worst result among all test data.
+                TestResult GetWorstResults() const;
+
+                Mezzanine::String GetTestLog() const;
+            /*
             protected:
                 /// @brief Some basic variable for tracking simple statistics
                 String::size_type LongestNameLength;
@@ -160,12 +263,12 @@ namespace Mezzanine
                 /// lowercase.
                 /// @note One of two methods that must be implmented on a UnitTestGroup
                 virtual Mezzanine::String Name();
-
+*/
                 /// @brief Its expected that tests will be inserted using this
                 /// @details This will automate tracking of the most and least successful tests
                 /// @param CurrentTest The New test results and name
-                void AddTestResult(TestData CurrentTest);
-
+                void AddTestResult(TestData&& CurrentTest);
+/*
                 /// @brief Add a test results without having to to construct a TestData first
                 /// @details This prepends the name of this UnitTestGroup and "::" to the
                 /// @warning The name of the test can have no spaces in it. An exception will be thrown if found.
@@ -203,8 +306,11 @@ namespace Mezzanine
                                             bool Summary = true,
                                             bool FullOutput = true,
                                             bool HeaderOutput = true);
+*/
 
-            public:
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // Test Macro Functions Backing
+
                 /// @brief Interpret Boolean value as a test result. Also Prepends the name of the current test, as
                 /// returned by Name() + "::", to ease test scoping.
                 /// @warning IfFalse comes first in the argument list, This is because the common test cases have
@@ -249,12 +355,12 @@ namespace Mezzanine
                 {
                     TestResult Result = Test( TestName, (ExpectedResults == ActualResults),
                         IfFalse, IfTrue, FuncName, File, Line);
-                    if(Mezzanine::Testing::TestResult::Success != Result)
+                    if(EmitIntermediaryTestResults() && Mezzanine::Testing::TestResult::Success != Result)
                     {
-                        std::cout << "Test - " << TestName << " failed: "
-                                  << "Expected '" << ExpectedResults << "' "
-                                  << "but actually Recieved '" << ActualResults << "'."
-                                  << std::endl;
+                        TestLog << "Test - " << TestName << " failed: "
+                                << "Expected '" << ExpectedResults << "' "
+                                << "but actually Recieved '" << ActualResults << "'."
+                                << std::endl;
                     }
                  }
 
@@ -290,12 +396,12 @@ namespace Mezzanine
                     Boole Within{ (ExpectedResults-Epsilon*PreciseReal(EpsilonCount)) <= ActualResults &&
                                             (ActualResults <= ExpectedResults+Epsilon*PreciseReal(EpsilonCount)) };
                     TestResult Result = Test( TestName, Within, IfFalse, IfTrue, FuncName, File, Line);
-                    if(Mezzanine::Testing::TestResult::Success != Result)
+                    if(EmitIntermediaryTestResults() && Mezzanine::Testing::TestResult::Success != Result)
                     {
-                        std::cout << "Test - " << TestName << " failed: "
-                                  << "Expected '" << ExpectedResults << "' "
-                                  << "but actually Recieved '" << ActualResults << "'."
-                                  << std::endl;
+                        TestLog << "Test - " << TestName << " failed: "
+                                << "Expected '" << ExpectedResults << "' "
+                                << "but actually Recieved '" << ActualResults << "'."
+                                << std::endl;
                     }
                 }
 
@@ -318,9 +424,15 @@ namespace Mezzanine
                     catch (const ExceptionType&)
                         { Passed = true; }
                     catch (const std::exception& e)
-                        { std::cout << "Caught Unexpected Exception: " << e.what() << std::endl; }
+                    {
+                        if(EmitIntermediaryTestResults())
+                            { TestLog << "Caught Unexpected Exception: " << e.what() << std::endl; }
+                    }
                     catch (...)
-                        { std::cout << "Caught Unexpected Exception not derived from std::expection." << std::endl; }
+                    {
+                        if(EmitIntermediaryTestResults())
+                            { TestLog << "Caught Unexpected Exception not derived of std::expection." << std::endl; }
+                    }
                     Test(TestName, Passed, IfFalse, IfTrue, FuncName, File, Line);
                 }
 
@@ -388,17 +500,26 @@ namespace Mezzanine
                     TestResult Result = Test( TestName,
                                               (ExpectedNeedleType::npos != ActualHaystack.find(ExpectedNeedle)),
                                               IfFalse, IfTrue, FuncName, File, Line);
-                    if(Mezzanine::Testing::TestResult::Success != Result)
+                    if(EmitIntermediaryTestResults() && Mezzanine::Testing::TestResult::Success != Result)
                     {
-                        std::cout << "Test - " << TestName << " failed: "
-                                  << "Expected to find '" << ExpectedNeedle << "' "
-                                  << "but haystack was '" << ActualHaystack << "'."
-                                  << std::endl;
+                        TestLog << "Test - " << TestName << " failed: "
+                                << "Expected to find '" << ExpectedNeedle << "' "
+                                << "but haystack was '" << ActualHaystack << "'."
+                                << std::endl;
                     }
                 }
 
         };
         RESTORE_WARNING_STATE
+
+        /// @brief Sort a container of TestDatas and search it for the worst test results.
+        /// @return Scan every test and find the worst result among all test data.
+        TestResult GetWorstResults(const UnitTestGroup::TestDataStorageType& ToSearch);
+
+        /// @brief A group of testnames and the Actual class that implements those test(s).
+        typedef std::map<Mezzanine::String, UnitTestGroup*> CoreTestGroup;
+        /// @brief The type of things in a CoreTestGroup
+        typedef std::pair<Mezzanine::String, UnitTestGroup*> CoreTestGroupEntry;
 
     }// Testing
 }// Mezzanine

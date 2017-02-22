@@ -56,10 +56,10 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        SAVE_WARNING_STATE
-        SUPPRESS_GCC_WARNING("-Wreturn-type") // Control cannot reach the end of this function, because the
+        //SAVE_WARNING_STATE
+        //SUPPRESS_GCC_WARNING("-Wreturn-type") // Control cannot reach the end of this function, because the
                                               // warning for incomplete case statements will stop compilation.
-        SUPPRESS_VC_WARNING(4715)
+        //SUPPRESS_VC_WARNING(4715)
         Mezzanine::String TestResultToString(TestResult Convertable)
         {
             switch(Convertable)
@@ -81,8 +81,33 @@ namespace Mezzanine
                 case TestResult::NotApplicable:
                     return NotApplicableString;
             }
+            return NotApplicableString;
         }
-        RESTORE_WARNING_STATE
+
+        String TestResultToFixedBoxString(TestResult Convertable)
+        {
+            switch(Convertable)
+            {
+                case TestResult::Success:
+                    return "[    " + SuccessString + "    ]";
+                case TestResult::Warning:
+                    return "[    " + WarningString + "    ]";
+                case TestResult::Skipped:
+                    return "[    " + SkippedString + "    ]";
+                case TestResult::Cancelled:
+                    return "[   " + CancelledString + "   ]";
+                case TestResult::Inconclusive:
+                    return "[ " + InconclusiveString + "  ]";
+                case TestResult::Failed:
+                    return "[    " + FailedString + "     ]";
+                case TestResult::Unknown:
+                    return "[    " + UnknownString + "    ]";
+                case TestResult::NotApplicable:
+                    return "[ " + NotApplicableString + " ]";
+            }
+            return NotApplicableString;
+        }
+        //RESTORE_WARNING_STATE
 
         Mezzanine::Int32 TestResultToInt(TestResult Convertable)
             { return Mezzanine::Int32(Convertable); }

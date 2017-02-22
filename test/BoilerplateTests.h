@@ -42,64 +42,52 @@
 
 /// @file
 /// @brief A Test header suitable for copying as a starting point for tests.
+/// @details This class's name is the filename. All test groups must inherit from Mezzanine::Testing::UnitTestGroup
+/// but can do so by inheriting from one of the "policy implementing" unit test groupo.
+/// @n
+/// Tests in the Mezzanine::Testing::AutomaticTestGroup will run in threads along with most of the other test threads
+/// and
 
 // Add other headers you need here
 #include "MezzTest.h"
 
-SAVE_WARNING_STATE
-SUPPRESS_CLANG_WARNING("-Wweak-vtables") // We really don't care, because this will this will be recompiled each test.
-SUPPRESS_CLANG_WARNING("-Wpadded") // Test classes will likely need to be padded and we don't care.
+// Pick any of the following styles to create your tests
 
+/*
 /// @brief The test suite will find all classes identified as tests in CMake, but they need to look like this.
-/// @details This class's name is the filename + "Tests"
-class BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
+class MEZZ_LIB BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
+//class MEZZ_LIB ConsoleLogicTests : public Mezzanine::Testing::AutomaticTestGroup
+//class MEZZ_LIB WarningTimedTestTests : public Mezzanine::Testing::BenchmarkTestGroup
 {
     public:
         /// @brief Default Constructor
-        BoilerplateTests() = default;
-
-        /// @brief Default Deconstructor
         virtual ~BoilerplateTests() = default;
 
-        // This is used as the name of the test on the command prompt
-        virtual Mezzanine::String Name() override
-            { return "boilerplate"; }
+        /// @brief This is what will be run when executing the test
+        virtual void operator ()() override;
 
-        void RunAutomaticTests() override
-        {
-            // The vast majority of tests will go here.
-
-            // They should use the macros from testdatatools.h to automatically function, filename and line number.
-            //TEST("ExamplePassingTest", true);
-        }
-        bool HasAutomaticTests() const override
-            { return true; }
-
-
-        //void RunSubprocessTest(const Mezzanine::String& Arg) // Add this parameter back in if you need it.
-        void RunSubprocessTest(const Mezzanine::String&) override
-        {
-            // Tests with a high risk of crashing can go here
-
-            // If you ever need to debug stuff in here be sure to pass "debugtests" to test executable
-
-            // To enable this test group have HasSubprocessTest() return true
-        }
-        bool HasSubprocessTest() const override
-            { return false; }
-
-
-        void RunInteractiveTests() override
-        {
-            // Tests that require the mushy and weak flesh of human (Until our machine overlords rise up).
-
-            // To enable this test group have HasInteractiveTests() return true
-        }
-        bool HasInteractiveTests() const override
-            { return false; }
-
-
+        /// @brief This is used as the name of the test on the command prompt,
+        virtual Mezzanine::String Name() const override
+            { return "BoilerPlate"; }
 };
 
-RESTORE_WARNING_STATE
+
+void BoilerplateTests ::operator ()()
+{
+    // They should use the macros from TestMacros.h to automatically function, filename and line number.
+    //TEST("ExamplePassingTest", true);
+}
+
+// */
+
+
+DEFAULT_TEST_GROUP(BoilerplateTests, Boilerplate)
+{
+    // Tests should use the macros from TestMacros.h to automatically function, filename and line number.
+    TEST("ExamplePassingTest", true);
+}
+
+
+
+
 #endif

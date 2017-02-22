@@ -37,61 +37,16 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_TimingTools_h
-#define Mezz_Test_TimingTools_h
 
 /// @file
-/// @brief TestData, TestDataStorage and UnitTestGroup class definitions.
+/// @brief The definition of the a group of tests that need heart and soul. Or at least a warm body and 80 IQ points.
 
-#include "DataTypes.h"
-
-#include <chrono>
-
+#include "InteractiveTestGroup.h"
 
 namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief A simple piece of data to represent the length of a named period of time.
-        struct MEZZ_LIB NamedDuration
-        {
-            /// @brief What was it called?
-            Mezzanine::String Name;
 
-            /// @brief How long did it take
-            std::chrono::nanoseconds Duration;
-        };
-
-        /// @brief An easy way to get the time something took to execute.
-        class MEZZ_LIB TestTimer
-        {
-            /// @brief The time this was constructed.
-            std::chrono::high_resolution_clock::time_point BeginTimer;
-
-            public:
-                /// @brief Simply Creating this starts the timer
-                TestTimer()
-                    : BeginTimer(std::chrono::high_resolution_clock::now())
-                    {}
-
-                /// @brief How long since this started.
-                /// @return An std::chrono::duration in nanoseconds containing the difference between now and when
-                /// timing was started
-                std::chrono::nanoseconds GetLength();
-
-                /// @brief How long since this started and give it a name for added meaning.
-                /// @oaram Name The name of the time period that just elapsed.
-                NamedDuration GetNameDuration(const Mezzanine::String& Name);
-        };
-
-        Mezzanine::String MEZZ_LIB PrettyDurationString(std::chrono::nanoseconds Duration);
-
-        /// @brief Pretty print a NamedDuration.
-        /// @param Stream the stream, likely cout to send it.
-        /// @param TimingToStream A single NameDuration.
-        /// @return The modified stream.
-        std::ostream& MEZZ_LIB operator<<(std::ostream& Stream, const NamedDuration& TimingToStream);
     }// Testing
 }// Mezzanine
-
-#endif

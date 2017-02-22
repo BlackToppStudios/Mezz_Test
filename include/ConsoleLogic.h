@@ -44,8 +44,7 @@
 /// @brief The definition of a few command line tools.
 
 #include "DataTypes.h"
-
-#include "TestData.h"
+#include "UnitTestGroup.h"
 
 namespace Mezzanine
 {
@@ -54,9 +53,8 @@ namespace Mezzanine
         /// @brief Print a message for the user onf the standard output that briefly describes how to use this.
         /// @param ThisName The name of the current executable
         /// @param TestGroups This is searched for the current list of valid test names.
-        /// @return Always returns ExitInvalidArguments
         /// @details This just prints what GetUsageString returns
-        int MEZZ_LIB Usage(const Mezzanine::String& ThisName, const Mezzanine::Testing::CoreTestGroup& TestGroups);
+        void MEZZ_LIB Usage(const Mezzanine::String& ThisName, const Mezzanine::Testing::CoreTestGroup& TestGroups);
 
         /// @param ThisName The name of the current executable
         /// @param TestGroups This is searched for the current list of valid test names.
@@ -70,7 +68,7 @@ namespace Mezzanine
         /// @TestGroups The testgroup to print the names of.
         Mezzanine::String MEZZ_LIB GetPrintableTestList(const Mezzanine::String::size_type TargetWidth,
                                                         const CoreTestGroup& TestGroups);
-
+/*
         /// @brief Asked the user a question on the std output and get a TestResult as an answer.
         /// @param Question The question to ask the user.
         /// Status otherwise they will return Warnings.
@@ -86,7 +84,7 @@ namespace Mezzanine
         /// @brief Execute a command in a process, piping its standard output to a file.
         /// @return The contents of the file as String.
         String MEZZ_LIB GetCommandResults(String Command);
-
+*/
         /// @brief Convert one human readable character to a TestResults by inferring things like 'Y' is "yes" which is
         /// "success", 'F' is 'Fail' is a test "Failure" etc...
         /// @param Answer The answer that presumably a human provided.

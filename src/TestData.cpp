@@ -43,14 +43,6 @@
 
 #include "MezzTest.h"
 
-#include <vector>
-#include <stdexcept>
-#include <sstream>
-#include <cassert>
-
-using namespace Mezzanine;
-using namespace std;
-
 namespace Mezzanine
 {
     namespace Testing
@@ -64,36 +56,8 @@ namespace Mezzanine
             : TestName(Name), FunctionName(FuncName), FileName(File), LineNumber(Line), Results(Result)
         {}
 
-        TestData::TestData(pugi::xml_node Node)
-            : TestName( Node.attribute("TestName").as_string() ),
-              FunctionName( Node.attribute("FunctionName").as_string() ),
-              FileName( Node.attribute("FileName").as_string() ),
-              LineNumber( Node.attribute("LineNumber").as_uint() ),
-              Results( StringToTestResult(Node.attribute ("Results").as_string()) )
-        {}
-
         bool TestData::operator<(const TestData& Rhs) const
             { return this->TestName < Rhs.TestName; }
-
-        String TestData::GetAsXML() const
-        {
-            std::stringstream Snippet;
-            Snippet << "<TestData "
-                    << "TestName=\"" << TestName << "\" "
-                    << "Results=\"" << TestResultToString(Results) << "\" "
-                    << "FunctionName=\"" << FunctionName << "\" "
-                    << "FileName=\"" << FileName << "\" "
-                    << "LineNumber=\"" << LineNumber << "\" "
-                    << "/>";
-            return Snippet.str();
-        }
-
-        int PrintList(CoreTestGroup& TestGroups)
-        {
-            for(CoreTestGroup::iterator Iter=TestGroups.begin(); Iter!=TestGroups.end(); ++Iter)
-                { cout << Iter->first << std::endl; }
-            return ExitSuccess;
-        }
 
         TestData StringToTestData(Mezzanine::String Line)
         {
@@ -103,5 +67,71 @@ namespace Mezzanine
             Results.TestName=rtrim(Line.substr(0,LastSpace));
             return Results;
         }
+
+        String EscapeTestNameString(const Mezzanine::String& RawName)
+        {
+            Mezzanine::String Results;
+            Results.reserve(RawName.size() + RawName.size()/10); // A little extra space in case we need to escape stuff
+            for(const char& OneLetter : RawName)
+            {
+                switch (OneLetter)
+                {
+                    case '\n':
+                        Results += "\\n";
+                        break;
+                    case '\\':
+                        Results += "\\\\";
+                        break;
+                    default:
+                        Results.push_back(OneLetter);
+                }
+            }
+            return Results;
+        }
+
+        String UnescapeTestNameString(const Mezzanine::String& MungedName)
+        {
+            Mezzanine::String Results;
+            Results.reserve(MungedName.size());
+            for(Mezzanine::String::const_iterator IterOneLetter = MungedName.cbegin();
+                MungedName.cend() != IterOneLetter;
+                IterOneLetter++)
+            {
+                if('\\' == *IterOneLetter)
+                {
+                    IterOneLetter++;
+                    switch(*IterOneLetter)
+                    {
+                        case 'n':
+                            Results.push_back('\n');
+                            break;
+                        case '\\':
+                            Results.push_back('\\');
+                            break;
+                        default:
+                            Results.push_back('\\');
+                            Results.push_back(*IterOneLetter);
+                    }
+
+                } else {
+                    Results.push_back(*IterOneLetter);
+                }
+            }
+            return Results;
+        }
+
+        std::ostream& operator<<(std::ostream& Stream, const TestData& ToStream)
+        {
+            Stream << ' ' << TestResultToFixedBoxString(ToStream.Results) << "  "
+                   <<  EscapeTestNameString(ToStream.TestName) << '\n';
+            if(TestResult::Success != ToStream.Results)
+            {
+                Stream << "                      in function '" << ToStream.FunctionName
+                       << "' at " << ToStream.FileName
+                       << ":" << ToStream.LineNumber << ".\n";
+            }
+            return Stream;
+        }
+
     }// Testing
 }// Mezzanine

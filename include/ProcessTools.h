@@ -37,60 +37,35 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_TimingTools_h
-#define Mezz_Test_TimingTools_h
+#ifndef Mezz_Test_ProcessTools_h
+#define Mezz_Test_ProcessTools_h
 
 /// @file
-/// @brief TestData, TestDataStorage and UnitTestGroup class definitions.
+/// @brief Tools for running commands and getting their output.
 
 #include "DataTypes.h"
-
-#include <chrono>
-
 
 namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief A simple piece of data to represent the length of a named period of time.
-        struct MEZZ_LIB NamedDuration
-        {
-            /// @brief What was it called?
-            Mezzanine::String Name;
+        /// @brief Run a process and capture its console output.
+        /// @param Command The command to attempt to crun and capture its output.
+        /// @param TempFileName The file to put all the console output of the command to be transferred back here.
+        /// @return Everything the subprocess emits to the console (stdout or stderr) as a single concatenated string.
+        /// @details This launches a process, redirects its output to a file and reads that file to return that output.
+        /// This is a simple wrapper around std::system, concatenating output redirection to the command. Because of
+        /// this "|", "<" and ">" are not allowed in commands passed to this.
+        Mezzanine::String MEZZ_LIB RunCommand(const Mezzanine::String& Command,
+                                              const Mezzanine::String& TempFileName);
 
-            /// @brief How long did it take
-            std::chrono::nanoseconds Duration;
-        };
 
-        /// @brief An easy way to get the time something took to execute.
-        class MEZZ_LIB TestTimer
-        {
-            /// @brief The time this was constructed.
-            std::chrono::high_resolution_clock::time_point BeginTimer;
+        /// @brief Get all the text in a file.
+        /// @param Filename The file to read.
+        /// @return A string with the contents.
+        Mezzanine::String GetFileContents(const Mezzanine::String& Filename);
 
-            public:
-                /// @brief Simply Creating this starts the timer
-                TestTimer()
-                    : BeginTimer(std::chrono::high_resolution_clock::now())
-                    {}
 
-                /// @brief How long since this started.
-                /// @return An std::chrono::duration in nanoseconds containing the difference between now and when
-                /// timing was started
-                std::chrono::nanoseconds GetLength();
-
-                /// @brief How long since this started and give it a name for added meaning.
-                /// @oaram Name The name of the time period that just elapsed.
-                NamedDuration GetNameDuration(const Mezzanine::String& Name);
-        };
-
-        Mezzanine::String MEZZ_LIB PrettyDurationString(std::chrono::nanoseconds Duration);
-
-        /// @brief Pretty print a NamedDuration.
-        /// @param Stream the stream, likely cout to send it.
-        /// @param TimingToStream A single NameDuration.
-        /// @return The modified stream.
-        std::ostream& MEZZ_LIB operator<<(std::ostream& Stream, const NamedDuration& TimingToStream);
     }// Testing
 }// Mezzanine
 

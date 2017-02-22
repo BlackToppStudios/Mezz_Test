@@ -46,17 +46,22 @@
 #include "TimingTools.h"
 
 #include <vector>
-#include <stdexcept>
-#include <sstream>
-#include <cassert>
+#include <iostream>
 
-using namespace Mezzanine;
-using namespace std;
+using std::chrono::microseconds;
 
 namespace Mezzanine
 {
     namespace Testing
-    {
+    {/*
+        int PrintList(CoreTestGroup& TestGroups)
+        {
+            for(CoreTestGroup::iterator Iter=TestGroups.begin(); Iter!=TestGroups.end(); ++Iter)
+                { cout << Iter->first << std::endl; }
+            return ExitSuccess;
+        }
+
+
         UnitTestGroup::UnitTestGroup()
             :   TestDataStorage(),
                 LongestNameLength(0),
@@ -124,68 +129,86 @@ namespace Mezzanine
             std::cout << std::endl << "]]></InteractiveTestOutput>" << std::endl;
             std::cerr << std::endl << "]]></InteractiveTestError>" << std::endl;
         }
+*/
 
-        void UnitTestGroup::RunAutomaticTests()
-            {}
-        bool UnitTestGroup::HasAutomaticTests() const
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Static and Thread local variables for the UnitTestGroup.
+
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
+        SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
+        thread_local std::stringstream UnitTestGroup::TestLog;
+        RESTORE_WARNING_STATE
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Policy class methods, Test policy classes will implement these. 90% of tests classes ignore these.
+
+        Boole UnitTestGroup::EmitIntermediaryTestResults() const
+            { return true; }
+
+        Boole UnitTestGroup::RequiresSubProcess() const
             { return false; }
-        void UnitTestGroup::ShouldRunAutomaticTests()
-            { DoAutomaticTest = true; }
 
-        void UnitTestGroup::RunInteractiveTests()
-            {}
-        bool UnitTestGroup::HasInteractiveTests() const
-            { return false; }
-        void UnitTestGroup::ShouldRunInteractiveTests()
-            { DoInteractiveTest = true; }
+        Boole UnitTestGroup::IsMultiThreadSafe() const
+            { return true; }
 
-        void UnitTestGroup::RunSubprocessTest(const String&)
-            {}
-        bool UnitTestGroup::HasSubprocessTest() const
-            { return false; }
-        void UnitTestGroup::ShouldRunSubProcessTests()
-            { DoSubProcessTest = true; }
+        Boole UnitTestGroup::IsMultiProcessSafe() const
+            { return true; }
 
-        Mezzanine::String UnitTestGroup::Name()
-            { return ""; }
+        Boole UnitTestGroup::ShouldRunAutomatically() const
+            { return true; }
 
-        void UnitTestGroup::AddTestResult(TestData CurrentTest)
+        //////////////////////////////////////////////////////
+        // MetaPolicy methods, don't override these, they use the policy methods.
+
+        Boole UnitTestGroup::MustBeSerialized() const
+            { return !IsMultiThreadSafe() && !IsMultiThreadSafe(); }
+
+        Boole UnitTestGroup::CanBeParrale() const
+            { return IsMultiThreadSafe() || IsMultiThreadSafe(); }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Make all UnitTestGroups look like a container of TestDatas
+        UnitTestGroup::iterator UnitTestGroup::begin()
+            { return TestDataStorage.begin(); }
+
+        UnitTestGroup::const_iterator UnitTestGroup::begin() const
+            { return cbegin(); }
+
+        UnitTestGroup::const_iterator UnitTestGroup::cbegin() const
+            { return TestDataStorage.cbegin(); }
+
+        UnitTestGroup::iterator UnitTestGroup::end()
+            { return TestDataStorage.end(); }
+
+        UnitTestGroup::const_iterator UnitTestGroup::end() const
+            { return cend(); }
+
+        UnitTestGroup::const_iterator UnitTestGroup::cend() const
+            { return TestDataStorage.cend(); }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Other useful stuff.
+
+        TestResult UnitTestGroup::GetWorstResults() const
+            { return Mezzanine::Testing::GetWorstResults(TestDataStorage); }
+
+        String UnitTestGroup::GetTestLog() const
+            { return TestLog.str(); }
+
+        void UnitTestGroup::AddTestResult(TestData&& CurrentTest)
         {
-            if(CurrentTest.TestName.npos != CurrentTest.TestName.find(" "))
+            CurrentTest.TestName = Name() + "::" + CurrentTest.TestName;
+            std::sort(TestDataStorage.begin(), TestDataStorage.end());
+            if(std::binary_search(TestDataStorage.begin(), TestDataStorage.end(), CurrentTest))
             {
-                throw std::invalid_argument("Invalid Test Name, contains one or more space character ( ), TestName: \""
-                                            + CurrentTest.TestName + "\"");
-            }
-            if(CurrentTest.TestName.npos != CurrentTest.TestName.find("\""))
-            {
-                throw std::invalid_argument("Invalid Test Name, contains one or more double quote (\") character(s), "
-                                            "TestName: \"" + CurrentTest.TestName + "\"");
-            }
-
-            if(this->Name().length())
-            {
-                if(this->Name().npos != this->Name().find(" "))
-                {
-                    throw std::invalid_argument("Invalid UnitTestGroup Name, contains one or more space character ( ), "
-                                                "name: \"" + this->Name() + "\""); }
-                if(this->Name().npos != this->Name().find("\""))
-                {
-                    throw std::invalid_argument("Invalid UnitTestGroup Name, contains one or more double quote (\"), "
-                                                "name: \"" + this->Name() + "\""); }
-                CurrentTest.TestName = this->Name() + "::" + CurrentTest.TestName;
-            }
-
-            TestDataStorage::iterator PreExisting = this->find(CurrentTest.TestName);
-            if(this->end()!=PreExisting)
-            {
-                throw std::runtime_error("Two tests have the exact same name: " +PreExisting->TestName);
+                throw std::runtime_error("Multiple tests have the same name, but cannot: " + CurrentTest.TestName);
             } else {
-                this->insert(CurrentTest);
-                if(CurrentTest.TestName.length() > LongestNameLength)
-                    { LongestNameLength=CurrentTest.TestName.length(); }
+                if(EmitIntermediaryTestResults()) { TestLog << CurrentTest; }
+                TestDataStorage.emplace_back(CurrentTest);
             }
         }
-
+/*
         void UnitTestGroup::AddTestResult(const Mezzanine::String Fresh, TestResult Meat)
         {
             std::cout << "Noting result of " << this->Name() + "::" + Fresh << " as "
@@ -330,7 +353,9 @@ namespace Mezzanine
             //if(FullOutput && TestError.str().size()>5 ) // Sometimes the copying put "0\r\n" in TestError
             //    { Error << "Errors: " << TestError.str(); }
         }
-
+*/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Test Macro Functions Backing
         TestResult UnitTestGroup::Test(const String& TestName, bool TestCondition,
                                  TestResult IfFalse,
                                  TestResult IfTrue,
@@ -338,23 +363,15 @@ namespace Mezzanine
                                  const String& File,
                                  Whole Line )
         {
-            try
+            TestResult Result;
+            if(TestCondition)
             {
-                TestResult Result;
-                if(TestCondition)
-                {
-                    Result = IfTrue;
-                }else{
-                    Result = IfFalse;
-                }
-                AddTestResult( TestData(TestName, Result, FuncName, File, Line) );
-                return Result;
-            }catch(exception& e){
-                std::cerr << "Caught an unhandled exception while adding results for " << TestName << endl
-                          << "Message: " << e.what() << endl;
-                AddTestResult( TestData("UnhandledException", Testing::TestResult::Failed, FuncName, File, Line) );
-                return Testing::TestResult::Failed;
+                Result = IfTrue;
+            }else{
+                Result = IfFalse;
             }
+            AddTestResult( TestData(TestName, Result, FuncName, File, Line) );
+            return Result;
         }
 
         void UnitTestGroup::TestNoThrow(const String& TestName,
@@ -366,47 +383,64 @@ namespace Mezzanine
             try
                 { TestCallable(); Passed = true;}
             catch (const std::exception& e)
-                { std::cout << "Caught Unexpected Exception: " << e.what() << std::endl; }
+            {
+                if(EmitIntermediaryTestResults())
+                    { TestLog << "Caught Unexpected Exception: " << e.what() << std::endl; }
+            }
             catch (...)
-                { std::cout << "Caught Unexpected Exception not derived from std::expection." << std::endl; }
+            {
+                if(EmitIntermediaryTestResults())
+                    { TestLog << "Caught Unexpected Exception not derived from std::expection." << std::endl; }
+            }
             Test(TestName, Passed, IfFalse, IfTrue, FuncName, File, Line);
         }
 
         void UnitTestGroup::TestTimed(const String& TestName,
-                                      chrono::microseconds Expected,
-                                      chrono::microseconds MaxVariance,
+                                      std::chrono::microseconds Expected,
+                                      std::chrono::microseconds MaxVariance,
                                       std::function<void ()> TestCallable,
                                       TestResult IfFalse, TestResult IfTrue,
                                       const String& FuncName, const String& File, Whole Line)
         {
-           TimedTest TestDuration;
+           TestTimer TestDuration;
            TestCallable();
-           std::chrono::microseconds TimeTaken{TestDuration.GetLength()};
+           std::chrono::microseconds TimeTaken{std::chrono::duration_cast<microseconds>(TestDuration.GetLength())};
            Boole Passed{TimeTaken-MaxVariance<Expected && Expected<TimeTaken+MaxVariance};
            TestResult Result{Test(TestName, Passed, IfFalse, IfTrue, FuncName, File, Line)};
-           if(Mezzanine::Testing::TestResult::Success != Result)
+           if(EmitIntermediaryTestResults() && Mezzanine::Testing::TestResult::Success != Result)
            {
-               std::cout << "Expected test to take " << Expected.count()
-                         << "µs with a variance of " << MaxVariance.count()
-                         << "µs, but it actually took " << TimeTaken.count() << "µs."<< std::endl;
+               TestLog << "Expected test to take " << Expected.count()
+                       << "µs with a variance of " << MaxVariance.count()
+                       << "µs, but it actually took " << TimeTaken.count() << "µs."<< std::endl;
            }
         }
 
         void UnitTestGroup::TestTimedUnder(const String& TestName,
-                                           chrono::microseconds MaxAcceptable,
+                                           std::chrono::microseconds MaxAcceptable,
                                            std::function<void ()> TestCallable,
                                            TestResult IfFalse, TestResult IfTrue,
                                            const String& FuncName, const String& File, Whole Line)
         {
-           TimedTest TestDuration;
+           TestTimer TestDuration;
            TestCallable();
-           std::chrono::microseconds TimeTaken{TestDuration.GetLength()};
+           microseconds TimeTaken{std::chrono::duration_cast<microseconds>(TestDuration.GetLength())};
            TestResult Result{Test(TestName, TimeTaken < MaxAcceptable, IfFalse, IfTrue, FuncName, File, Line)};
-           if(Mezzanine::Testing::TestResult::Success != Result)
+           if(EmitIntermediaryTestResults() && Mezzanine::Testing::TestResult::Success != Result)
            {
-               std::cout << "Expected test to take under " << MaxAcceptable.count()
-                         << "µs, but it actually took " << TimeTaken.count() << "µs."<< std::endl;
+               TestLog << "Expected test to take under " << MaxAcceptable.count()
+                       << "µs, but it actually took " << TimeTaken.count() << "µs."<< std::endl;
            }
+        }
+
+        TestResult GetWorstResults(const UnitTestGroup::TestDataStorageType& ToSearch)
+        {
+            TestResult Highest = TestResult::Success;
+            for(const TestData& OneTestData : ToSearch)
+            {
+                if(OneTestData.Results > Highest)
+                    { Highest = OneTestData.Results; }
+            }
+            return Highest;
         }
 
 

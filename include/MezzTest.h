@@ -43,13 +43,18 @@
 /// @file
 /// @brief The declaration of a number of tools to help with the main function implementation.
 
+#include "AutomaticTestGroup.h"
+#include "BenchmarkTestGroup.h"
 #include "ConsoleLogic.h"
-#include "ConsoleStringManipulation.h"
 #include "OutputBufferGuard.h"
+#include "ProcessTools.h"
+#include "StringManipulation.h"
+#include "SilentTestGroup.h"
 #include "TestData.h"
-#include "UnitTestGroup.h"
-#include "TestDataTools.h"
+#include "TestMacros.h"
 #include "TestEnumerations.h"
+#include "TimingTools.h"
+#include "UnitTestGroup.h"
 
 #include <stdexcept> // Used to throw for TEST_THROW
 
@@ -57,53 +62,77 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief Used to indicate the current 'depth' in the subprocess tree.
-        /// @details Since the caller of the unit tests can pass arbitrary gibberish
-        /// It is possible to get things that should only run in subsubprocesses in the
-        /// main test process. This does not truly indicate how many processes have
-        /// been spawned, but rather indicates the plans for what will be executed.
-        enum ProcessDepth {
-            MainProcess             = 0, ///< There is no plan to execute tests in this process subprocesses will be
-                                         /// launched for any tests.
-            TestSubprocess          = 1, ///< One or more Tests will be executed in this process, but no subprocess
-                                         /// requested by tests will be run.
-            TestSubSubProcess       = 2  ///< Tests requested to run in subrocesses by individual tests will run in this
-                                         /// process.
-        };
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wpadded") // Temporary
+            /// @brief A struct storing everything that might be passed in on the command line.
+            struct MEZZ_LIB ParsedCommandLineArgs
+            {
+                /// @brief The list of tests to run.
+                std::vector<UnitTestGroup*> TestsToRun;
 
-        /// @brief Indicates what this test might attempt to do, based on what it thinks the process depth is.
-        /// @return a ProcessDepth enum member
-        ProcessDepth GetCurrentProcessDepth();
+                /// @brief This will store the name of the command that launched this executable at run time.
+                Mezzanine::String CommandName;
 
-        /// @brief If a test needs to pass a string to a subsubprocess it will get stored here
-        /// @return A string that a test group intends on passing into a subsubprocess test
-        Mezzanine::String GetSubSubProcessArgument();
+                /// @brief If not ExitCode::ExitSucces then the caller should exit immediately.
+                ExitCode ExitWithError;
 
-        /// @internal
-        /// @brief Write the passed UnitTestGroup to an XML temp file
-        /// @param TestsToWrite Teh group of tests to write.
-        void WriteTempFile(const Testing::UnitTestGroup &TestsToWrite);
+                /// @brief The current process depth as interpretted by Main.
+                Boole InSubProcess;
 
-        /// @internal
-        /// @brief This will open then parse the contents of the file specified by TempFile and interpret any test
-        /// results located
-        /// @throw This can throw any exception that the C++ filestream classes can throw.
-        /// @return This "reads" the temp file and interprets it. It tries to extract the name of the test as the whole
-        /// of a line minus the last word. The last word is then converted into a @ref TestResult using
-        /// @ref StringToTestResult. Any Whitespace between between the end of the last word and the end of the test
-        /// name is dropped. All lines are interpretted this way and returned as a single @ref UnitTestGroup.
-        UnitTestGroup GetResultsFromTempFile();
+                /// @brief Skip writing the log file.
+                Boole SkipFile;
 
-        /// @internal
-        /// @brief Empty the file specified by TempFile
-        /// @warning This doesn't ask for permission and can't easily be cancelled or recovered
-        /// from. This will open, then erase the contents of the file.
-        /// @throw This can throw any exception that the C++ filestream classes can throw.
-        void ClearTempFile();
+                /// @brief Skip writing the summary at the end.
+                Boole SkipSummary;
+            };
+        RESTORE_WARNING_STATE
 
-        /// @internal
-        /// @brief Attempts to delete TempFile. Silently fails if not possible.
-        void DeleteTempFile();
+        /// @brief Deal with all the fine detail of dealing with command like arguments.
+        /// @param argc Should be the argc passed in from the system.
+        /// @param argv Should be the argv passed in from the system.
+        /// @oaram TestInstances The complete set of tests.
+        /// @return A complete ParsedCommandLineArgs detailing every arg that this handles
+        ParsedCommandLineArgs MEZZ_LIB DealWithdCommandLineArgs(int argc, 
+                                                                char** argv, 
+                                                                const CoreTestGroup& TestInstances);
+        /// @brief Print a report of the tests to a stream
+        /// @param AllResults All of the results to appear in the summary.
+        /// @param SummaryStream Place to print the results.
+        /// @return The worst test result.
+        TestResult MEZZ_LIB RenderTestResultSummary(const UnitTestGroup::TestDataStorageType& AllResults,
+                                                    std::ostream& SummaryStream);
+
+        /// @brief Print a report of the timings to a stream.
+        /// @param AllTimings All of the timings to appear in the summary.
+        /// @param SummaryStream Place to print the timings.
+        void MEZZ_LIB RenderTimingsSummary(const std::vector<NamedDuration>& AllTimings,
+                                           std::ostream& SummaryStream);
+
+        void MEZZ_LIB RunSubProcessTest(const ParsedCommandLineArgs& Options,
+                               UnitTestGroup& OneTestGroup);
+
+        /// @brief Run all the tests that run in other threads.
+        /// @param Options The options passed in by the user.
+        /// @param AllResults The place to store test results.
+        /// @param TestTimings The place to store all test timings.
+        void MEZZ_LIB RunParallelThreads(const ParsedCommandLineArgs& Options,
+                                         UnitTestGroup::TestDataStorageType& AllResults,
+                                         std::vector<NamedDuration>& TestTimings);
+
+        /// @brief Run all the tests that DON'T run in other threads.
+        /// @param Options The options passed in by the user.
+        /// @param AllResults The place to store test results.
+        /// @param TestTimings The place to store all test timings.
+        void MEZZ_LIB RunSerializedTests(const ParsedCommandLineArgs& Options,
+                                         UnitTestGroup::TestDataStorageType& AllResults,
+                                         std::vector<NamedDuration>& TestTimings);
+
+        /// @brief Run all the tests per their normal execution policies.
+        /// @param Options The options about what tests to run.
+        /// @param TestTimings A collection of timings this will add to.
+        /// @return A collections of all the results.
+        UnitTestGroup::TestDataStorageType MEZZ_LIB RunTests(const ParsedCommandLineArgs& Options,
+                                                             std::vector<NamedDuration>& TestTimings);
 
         /// @brief This is the entry point for the unit test executable.
         /// @details This will contruct an AllUnitTestGroups with the listing of unit tests available from cmake
@@ -118,33 +147,45 @@ namespace Mezzanine
         /// process fails. If the main process cannot create child processes it will return EXIT_FAILURE.
         /// @param argc Is interpretted as the amount of passed arguments
         /// @param argv Is interpretted as the arguments passed in from the launching shell.
-        int MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances);
+        ExitCode MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances);
+
+        /// @brief When display timings with fixed width columns, this is how wide the name column is.
+        static const Mezzanine::Whole TimingNameColumnWidth = 30;
+
+        /// @brief When display timings with fixed width columns, this is how wide the nanosecond column is.
+        static const Mezzanine::Whole TimingNsColumnWidth = 16;
 
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
         SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
 
-        /// @internal
-        /// @brief If this is passed to the command line the test is executed without launching a separate processs.
-        /// @details In most cases each test is launched as a separate process and this is passed to it.
-        static const Mezzanine::String MemSpaceArg("debugtests");
+        /// @brief A string that if passed on the command tells the tests not to launch sub processes.
+        static const Mezzanine::String RunInThisProcessToken("thisprocess");
+        /// @vopydoc RunInThisProcessToken
+        static const Mezzanine::String DebugAToken("debug");
+        /// @vopydoc RunInThisProcessToken
+        static const Mezzanine::String DebugBToken("debutests");
 
-        /// @internal
-        /// @brief If this is passed to the command line prepended to a testname that tests subprocess will be executed
-        /// instead of that test
-        static const Mezzanine::String SubTestPrefix("debug");
+        /// @brief A string that if passed on the command tells this to show the usage.
+        static const Mezzanine::String HelpToken("help");
 
-        /// @internal
-        /// @brief This is the name of the file used to communicate results from child processes
-        /// @warning This variable is used to create temporary files in a percieved insecure way
-        /// Everything will be fine as long as nothing else writes to this this file during or
-        /// between Tests. If something does, then you probably have big enough problems you
-        /// shouldn't be developing software until that is fixed.
-        static const Mezzanine::String TempFile("UnitTestWork.txt");
+        /// @brief The token to pass on the command line to run all the tests.
+        static const Mezzanine::String AllToken("all");
+
+        /// @brief The token to pass on the command line to run all tests intended for unattended execution.
+        static const Mezzanine::String AutomaticToken("automatic");
+
+        /// @brief The token to pass on the command line to run all tests NOT intended for unattended execution.
+        static const Mezzanine::String InteractiveToken("interactive");
+
+        /// @brief The token to pass on the command line to skip the summary.
+        static const Mezzanine::String SkipSummaryToken("skipsummary");
+
+        /// @brief The token to pass on the command line to not emit a logfile.
+        static const Mezzanine::String SkipFileToken("skipfile");
 
         RESTORE_WARNING_STATE
     }// Testing
 }// Mezzanine
-
 
 #endif

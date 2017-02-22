@@ -37,60 +37,42 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_TimingTools_h
-#define Mezz_Test_TimingTools_h
+#ifndef Mezz_Test_StringManipulation_h
+#define Mezz_Test_StringManipulation_h
 
 /// @file
-/// @brief TestData, TestDataStorage and UnitTestGroup class definitions.
+/// @brief Some string manipulation functions for use in the Unit Tests.
 
 #include "DataTypes.h"
-
-#include <chrono>
-
 
 namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief A simple piece of data to represent the length of a named period of time.
-        struct MEZZ_LIB NamedDuration
-        {
-            /// @brief What was it called?
-            Mezzanine::String Name;
+        /// @brief Take the whitespace off the end of a String.
+        /// @param Text The Text to clean up.
+        /// @return If " asdf " is passed " asdf" is returned. Also removes carriage returns, newlines and tabs. Does
+        /// not use the locale.
+        Mezzanine::String MEZZ_LIB RightTrim(const Mezzanine::String& Text);
 
-            /// @brief How long did it take
-            std::chrono::nanoseconds Duration;
-        };
+        /// @copydoc RightTrim
+        /// @details This is delegates its work to RightTrim, the name just exists to simplify 
+        Mezzanine::String MEZZ_LIB rtrim(const Mezzanine::String& Text);
 
-        /// @brief An easy way to get the time something took to execute.
-        class MEZZ_LIB TestTimer
-        {
-            /// @brief The time this was constructed.
-            std::chrono::high_resolution_clock::time_point BeginTimer;
+        /// @brief Makes a c style stron all lowercase with respect to the current locale
+        /// @param StringToConvert This string is actually changed.
+        /// @return for convience purposes the string is also returned.
+        Mezzanine::String MEZZ_LIB AllLower(const Mezzanine::String& StringToConvert);
 
-            public:
-                /// @brief Simply Creating this starts the timer
-                TestTimer()
-                    : BeginTimer(std::chrono::high_resolution_clock::now())
-                    {}
+        /// @brief Get a copy of the passed filename with every unsafe character removed.
+        /// @param OriginalFilename A string something like the filename you want.
+        /// @return A string you can actually use as a file name
+        Mezzanine::String MEZZ_LIB SanitizeFileName(const Mezzanine::String& OriginalFilename);
 
-                /// @brief How long since this started.
-                /// @return An std::chrono::duration in nanoseconds containing the difference between now and when
-                /// timing was started
-                std::chrono::nanoseconds GetLength();
-
-                /// @brief How long since this started and give it a name for added meaning.
-                /// @oaram Name The name of the time period that just elapsed.
-                NamedDuration GetNameDuration(const Mezzanine::String& Name);
-        };
-
-        Mezzanine::String MEZZ_LIB PrettyDurationString(std::chrono::nanoseconds Duration);
-
-        /// @brief Pretty print a NamedDuration.
-        /// @param Stream the stream, likely cout to send it.
-        /// @param TimingToStream A single NameDuration.
-        /// @return The modified stream.
-        std::ostream& MEZZ_LIB operator<<(std::ostream& Stream, const NamedDuration& TimingToStream);
+        /// @brief Get a copy of the passed possible process command with every unsafe character removed.
+        /// @param OriginalProcess A string something like the process you want to launch.
+        /// @return A string you can actually use as a file name
+        Mezzanine::String MEZZ_LIB SanitizeProcessCommand(const Mezzanine::String& OriginalProcess);
     }// Testing
 }// Mezzanine
 
