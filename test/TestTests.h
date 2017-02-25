@@ -97,7 +97,7 @@ void WarningTestTests::operator ()()
 }
 
 /// @brief This is the actual Test class. This tests our Test Macros.
-class MEZZ_LIB TestTests : public Mezzanine::Testing::BenchmarkTestGroup
+class MEZZ_LIB TestTests : public Mezzanine::Testing::AutomaticTestGroup
 {
     public:
         virtual void operator()() override;

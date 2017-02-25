@@ -49,6 +49,8 @@
 #include <exception>
 #include <cstdlib>
 
+#include <iostream>
+
 namespace Mezzanine
 {
     namespace Testing

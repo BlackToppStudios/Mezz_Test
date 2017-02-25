@@ -43,6 +43,11 @@
 
 #include "MezzTest.h"
 
+#include <regex>
+
+using std::regex;
+using std::smatch;
+
 namespace Mezzanine
 {
     namespace Testing
@@ -56,17 +61,48 @@ namespace Mezzanine
             : TestName(Name), FunctionName(FuncName), FileName(File), LineNumber(Line), Results(Result)
         {}
 
-        bool TestData::operator<(const TestData& Rhs) const
+        Boole TestData::operator<(const TestData& Rhs) const
             { return this->TestName < Rhs.TestName; }
+
+        Boole TestData::operator==(const TestData& Rhs) const
+        {
+            return Rhs.LineNumber == this->LineNumber   &&  Rhs.Results == this->Results    &&
+                   Rhs.TestName == this->TestName       &&  Rhs.FileName == this->FileName  &&
+                   Rhs.FunctionName == this->FunctionName;
+        }
+
+        Boole TestData::operator!=(const TestData& Rhs) const
+        {
+            return Rhs.LineNumber != this->LineNumber   ||  Rhs.Results != this->Results    ||
+                   Rhs.TestName != this->TestName       ||  Rhs.FileName != this->FileName  ||
+                   Rhs.FunctionName != this->FunctionName;
+        }
+
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
 
         TestData StringToTestData(Mezzanine::String Line)
         {
-            TestData Results;
-            size_t LastSpace=Line.rfind(' ');
-            Results.Results = StringToTestResult(Line.substr(LastSpace+1));
-            Results.TestName=rtrim(Line.substr(0,LastSpace));
-            return Results;
+            const static regex FailMatcher
+                    ("[^\\[]*\\[ *([^ ]*) *\\] *(.*) in function '([^']*)' at ([^:]*):([0-9]*)\\.");
+            const static regex SuccessMatcher("[^\\[]*\\[ *([^ ]*) *\\] *(.*)");
+
+            smatch Findings;
+
+            if(std::regex_search(Line, Findings, FailMatcher))
+            {
+                std::stringstream Converter(Findings[5]);
+                Whole LineNumber;
+                Converter >> LineNumber;
+                return TestData{Findings[2], StringToTestResult(Findings[1]), Findings[3], Findings[4], LineNumber};
+            }
+
+            if(std::regex_search(Line, Findings, SuccessMatcher))
+                { return TestData{Findings[2], StringToTestResult(Findings[1])}; }
+
+            return TestData{};
         }
+        RESTORE_WARNING_STATE
 
         String EscapeTestNameString(const Mezzanine::String& RawName)
         {
@@ -123,13 +159,14 @@ namespace Mezzanine
         std::ostream& operator<<(std::ostream& Stream, const TestData& ToStream)
         {
             Stream << ' ' << TestResultToFixedBoxString(ToStream.Results) << "  "
-                   <<  EscapeTestNameString(ToStream.TestName) << '\n';
+                   <<  EscapeTestNameString(ToStream.TestName);
             if(TestResult::Success != ToStream.Results)
             {
-                Stream << "                      in function '" << ToStream.FunctionName
+                Stream << " in function '" << ToStream.FunctionName
                        << "' at " << ToStream.FileName
-                       << ":" << ToStream.LineNumber << ".\n";
+                       << ":" << ToStream.LineNumber << '.';
             }
+            Stream << '\n';
             return Stream;
         }
 

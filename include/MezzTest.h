@@ -108,8 +108,11 @@ namespace Mezzanine
         void MEZZ_LIB RenderTimingsSummary(const std::vector<NamedDuration>& AllTimings,
                                            std::ostream& SummaryStream);
 
+        /// @brief Run a single test that requires a subProcess, UB is it doesn't
+        /// @param Options The parsed command line options.
+        /// @param OneTestGroup The test group to execute.
         void MEZZ_LIB RunSubProcessTest(const ParsedCommandLineArgs& Options,
-                               UnitTestGroup& OneTestGroup);
+                                        UnitTestGroup& OneTestGroup);
 
         /// @brief Run all the tests that run in other threads.
         /// @param Options The options passed in by the user.

@@ -48,6 +48,7 @@
 #include <iomanip>
 #include <thread>
 #include <mutex>
+#include <sstream>
 
 namespace
 {
@@ -168,9 +169,27 @@ namespace Mezzanine
         void RunSubProcessTest(const ParsedCommandLineArgs& Options,
                                UnitTestGroup& OneTestGroup)
         {
-// check if we are in a subprocess and run the test.
-// capture and parse the stdout if we are not in the subprocess.
-            std::cout << Options.CommandName << OneTestGroup.Name(); // temp code
+            if(Options.InSubProcess)
+            {
+                OneTestGroup(); // Run tests and discard results, the parent process will grab it.
+            } else {
+                String ProcessLog = RunCommand(
+                    Options.CommandName + " " + OneTestGroup.Name() + " " +
+                        RunInThisProcessToken + " " + SkipSummaryToken,
+                    OneTestGroup.Name() + "_SubProcess.log"
+                );
+                std::istringstream LogStream(ProcessLog);
+                Mezzanine::String OneLine;
+                while( std::getline(LogStream, OneLine) )
+                {
+                    TestData PossibleResults( StringToTestData(OneLine) );
+                    if(TestData{} != PossibleResults)
+                    {
+                        PossibleResults.TestName = "SubProcess::" + PossibleResults.TestName;
+                        OneTestGroup.AddTestResultWithoutName(std::move(PossibleResults));
+                    }
+                }
+            }
         }
 
         void RunParallelThreads(const ParsedCommandLineArgs& Options,
@@ -185,7 +204,9 @@ namespace Mezzanine
                 UnitTestGroup& TestGroupForThread = *(OneTestGroup);
 
                 // Skip the ones that cannot be run here. Run only the tests that love massive parrellelism.
-                if(!TestGroupForThread.IsMultiProcessSafe()) { continue; }
+                if(TestGroupForThread.MustBeSerialized()) { continue; }
+
+                // Make a test for each thread and handle all the synchronization right here.
                 TestThreads.emplace_back(
                     [&]()
                     {
@@ -195,17 +216,14 @@ namespace Mezzanine
                         {
                             TestGroupForThread.operator()();
                         } else {
-                            std::cout << ("Subprocess Test not run " + TestGroupForThread.Name() + "\n");
-                            RunCommand(Options.CommandName + TestGroupForThread.Name(),
-                                       TestGroupForThread.Name() + "_SubProcess.log");
+                            RunSubProcessTest(Options, TestGroupForThread);
                         }
 
                         // Synchronize with single threaded part.
                         std::lock_guard<std::mutex> Lock(ResultsMutex);
                         AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
                         std::cout << TestGroupForThread.GetTestLog(); // Publish the Thread Specific TestLogs.
-                        TestTimings.emplace_back
-                            (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
+                        TestTimings.emplace_back (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
                     }
                 );
             }
@@ -220,25 +238,22 @@ namespace Mezzanine
             {
                 UnitTestGroup& TestGroupForThread = *(OneTestGroup);
 
-                // skip the ones that cannot be run here because they can't stand parrellelism.
-                if(TestGroupForThread.IsMultiProcessSafe()) { continue; }
+                // Skip the ones that cannot be run here because they can't stand parrellelism.
+                if(TestGroupForThread.CanBeParallel()) { continue; }
 
-
+                // Run all of the rest tests right here.
                 TestTimer SingleThreadTimer;
                 if(TestGroupForThread.IsMultiThreadSafe())
                 {
                     TestGroupForThread.operator()();
                 } else {
-                    std::cout << ("Subprocess Test not run " + TestGroupForThread.Name() + "\n");
-                    RunCommand(Options.CommandName + TestGroupForThread.Name(),
-                               TestGroupForThread.Name() + "_SubProcess.log");
+                    RunSubProcessTest(Options, TestGroupForThread);
                 }
 
                 // Synchronize with single threaded part.
                 AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
-                std::cout << TestGroupForThread.GetTestLog(); // Publish the Thread Specific TestLogs.
-                TestTimings.emplace_back
-                    (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
+                std::cout << TestGroupForThread.GetTestLog(); // Publish the Test Specific Logs.
+                TestTimings.emplace_back (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-S "));
 
             }
         }
@@ -247,20 +262,8 @@ namespace Mezzanine
                                                     std::vector<NamedDuration>& TestTimings)
         {
             UnitTestGroup::TestDataStorageType AllResults;
-
             RunParallelThreads(Options, AllResults, TestTimings);
             RunSerializedTests(Options, AllResults, TestTimings);
-
-//                if(TestInstance.RequiresSubProcess())
-//                {
-//                    //
-//                } else {
-
-//                }
-
-
-
-
             return AllResults;
         }
 

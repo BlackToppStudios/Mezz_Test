@@ -79,9 +79,6 @@ void ConversionTests::operator ()()
     TEST_THROW("BadFStringTestResults", std::invalid_argument, []{ StringToTestResult("FThatIsYouGradeNow"); } );
     TEST_THROW("BadNStringTestResults", std::invalid_argument, []{ StringToTestResult("NeverApplicable"); } );
 
-    Mezzanine::Testing::TestData FromLine{ Mezzanine::Testing::StringToTestData("SampleTestName    Success") };
-    TEST_EQUAL("LineToTestDataName", "SampleTestName", FromLine.TestName);
-    TEST_EQUAL("LineToTestDataResults", Mezzanine::Testing::TestResult::Success, FromLine.Results);
 }
 
 #endif

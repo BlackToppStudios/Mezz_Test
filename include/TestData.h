@@ -106,7 +106,17 @@ namespace Mezzanine
             /// @brief Used to sort TestData in std::std and other sorted containers, by TestName.
             /// @param Rhs the right hand operand when using the less than comparison operator.
             /// @return A bool with the same value as this->TestName < Rhs.TestName.
-            bool operator<(const TestData& Rhs) const;
+            Boole operator<(const TestData& Rhs) const;
+
+            /// @brief Used to compare two TestData mostly for testing purposes
+            /// @param Rhs the right hand operand when using the == operator.
+            /// @return True if every member matches, false otherwise.
+            Boole operator==(const TestData& Rhs) const;
+
+            /// @brief Used to compare two TestData for inequality.
+            /// @param Rhs the right hand operand when using the ~= operator.
+            /// @return True if any members differ, false otherwise.
+            Boole operator!=(const TestData& Rhs) const;
         };
         RESTORE_WARNING_STATE
 
