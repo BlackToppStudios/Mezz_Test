@@ -70,7 +70,7 @@ namespace Mezzanine
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wsign-conversion") // std::streamoff are signed with the string constructor takes
         // size_type which is unsigned. So this is only go0d for files with fewer than 2^31 bytes.
-        SUPPRESS_GCC_WARNING("-Werror=conversion") // The same issue but an extra warning GCC raises.
+        SUPPRESS_GCC_WARNING("-Wconversion") // The same issue but an extra warning GCC raises.
         Mezzanine::String GetFileContents(const Mezzanine::String& Filename)
         {
             std::ifstream ResultReader(Filename, std::ios::binary | std::ios::ate);
