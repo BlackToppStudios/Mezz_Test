@@ -80,7 +80,7 @@ namespace Mezzanine
                 std::chrono::nanoseconds GetLength();
 
                 /// @brief How long since this started and give it a name for added meaning.
-                /// @oaram Name The name of the time period that just elapsed.
+                /// @param Name The name of the time period that just elapsed.
                 NamedDuration GetNameDuration(const Mezzanine::String& Name);
         };
 

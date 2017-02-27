@@ -90,7 +90,7 @@ namespace Mezzanine
         /// @brief Deal with all the fine detail of dealing with command like arguments.
         /// @param argc Should be the argc passed in from the system.
         /// @param argv Should be the argv passed in from the system.
-        /// @oaram TestInstances The complete set of tests.
+        /// @param TestInstances The complete set of tests.
         /// @return A complete ParsedCommandLineArgs detailing every arg that this handles
         ParsedCommandLineArgs MEZZ_LIB DealWithdCommandLineArgs(int argc, 
                                                                 char** argv, 

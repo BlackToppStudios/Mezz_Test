@@ -55,10 +55,17 @@ using Mezzanine::Testing::GetFileContents;
 AUTOMATIC_TEST_GROUP(ProcessTests, Process)
 {
     // make file and read it back.
+    #ifdef MEZZ_Windows
+        const String LF("\r\n");
+    #else
+        const String LF("\n");
+    #endif
+
     const Mezzanine::String TestFilename("ProcessTestFile.txt");
-    const Mezzanine::String TestToken("I've seen things you people wouldn't believe. Attack ships on fire off the\n"
-                                      "shoulder of Orion. I watched C-beams glitter in the dark near the Tannhäuser\n"
-                                      "Gate. All those moments will be lost in time, like tears in rain. Time to die.");
+    const Mezzanine::String TestToken(
+                "I've seen things you people wouldn't believe. Attack ships on fire off the" + LF +
+                "shoulder of Orion. I watched C-beams glitter in the dark near the Tannhäuser" + LF +
+                "Gate. All those moments will be lost in time, like tears in rain. Time to die.");
     std::ofstream TestFile(TestFilename);
     TestFile << TestToken;
     TestFile.close();
