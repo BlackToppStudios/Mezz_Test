@@ -109,16 +109,7 @@ namespace Mezzanine
 
         UnitTestGroup::const_iterator UnitTestGroup::cend() const
             { return TestDataStorage.cend(); }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Other useful stuff.
-
-        TestResult UnitTestGroup::GetWorstResults() const
-            { return Mezzanine::Testing::GetWorstResults(TestDataStorage); }
-
-        String UnitTestGroup::GetTestLog() const
-            { return TestLog.str(); }
-
+        
         void UnitTestGroup::AddTestResultWithoutName(TestData&& CurrentTest)
         {
             std::sort(TestDataStorage.begin(), TestDataStorage.end());
@@ -136,6 +127,15 @@ namespace Mezzanine
             CurrentTest.TestName = Name() + "::" + CurrentTest.TestName;
             AddTestResultWithoutName(std::move(CurrentTest));
         }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Other useful stuff.
+
+        TestResult UnitTestGroup::GetWorstResults() const
+            { return Mezzanine::Testing::GetWorstResults(TestDataStorage); }
+
+        String UnitTestGroup::GetTestLog() const
+            { return TestLog.str(); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Test Macro Functions Backing
