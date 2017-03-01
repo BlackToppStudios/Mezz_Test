@@ -43,10 +43,8 @@
 
 #include "MezzTest.h"
 
-#include <regex>
-
-using std::regex;
-using std::smatch;
+#include <algorithm>
+#include <iostream>
 
 namespace Mezzanine
 {
@@ -80,27 +78,69 @@ namespace Mezzanine
 
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
+        SUPPRESS_GCC_WARNING("-Wsign-conversion")
 
         TestData StringToTestData(Mezzanine::String Line)
         {
-            const static regex FailMatcher
-                    ("[^\\[]*\\[ *([^ ]*) *\\] *(.*) in function '([^']*)' at ([^:]*):([0-9]*)\\.");
-            const static regex SuccessMatcher("[^\\[]*\\[ *([^ ]*) *\\] *(.*)");
+            using Iterator = Mezzanine::String::const_iterator;
+            using Character = Mezzanine::String::value_type;
 
-            smatch Findings;
+            const auto NotSpace = [](const Character& L) { return (L!=' ' && L!='\t' && L!='\r' && L!='\n'); };
+            const String FunctionToken(" in function ");
+            const String FileToken(" at ");
 
-            if(std::regex_search(Line, Findings, FailMatcher))
+            // Skip whatever to get to '['
+            Iterator OpenBracket = std::find(Line.cbegin(), Line.cend(), '[');
+            if(Line.cend() == OpenBracket) { return TestData{}; }
+
+            // Skip whitespace to Beginning of Result and Pull out the result
+            Iterator ResultsBegin = std::find_if(OpenBracket+1, Line.cend(), NotSpace);
+            if(Line.cend() == ResultsBegin) { return TestData{}; }
+            Iterator ResultsEnd = std::find(ResultsBegin+1, Line.cend(), ' ');
+            if(Line.cend() == ResultsEnd) { return TestData{}; }
+            TestResult Result = StringToTestResult(String(ResultsBegin, ResultsEnd));
+
+            // Skip whatever to '['
+            Iterator CloseBracket = std::find(ResultsEnd+1, Line.cend(), ']');
+            if(Line.cend() == CloseBracket) { return TestData{}; }
+
+            // Read the Name
+            Iterator NameBegin = std::find_if(CloseBracket+1, Line.cend(), NotSpace);
+            if(Line.cend() == NameBegin) { return TestData{}; }
+            Iterator NameEnd;
+            if(TestResult::Success == Result)
+                { NameEnd = Line.cend(); }
+            else
             {
-                std::stringstream Converter(Findings[5]);
-                Whole LineNumber;
-                Converter >> LineNumber;
-                return TestData{Findings[2], StringToTestResult(Findings[1]), Findings[3], Findings[4], LineNumber};
+                String::size_type NameEndIndex = Line.find(FunctionToken, std::distance(Line.cbegin(), NameBegin));
+                if(String::npos == NameEndIndex) { return TestData{}; }
+                NameEnd = Line.cbegin() + NameEndIndex;
             }
+            String Name(NameBegin, NameEnd);
 
-            if(std::regex_search(Line, Findings, SuccessMatcher))
-                { return TestData{Findings[2], StringToTestResult(Findings[1])}; }
+            // If successful, we are done, If not find the function name
+            if(TestResult::Success == Result) { return TestData{Name, Result}; }
+            Iterator FunctionBegin = std::find(NameEnd+FunctionToken.size(), Line.cend(), '\'');
+            if(Line.cend() == FunctionBegin) { return TestData{Name, Result, "Bad Function Name, No Start Quote"}; }
+            Iterator FunctionEnd = std::find(FunctionBegin+1, Line.cend(), '\'');
+            if(Line.cend() == FunctionEnd) { return TestData{Name, Result, "Bad Function Name, No End Quote"}; }
+            String FunctionName(FunctionBegin+1, FunctionEnd);
 
-            return TestData{};
+            // Find the start of the file
+            String::size_type FileStartHint = Line.find(FileToken, std::distance(Line.cbegin(), FunctionEnd));
+            if(String::npos == FileStartHint) { return TestData{Name, Result, FunctionName, "Bad Filename no 'at'"}; }
+            Iterator FileStart = Line.cbegin() + FileStartHint + FileToken.size();
+            Iterator FileEnd = std::find(FileStart + 1, Line.cend(), ':');
+            if(Line.cend() == FileEnd) { return TestData{Name, Result, FunctionName, "Bad Filename no ':'"}; }
+            String FileName(FileStart, FileEnd);
+
+            // Get Line number as a Whole
+            String RestOfLine(Line.substr(std::distance(Line.cbegin(), FileEnd)+1));
+            std::stringstream LineNumberConverter( RestOfLine );
+            Whole LineNumber{0};
+            LineNumberConverter >> LineNumber;
+
+            return TestData{Name, Result, FunctionName, FileName, LineNumber};
         }
         RESTORE_WARNING_STATE
 

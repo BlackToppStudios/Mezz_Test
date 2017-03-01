@@ -55,7 +55,6 @@ namespace Mezzanine
     /// @brief This contains all the items (except the tests themselves) that make the unit tests work.
     namespace Testing
     {
-
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wpadded")
         ///////////////////////////////////////////////////////////////////////////////////////////

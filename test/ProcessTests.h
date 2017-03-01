@@ -55,16 +55,10 @@ using Mezzanine::Testing::GetFileContents;
 AUTOMATIC_TEST_GROUP(ProcessTests, Process)
 {
     // make file and read it back.
-    #ifdef MEZZ_Windows
-        const String LF("\r\n");
-    #else
-        const String LF("\n");
-    #endif
-
     const Mezzanine::String TestFilename("ProcessTestFile.txt");
     const Mezzanine::String TestToken(
-                "I've seen things you people wouldn't believe. Attack ships on fire off the" + LF +
-                "shoulder of Orion. I watched C-beams glitter in the dark near the Tannhäuser" + LF +
+                "I've seen things you people wouldn't believe. Attack ships on fire off the "
+                "shoulder of Orion. I watched C-beams glitter in the dark near the Tannhäuser "
                 "Gate. All those moments will be lost in time, like tears in rain. Time to die.");
     std::ofstream TestFile(TestFilename);
     TestFile << TestToken;
@@ -74,7 +68,11 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
 
 
     // Try launching a process and reading its stdout
-    TEST_EQUAL("RunCommand-stdout", "foo\n", RunCommand("echo foo", "RunCommandScratch.txt"));
+    #ifdef MEZZ_Windows
+        TEST_EQUAL("RunCommand-stdout", "foo\r\n", RunCommand("echo foo", "RunCommandScratch.txt"));
+    #else
+        TEST_EQUAL("RunCommand-stdout", "foo\n", RunCommand("echo foo", "RunCommandScratch.txt"));
+    #endif
     TEST_THROW("RunCommand-BadCommand",
                std::runtime_error,
                []{ RunCommand("echo foo > somefile.txt", "ShouldExistRunCommandScratch.txt"); });
