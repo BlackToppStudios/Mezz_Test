@@ -13,8 +13,8 @@ compiler:
 before_script:
   - mkdir build
   - cd build
-  - mkdir JagatiPackages
-  - export JAGATI_DIR=`pwd`/JagatiPackages
+#  - mkdir JagatiPackages
+#  - export JAGATI_DIR=`pwd`/JagatiPackages
   - cmake -G"Ninja" .. -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON
 
 install:
