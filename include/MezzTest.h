@@ -167,7 +167,7 @@ namespace Mezzanine
         /// @vopydoc RunInThisProcessToken
         static const Mezzanine::String DebugAToken("debug");
         /// @vopydoc RunInThisProcessToken
-        static const Mezzanine::String DebugBToken("debutests");
+        static const Mezzanine::String DebugBToken("debugtests");
 
         /// @brief A string that if passed on the command tells this to show the usage.
         static const Mezzanine::String HelpToken("help");
