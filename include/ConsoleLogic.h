@@ -69,6 +69,9 @@ namespace Mezzanine
         Mezzanine::String MEZZ_LIB GetPrintableTestList(const Mezzanine::String::size_type TargetWidth,
                                                         const CoreTestGroup& TestGroups);
 /*
+        // Most remarked code ought to be removed switftly, This feature will be re-added as soon as a scheme for
+        // testing it exists.
+
         /// @brief Asked the user a question on the std output and get a TestResult as an answer.
         /// @param Question The question to ask the user.
         /// Status otherwise they will return Warnings.
@@ -80,10 +83,6 @@ namespace Mezzanine
         ///     -  "Unsure", "Inconclusive" as Inconclusive.
         /// @return Depends on users input
         TestResult MEZZ_LIB GetTestAnswerFromStdin(Mezzanine::String Question);
-
-        /// @brief Execute a command in a process, piping its standard output to a file.
-        /// @return The contents of the file as String.
-        String MEZZ_LIB GetCommandResults(String Command);
 */
         /// @brief Convert one human readable character to a TestResults by inferring things like 'Y' is "yes" which is
         /// "success", 'F' is 'Fail' is a test "Failure" etc...

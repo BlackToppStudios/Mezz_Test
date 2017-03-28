@@ -47,7 +47,6 @@ namespace Mezzanine
 {
     namespace Testing
     {
-
         Boole BenchmarkTestGroup::RequiresSubProcess() const
             { return true; }
 

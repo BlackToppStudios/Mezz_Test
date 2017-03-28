@@ -56,10 +56,6 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        //SAVE_WARNING_STATE
-        //SUPPRESS_GCC_WARNING("-Wreturn-type") // Control cannot reach the end of this function, because the
-                                              // warning for incomplete case statements will stop compilation.
-        //SUPPRESS_VC_WARNING(4715)
         Mezzanine::String TestResultToString(TestResult Convertable)
         {
             switch(Convertable)
@@ -107,7 +103,6 @@ namespace Mezzanine
             }
             return NotApplicableString;
         }
-        //RESTORE_WARNING_STATE
 
         Mezzanine::Int32 TestResultToInt(TestResult Convertable)
             { return Mezzanine::Int32(Convertable); }

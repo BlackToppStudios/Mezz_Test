@@ -47,7 +47,7 @@
 #include "UnitTestGroup.h"
 
 SAVE_WARNING_STATE
-SUPPRESS_VC_WARNING(4668)
+SUPPRESS_VC_WARNING(4668) // A Prprocessor macro was used and never defined, because the VS Headers are poorly written.
 
 #include <vector>
 #include <sstream>
@@ -186,7 +186,6 @@ namespace Mezzanine
                     return Testing::TestResult::Unknown;
             }
         }
-
 
     }// Testing
 }// Mezzanine

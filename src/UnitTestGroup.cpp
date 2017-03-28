@@ -58,9 +58,9 @@ namespace Mezzanine
 // Static and Thread local variables for the UnitTestGroup.
 
         SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
-        SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
-        thread_local std::stringstream UnitTestGroup::TestLog;
+            SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
+            SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
+            thread_local std::stringstream UnitTestGroup::TestLog;
         RESTORE_WARNING_STATE
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

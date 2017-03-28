@@ -59,11 +59,10 @@ namespace Mezzanine
         Mezzanine::String MEZZ_LIB RunCommand(const Mezzanine::String& Command,
                                               const Mezzanine::String& TempFileName);
 
-
         /// @brief Get all the text in a file.
         /// @param Filename The file to read.
         /// @return A string with the contents.
-        Mezzanine::String GetFileContents(const Mezzanine::String& Filename);
+        Mezzanine::String MEZZ_LIB GetFileContents(const Mezzanine::String& Filename);
 
 
     }// Testing

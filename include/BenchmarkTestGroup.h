@@ -41,7 +41,7 @@
 #define Mezz_Test_BenchmarkTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that is performamce sensitive
+/// @brief The declaration of the a group of tests that is performance sensitive.
 
 #include "UnitTestGroup.h"
 
@@ -51,14 +51,17 @@ namespace Mezzanine
     {
 
         SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wpadded") // Temporary
-        SUPPRESS_CLANG_WARNING("-Wweak-vtables") // Temporary
+        //SUPPRESS_CLANG_WARNING("-Wpadded") // Temporary
+        //SUPPRESS_CLANG_WARNING("-Wweak-vtables") // Temporary
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Benchmarks are performance sensitive, and require special attention.
-        /// @details Because the smallest load can affect performance nothing else should running while a
+        /// @details Because the smallest load can affect performance, nothing else should running while a
         /// benchmark runs. Since many benchmarks are sensitive to what was just run (prefilled caches, extra
-        /// allocated memory, etc...) each benchmark also gets its own process.
+        /// allocated memory, etc...) each test inheriting from this test group will get several safeguards. Inheritors
+        /// tests will be run in their own process to guarantee isolation. No other threads or processes will be run
+        /// while this test group runs, but the main process will still be alive, but in a waiting state until this
+        /// test group finishes.
         class MEZZ_LIB BenchmarkTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
             public:

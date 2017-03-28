@@ -84,6 +84,8 @@ namespace Mezzanine
                 NamedDuration GetNameDuration(const Mezzanine::String& Name);
         };
 
+        /// @brief Get a human readable string, annotated with minutes, seconds, etc...
+        /// @param Duration Some amount of nano seconds that is probably preposterous for humans to grok.
         Mezzanine::String MEZZ_LIB PrettyDurationString(std::chrono::nanoseconds Duration);
 
         /// @brief Pretty print a NamedDuration.

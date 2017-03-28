@@ -56,11 +56,12 @@ namespace Mezzanine
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests that all run entirely automatically using most default settings.
+        /// @details A normal test groups except it should emit no output. This is used in the tests for
+        /// Mezz_Test itself when a test group is needed that doesn't make any
         class MEZZ_LIB SilentTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
             public:                                                    
-                Boole EmitIntermediaryTestResults() const
-                    { return false; }
+                Boole EmitIntermediaryTestResults() const override;
 
                 virtual ~SilentTestGroup() = default;
         };

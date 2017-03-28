@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of the a group of tests that need no human intervention
+/// @brief The definition of the a group of tests that need no human intervention, not really a lot here.
 
 #include "AutomaticTestGroup.h"
 

@@ -183,9 +183,12 @@ namespace Mezzanine
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Other useful stuff.
 
+                /// @brief The worst test result usually indicates the overall level of success. This gets it.
                 /// @return Scan every test and find the worst result among all test data.
                 TestResult GetWorstResults() const;
 
+                /// @brief Get everything test to the thread_local TestLog
+                /// @return A string with the complete contents.
                 Mezzanine::String GetTestLog() const;
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////

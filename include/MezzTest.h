@@ -150,7 +150,7 @@ namespace Mezzanine
         /// process fails. If the main process cannot create child processes it will return EXIT_FAILURE.
         /// @param argc Is interpretted as the amount of passed arguments
         /// @param argv Is interpretted as the arguments passed in from the launching shell.
-        ExitCode MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances);
+        ExitCode MEZZ_LIB MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances);
 
         /// @brief When display timings with fixed width columns, this is how wide the name column is.
         static const Mezzanine::Whole TimingNameColumnWidth = 30;

@@ -51,9 +51,20 @@ namespace Mezzanine
     {
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests that all run entirely Interactively.
+        /// @details This test is not run automatically, because it requires a human judgement. Tests groups inheriting
+        /// from this might seek to answer questions like: Does this texture look like wood grain? Does this image look
+        /// like a robot? Is the text emitted legible?. In principle these are all questions that could be answered some
+        /// other way, but subtle behaviors might change the way processes generating these results work. A procedural
+        /// general algorithm might have hard to predict output, a GPU might take shortcuts and not produce pixel
+        /// perfect rendering and system encoding might corrupt text in unexpected ways. Simply show them to a human and
+        /// asking the question is much easier and cost effective than automating every possible failure mode.
+        /// @n All This test group does is remove itself and its inheritors from the list of tests to run automatically.
         class MEZZ_LIB InteractiveTestGroup : public UnitTestGroup
         {
+            public:
+                virtual ~InteractiveTestGroup() = default;
 
+                virtual Boole ShouldRunAutomatically() const override;
         };
     }// Testing
 }// Mezzanine
