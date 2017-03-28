@@ -85,7 +85,7 @@ namespace Mezzanine
             protected:
                 /// @brief A place for each test to send its logs.
                 /// @details This should be strictly preferred to cout because this is thread safe.
-                static thread_local std::stringstream TestLog;
+                std::stringstream TestLog;
 
             public:
                 /// @brief Default virtual deconstructor to allow for inheritance.

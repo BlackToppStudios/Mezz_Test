@@ -55,15 +55,6 @@ namespace Mezzanine
     namespace Testing
     {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Static and Thread local variables for the UnitTestGroup.
-
-        SAVE_WARNING_STATE
-            SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
-            SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
-            thread_local std::stringstream UnitTestGroup::TestLog;
-        RESTORE_WARNING_STATE
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Policy class methods, Test policy classes will implement these. 90% of tests classes ignore these.
 
         Boole UnitTestGroup::EmitIntermediaryTestResults() const
