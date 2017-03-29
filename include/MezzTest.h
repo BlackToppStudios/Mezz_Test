@@ -45,6 +45,7 @@
 
 #include "AutomaticTestGroup.h"
 #include "BenchmarkTestGroup.h"
+#include "BenchmarkThreadTestGroup.h"
 #include "ConsoleLogic.h"
 #include "OutputBufferGuard.h"
 #include "ProcessTools.h"

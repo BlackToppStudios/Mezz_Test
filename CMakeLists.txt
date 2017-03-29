@@ -62,6 +62,7 @@ message(STATUS "Determining Source Files.")
 set(TestHeaderFiles
     "${TestIncludeDir}AutomaticTestGroup.h"
     "${TestIncludeDir}BenchmarkTestGroup.h"
+    "${TestIncludeDir}BenchmarkThreadTestGroup.h"
     "${TestIncludeDir}ConsoleLogic.h"
     "${TestIncludeDir}InteractiveTestGroup.h"
     "${TestIncludeDir}MezzTest.h"
@@ -80,6 +81,7 @@ ShowList("Source Files:" "\t" "${TestHeaderFiles}")
 set(TestSourceFiles
     "${TestSourceDir}AutomaticTestGroup.cpp"
     "${TestSourceDir}BenchmarkTestGroup.cpp"
+    "${TestSourceDir}BenchmarkThreadTestGroup.cpp"
     "${TestSourceDir}ConsoleLogic.cpp"
     "${TestSourceDir}InteractiveTestGroup.cpp"
     "${TestSourceDir}MezzTest.cpp"

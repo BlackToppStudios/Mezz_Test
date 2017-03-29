@@ -116,6 +116,22 @@ namespace Mezzanine
                 void FileName ::operator ()()
         #endif
 
+        /// @def BENCHMARK_THREAD_TEST_GROUP
+        /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::BenchmarkThreadTestGroup
+        /// so it will not run parralel to any other tests and will get its own process.
+        #ifndef BENCHMARK_THREAD_TEST_GROUP
+            #define BENCHMARK_THREAD_TEST_GROUP(FileName, TestName)                                                           \
+                class MEZZ_LIB FileName : public Mezzanine::Testing::BenchmarkThreadTestGroup                                \
+                {                                                                                                      \
+                    public:                                                                                            \
+                        virtual ~FileName() = default;                                                                 \
+                        virtual void operator ()() override;                                                           \
+                        virtual Mezzanine::String Name() const override                                                \
+                            { return QUOTE(TestName); }                                                                \
+                };                                                                                                     \
+                void FileName ::operator ()()
+        #endif
+
         /// @def SILENT_TEST_GROUP
         /// @brief Defines a test group that uses policy settings in the class
         /// Mezzanine::Testing::SilentTestGroup so it will not emit normal test reporting until the summary.
