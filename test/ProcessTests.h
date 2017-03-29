@@ -69,9 +69,9 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
 
     // Try launching a process and reading its stdout
     #ifdef MEZZ_Windows
-        TEST_EQUAL("RunCommand-stdout", "foo\r\n\r\n", RunCommand("echo foo", "RunCommandScratch.txt"));
+        TEST_EQUAL("RunCommand-stdout", "foo\r\n", RunCommand("cmake -E echo \"foo\"", "RunCommandScratch.txt"));
     #else
-        TEST_EQUAL("RunCommand-stdout", "foo\n", RunCommand("echo foo", "RunCommandScratch.txt"));
+        TEST_EQUAL("RunCommand-stdout", "foo\n", RunCommand("cmake -E echo \"foo\"", "RunCommandScratch.txt"));
     #endif
     TEST_THROW("RunCommand-BadCommand",
                std::runtime_error,
