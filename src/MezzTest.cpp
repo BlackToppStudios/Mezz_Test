@@ -69,7 +69,7 @@ namespace Mezzanine
     {
         ParsedCommandLineArgs DealWithdCommandLineArgs(int argc, char** argv, const CoreTestGroup& TestInstances)
         {
-            ParsedCommandLineArgs Results{ {}, "Mezz_Tester", ExitCode::ExitSuccess, false, false, false};
+            ParsedCommandLineArgs Results{ {}, "Mezz_Tester", ExitCode::ExitSuccess, false, false, false, false};
 
             if (argc > 0) //Not really sure how this would happen, but I would rather test and not have silent failures.
                 { Results.CommandName = argv[0]; }
@@ -80,9 +80,11 @@ namespace Mezzanine
             CallingTableType CallingTable;
 
             CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = ExitCode::ExitFailure; };
+            CallingTable[RunInThisProcessToken] = [&Results]{ Results.InSubProcess = true; };
+            CallingTable[NoThreads] = [&Results]{ Results.ForceSingleThread = true; };
 
-            auto RunHere = [&Results](){ Results.InSubProcess = true; };
-            CallingTable[RunInThisProcessToken] = RunHere;
+            // Debug does both Single thread and Single process.
+            auto RunHere = [&Results]{ Results.InSubProcess = true; Results.ForceSingleThread = true; };
             CallingTable[DebugAToken] = RunHere;
             CallingTable[DebugBToken] = RunHere;
 
@@ -206,26 +208,32 @@ namespace Mezzanine
                 // Skip the ones that cannot be run here. Run only the tests that love massive parrellelism.
                 if(TestGroupForThread.MustBeSerialized()) { continue; }
 
-                // Make a test for each thread and handle all the synchronization right here.
-                TestThreads.emplace_back(
-                    [&]()
+                // Store the test and any synchronizaztion inside it.
+                auto DoAndTimeThisTest = [&]()
+                {
+                    // Multithreaded part
+                    TestTimer SingleThreadTimer;
+                    if(TestGroupForThread.IsMultiThreadSafe())
                     {
-                        // Multithreaded part
-                        TestTimer SingleThreadTimer;
-                        if(TestGroupForThread.IsMultiThreadSafe())
-                        {
-                            TestGroupForThread.operator()();
-                        } else {
-                            RunSubProcessTest(Options, TestGroupForThread);
-                        }
-
-                        // Synchronize with single threaded part.
-                        std::lock_guard<std::mutex> Lock(ResultsMutex);
-                        AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
-                        std::cout << TestGroupForThread.GetTestLog(); // Publish the Thread Specific TestLogs.
-                        TestTimings.emplace_back (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
+                        TestGroupForThread.operator()();
+                    } else {
+                        RunSubProcessTest(Options, TestGroupForThread);
                     }
-                );
+
+                    // Synchronize with single threaded part.
+                    std::lock_guard<std::mutex> Lock(ResultsMutex);
+                    AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
+                    std::cout << TestGroupForThread.GetTestLog(); // Publish the Thread Specific TestLogs.
+                    TestTimings.emplace_back (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
+                };
+
+                // Run it here if forced or in a thread otherwise.
+                if(Options.ForceSingleThread)
+                    { DoAndTimeThisTest(); }
+                else
+                    { TestThreads.emplace_back(DoAndTimeThisTest); }
+
+
             }
             for(std::thread& OneTestThread : TestThreads) { OneTestThread.join(); }
         }

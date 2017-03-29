@@ -79,6 +79,9 @@ namespace Mezzanine
                 /// @brief The current process depth as interpretted by Main.
                 Boole InSubProcess;
 
+                /// @brief Force single threaded to help troubleshoot.
+                Boole ForceSingleThread;
+
                 /// @brief Skip writing the log file.
                 Boole SkipFile;
 
@@ -168,6 +171,9 @@ namespace Mezzanine
         static const Mezzanine::String DebugAToken("debug");
         /// @vopydoc RunInThisProcessToken
         static const Mezzanine::String DebugBToken("debugtests");
+
+        /// @brief A string that if passed forces single threaded execution
+        static const Mezzanine::String NoThreads("nothreads");
 
         /// @brief A string that if passed on the command tells this to show the usage.
         static const Mezzanine::String HelpToken("help");

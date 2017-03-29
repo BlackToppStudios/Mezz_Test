@@ -76,10 +76,10 @@ namespace Mezzanine
         // MetaPolicy methods, don't override these, they use the policy methods.
 
         Boole UnitTestGroup::MustBeSerialized() const
-            { return !IsMultiThreadSafe() && !IsMultiThreadSafe(); }
+            { return !IsMultiThreadSafe() && !IsMultiProcessSafe(); }
 
         Boole UnitTestGroup::CanBeParallel() const
-            { return IsMultiThreadSafe() || IsMultiThreadSafe(); }
+            { return IsMultiThreadSafe() || IsMultiProcessSafe(); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Make all UnitTestGroups look like a container of TestDatas
