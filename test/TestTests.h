@@ -78,7 +78,9 @@ void NegativeTestTests::operator ()()
     TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing", 0.1, 1.2, 2);
     TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed);
     TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
+    TEST_THROW("TestThrowFailingNonException", std::invalid_argument, []{ throw std::string("pass"); });
     TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); });
+    TEST_NO_THROW("TestNoThrowFailingNonException", []{ throw std::string("Fail"); });
     TEST_STRING_CONTAINS("TestStringContainsFailing", Mezzanine::String("Foo"), Mezzanine::String("Fubar"));
 }
 
