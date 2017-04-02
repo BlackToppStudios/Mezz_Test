@@ -54,6 +54,46 @@ namespace
 {
     /// @brief Create a type for delegating work to something dynamic based on a string based lookup.
     typedef std::map<Mezzanine::String, std::function<void()>> CallingTableType;
+
+    using namespace Mezzanine::Testing;
+
+    CallingTableType CreateMainArgsCallingTable(const CoreTestGroup& TestInstances, ParsedCommandLineArgs& Results)
+    {
+       CallingTableType CallingTable;
+
+       CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = ExitCode::ExitFailure; };
+       CallingTable[RunInThisProcessToken] = [&Results]{ Results.InSubProcess = true; };
+       CallingTable[NoThreads] = [&Results]{ Results.ForceSingleThread = true; };
+
+       // Debug does both Single thread and Single process.
+       auto RunHere = [&Results]{ Results.InSubProcess = true; Results.ForceSingleThread = true; };
+       CallingTable[DebugAToken] = RunHere;
+       CallingTable[DebugBToken] = RunHere;
+
+       CallingTable[AllToken] = [&Results, &TestInstances]()
+       {
+           Results.TestsToRun.clear();
+           for(CoreTestGroup::value_type OneTest : TestInstances)
+               { Results.TestsToRun.push_back(OneTest.second); }
+       };
+
+       CallingTable[AutomaticToken] = [&Results, &TestInstances]()
+       {
+           for(CoreTestGroup::value_type OneTest : TestInstances)
+               { if(OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
+       };
+
+       CallingTable[InteractiveToken] = [&Results, &TestInstances]()
+       {
+           for(CoreTestGroup::value_type OneTest : TestInstances)
+               { if(!OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
+       };
+
+       CallingTable[SkipSummaryToken] = [&Results](){ Results.SkipSummary = true; };
+       CallingTable[SkipFileToken] = [&Results](){ Results.SkipFile = true; };
+
+       return CallingTable;
+    }
 }
 
 /// @file
@@ -77,58 +117,37 @@ namespace Mezzanine
                 { Results.ExitWithError = ExitCode::ExitInvalidArguments; }
 
             // Construct a delegation table that can take a huge variety of actions based on strings.
-            CallingTableType CallingTable;
+            CallingTableType CallingTable = CreateMainArgsCallingTable(TestInstances, Results);
 
-            CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = ExitCode::ExitFailure; };
-            CallingTable[RunInThisProcessToken] = [&Results]{ Results.InSubProcess = true; };
-            CallingTable[NoThreads] = [&Results]{ Results.ForceSingleThread = true; };
-
-            // Debug does both Single thread and Single process.
-            auto RunHere = [&Results]{ Results.InSubProcess = true; Results.ForceSingleThread = true; };
-            CallingTable[DebugAToken] = RunHere;
-            CallingTable[DebugBToken] = RunHere;
-
-            CallingTable[AllToken] = [&Results, &TestInstances]()
+            // Loop over the argv and make a decision for each arg.
+            for (int c=1; c<argc; ++c)
             {
-                Results.TestsToRun.clear();
-                for(CoreTestGroup::value_type OneTest : TestInstances)
-                    { Results.TestsToRun.push_back(OneTest.second); }
-            };
-
-            CallingTable[AutomaticToken] = [&Results, &TestInstances]()
-            {
-                for(CoreTestGroup::value_type OneTest : TestInstances)
-                    { if(OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
-            };
-
-            CallingTable[InteractiveToken] = [&Results, &TestInstances]()
-            {
-                for(CoreTestGroup::value_type OneTest : TestInstances)
-                    { if(!OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
-            };
-
-            CallingTable[SkipSummaryToken] = [&Results](){ Results.SkipSummary = true; };
-            CallingTable[SkipFileToken] = [&Results](){ Results.SkipFile = true; };
-
-            for (int c=1; c<argc; ++c) // Check Command line for keywords and get all the test names
-            {
-                if(ExitCode::ExitSuccess != Results.ExitWithError) { break; }
-                const Mezzanine::String ThisArg(AllLower(argv[c]));
-                if(CallingTable.count(ThisArg))
+                if(ExitCode::ExitSuccess != Results.ExitWithError) { break; } // Something bogus bail
+                const Mezzanine::String ThisArg(AllLower(argv[c]));           // Insure case insensitivity
+                if(CallingTable.count(ThisArg))                               // check for keywords that aren't tests.
+                    { CallingTable[ThisArg](); }
+                else if(TestInstances.count(ThisArg)) // Wasn't a keyword, could it be a test?
+                    { Results.TestsToRun.push_back(TestInstances.at(ThisArg)); }
+                else if(ThisArg.size()>SkipTestToken.size() &&
+                        TestInstances.count(ThisArg.substr(SkipTestToken.size())))
                 {
-                    CallingTable[ThisArg](); // Handle the storing of the setting this arg requires.
-                } else {
-                    if(TestInstances.count(ThisArg))
-                    {
-                        Results.TestsToRun.push_back(TestInstances.at(ThisArg)); // Handle a specific test
-                    } else {
-                        std::cerr << "Argument '" << ThisArg << "' not valid." << std::endl; // bogus
-                        Results.ExitWithError = ExitCode::ExitInvalidArguments;
-                    }
+                    auto FilterTestByName =
+                            [&](UnitTestGroup* T){ return ThisArg.substr(SkipTestToken.size()) == T->Name(); };
+                    Results.TestsToRun.erase(
+                        std::remove_if(Results.TestsToRun.begin(), Results.TestsToRun.end(), FilterTestByName),
+                        Results.TestsToRun.end()
+                    );
+                }
+                else
+                {
+                    std::cerr << ThisArg.substr(SkipTestToken.size()) << std::endl
+                              << "Argument '" << ThisArg << "' not valid." << std::endl; // bogus
+                    Results.ExitWithError = ExitCode::ExitInvalidArguments;
                 }
             }
 
-            if(0==Results.TestsToRun.size()){ CallingTable[AllToken](); }
+            if(0==Results.TestsToRun.size())
+                { CallingTable[AllToken](); }
 
             if(ExitCode::ExitSuccess != Results.ExitWithError) { Usage(Results.CommandName, TestInstances); }
             return Results;

@@ -64,12 +64,13 @@ namespace Mezzanine
         /// test group finishes.
         class MEZZ_LIB BenchmarkTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
-            public:
-                virtual ~BenchmarkTestGroup() = default;
+        public:
+            /// @brief Default virtual deconstructor to allow for polymorphism
+            virtual ~BenchmarkTestGroup() = default;
 
-                Boole RequiresSubProcess() const override;
-                Boole IsMultiThreadSafe() const override;
-                Boole IsMultiProcessSafe() const override;
+            Boole RequiresSubProcess() const override;
+            Boole IsMultiThreadSafe() const override;
+            Boole IsMultiProcessSafe() const override;
         };
         RESTORE_WARNING_STATE
     }// Testing

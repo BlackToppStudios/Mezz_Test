@@ -194,6 +194,9 @@ namespace Mezzanine
         /// @brief The token to pass on the command line to not emit a logfile.
         static const Mezzanine::String SkipFileToken("skipfile");
 
+        /// @brief The token to pass as a prefix to a test to skip it.
+        static const Mezzanine::String SkipTestToken("skip-");
+
         RESTORE_WARNING_STATE
     }// Testing
 }// Mezzanine

@@ -61,10 +61,11 @@ namespace Mezzanine
         /// @n All This test group does is remove itself and its inheritors from the list of tests to run automatically.
         class MEZZ_LIB InteractiveTestGroup : public UnitTestGroup
         {
-            public:
-                virtual ~InteractiveTestGroup() = default;
+        public:
+            /// @brief Default virtual deconstructor to allow for polymorphism
+            virtual ~InteractiveTestGroup() = default;
 
-                virtual Boole ShouldRunAutomatically() const override;
+            virtual Boole ShouldRunAutomatically() const override;
         };
     }// Testing
 }// Mezzanine

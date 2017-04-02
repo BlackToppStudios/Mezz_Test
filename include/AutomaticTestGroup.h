@@ -64,8 +64,9 @@ namespace Mezzanine
         /// either be "mocked out" so they don't interfere or use some other test groups rules.
         class MEZZ_LIB AutomaticTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
-            public:
-                virtual ~AutomaticTestGroup() = default;
+        public:
+            /// @brief Default virtual deconstructor to allow for polymorphism
+            virtual ~AutomaticTestGroup() = default;
         };
         RESTORE_WARNING_STATE
     }// Testing

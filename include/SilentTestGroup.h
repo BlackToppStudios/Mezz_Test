@@ -60,10 +60,11 @@ namespace Mezzanine
         /// Mezz_Test itself when a test group is needed that doesn't make any
         class MEZZ_LIB SilentTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
-            public:                                                    
-                Boole EmitIntermediaryTestResults() const override;
+        public:
+            /// @brief Default virtual deconstructor to allow for polymorphism
+            Boole EmitIntermediaryTestResults() const override;
 
-                virtual ~SilentTestGroup() = default;
+            virtual ~SilentTestGroup() = default;
         };
         RESTORE_WARNING_STATE
     }// Testing
