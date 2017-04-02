@@ -143,13 +143,23 @@ void TestTests::operator ()()
     Negation();
     for(const Mezzanine::Testing::TestData& SingleResult : Negation)
         { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Failed, SingleResult.Results); }
+    TEST_EQUAL("GetWorstShouldReturnFailure", Mezzanine::Testing::TestResult::Failed, Negation.GetWorstResults());
 
     // Warning Tests
     class WarningTestTests Warnifier;
     Warnifier();
     for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
         { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
+    TEST_EQUAL("GetWorstShouldReturnWarning", Mezzanine::Testing::TestResult::Warning, Warnifier.GetWorstResults());
 
+    int TestCount = 0;
+    int ConstTestCount = 0;
+    for(UnitTestGroup::iterator iter = Warnifier.begin(); iter != Warnifier.end(); iter++)
+        { TestCount++; }
+    for(UnitTestGroup::const_iterator iter = Warnifier.cbegin(); iter != Warnifier.cend(); iter++)
+        { ConstTestCount++; }
+
+    TEST_EQUAL("ConstAndNormalIterationOverTestGroupSame", TestCount, ConstTestCount);
 }
 
 RESTORE_WARNING_STATE
