@@ -60,9 +60,6 @@ namespace Mezzanine
         Boole UnitTestGroup::EmitIntermediaryTestResults() const
             { return true; }
 
-        Boole UnitTestGroup::RequiresSubProcess() const
-            { return false; }
-
         Boole UnitTestGroup::IsMultiThreadSafe() const
             { return true; }
 

@@ -47,9 +47,6 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        Boole BenchmarkThreadTestGroup::RequiresSubProcess() const
-            { return false; }
-
         Boole BenchmarkThreadTestGroup::IsMultiThreadSafe() const
             { return false; }
 

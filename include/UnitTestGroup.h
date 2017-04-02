@@ -114,16 +114,9 @@ namespace Mezzanine
                 // Policy class methods, Test policy classes will implement these. 90% of tests classes ignore these.
 
                 /// @brief Tell Test macros and AddResult whether or not to print immediately when called.
-                /// @note If a UnitTestGroup returns true it really shouldn't return true in RequiresSubProcess because
-                /// the calling process will not know how to
                 /// @return Defaults to true, but can be set to false to prevent printing of intermediary results, that
                 /// might not be useful. For example TestTests sets this to false when testing Test macro failures.
                 virtual Boole EmitIntermediaryTestResults() const;
-
-                /// @brief Some things must be run in a subprocess all on their own. Override this if you need it.
-                /// @return False by default, a test class should override this if it might divide by zero, segfault or
-                /// otherwise take down the test suite as a whole.
-                virtual Boole RequiresSubProcess() const;
 
                 /// @brief Is this safe to run alongside a trillion other tests?
                 /// @details To be MultiThreadSafe a test suite needs to access no singletons, the test suite must

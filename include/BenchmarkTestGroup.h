@@ -69,7 +69,6 @@ namespace Mezzanine
             /// @brief Default virtual deconstructor to allow for polymorphism
             virtual ~BenchmarkTestGroup() = default;
 
-            Boole RequiresSubProcess() const override;
             Boole IsMultiThreadSafe() const override;
             Boole IsMultiProcessSafe() const override;
         };

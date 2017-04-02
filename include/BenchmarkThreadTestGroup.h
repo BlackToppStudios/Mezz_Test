@@ -62,7 +62,6 @@ namespace Mezzanine
             public:
                 virtual ~BenchmarkThreadTestGroup() = default;
 
-                Boole RequiresSubProcess() const override;
                 Boole IsMultiThreadSafe() const override;
                 Boole IsMultiProcessSafe() const override;
         };
