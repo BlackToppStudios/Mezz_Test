@@ -49,10 +49,10 @@ namespace Mezzanine
 {
     namespace Testing
     {
-
         SAVE_WARNING_STATE
-        //SUPPRESS_CLANG_WARNING("-Wpadded") // Temporary
-        SUPPRESS_CLANG_WARNING("-Wweak-vtables") // Temporary
+        SUPPRESS_CLANG_WARNING("-Wweak-vtables") // Not a real issue, all translation unit having this is like 1 cache
+                                                 // miss per test case.
+        SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests that all run entirely automatically using most default settings.

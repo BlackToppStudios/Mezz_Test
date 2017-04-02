@@ -49,6 +49,7 @@
 
 #include <vector>
 #include <chrono>
+#include <functional>
 
 namespace Mezzanine
 {
@@ -69,7 +70,6 @@ namespace Mezzanine
         SUPPRESS_CLANG_WARNING("-Wpadded") // Testing code is not sensitive to care about 1 byte of padding
                                            // If we ever profile then we should disable this.
         SUPPRESS_CLANG_WARNING("-Wweak-vtables")
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests, suitable for being all the tests of a small subsystem or single class.
         class MEZZ_LIB UnitTestGroup
@@ -90,6 +90,14 @@ namespace Mezzanine
             public:
                 /// @brief Default virtual deconstructor to allow for inheritance.
                 virtual ~UnitTestGroup() = default;
+
+                // @brief Default constructor So inheritance works smoothly.
+                UnitTestGroup() = default;
+
+                /// @brief Delete copy constructor, because if these are copied there are logic errors.
+                UnitTestGroup(const UnitTestGroup&) = delete;
+                /// @brief Delete moved constructor, because if these are moved there are logic errors.
+                UnitTestGroup(const UnitTestGroup&&) = delete;
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // Test class methods, Every test class must implement these.

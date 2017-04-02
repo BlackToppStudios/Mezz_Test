@@ -100,6 +100,23 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
                TestData("foo", TestResult::Warning, "bar", "a.h", 12) ==
                TestData("foo", TestResult::Warning, "baz", "a.h", 12));
 
+    // Inequality
+    TEST_EQUAL("NotEqualName", true,
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 12) !=
+               TestData("baz", TestResult::Warning, "lorem", "a.h", 12));
+    TEST_EQUAL("NotEqualResult", true,
+               TestData("bar", TestResult::Unknown, "lorem", "a.h", 12) !=
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 12));
+    TEST_EQUAL("NotEqualFunction", true,
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 12) !=
+               TestData("bar", TestResult::Warning, "ipsum", "a.h", 12));
+    TEST_EQUAL("NotEqualFile", true,
+               TestData("bar", TestResult::Warning, "lorem", "b.h", 12) !=
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 12));
+    TEST_EQUAL("NotEqualLine", true,
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 12) !=
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 11));
+
     // Escaping tests
     TEST_EQUAL("EscapeTestNameString-PassThrough",      String("Foo"),          EscapeTestNameString("Foo"));
     TEST_EQUAL("EscapeTestNameString-Slashes",          String("Foo\\\\Bar"),   EscapeTestNameString("Foo\\Bar"));

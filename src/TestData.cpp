@@ -79,7 +79,7 @@ namespace Mezzanine
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
         SUPPRESS_GCC_WARNING("-Wsign-conversion")
-
+        SUPPRESS_VC_WARNING(4365)
         TestData StringToTestData(Mezzanine::String Line)
         {
             using Iterator = Mezzanine::String::const_iterator;

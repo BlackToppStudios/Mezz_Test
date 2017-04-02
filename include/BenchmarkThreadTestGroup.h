@@ -52,6 +52,7 @@ namespace Mezzanine
     {
 
         SAVE_WARNING_STATE
+        SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Benchmarks are performance sensitive, and require special attention.

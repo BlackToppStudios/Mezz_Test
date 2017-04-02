@@ -48,6 +48,13 @@
 #include <stdexcept>
 #include <thread>
 
+SAVE_WARNING_STATE
+SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
+SUPPRESS_VC_WARNING(5026) // more BS about move constructors implicitly removed
+SUPPRESS_VC_WARNING(5027) // Why are there garbage warnings like these three even in vs?
+                          // Any time you don't use the test group macros you might need to handle VS warnings.
+
+
 // This class is not called directly by the Unit Test framework and is just used by
 // TestTests to verify that Failing works correctly. Every test here should fail.
 class MEZZ_LIB NegativeTestTests : public Mezzanine::Testing::AutomaticTestGroup
@@ -144,5 +151,7 @@ void TestTests::operator ()()
         { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
 
 }
+
+RESTORE_WARNING_STATE
 
 #endif

@@ -49,6 +49,9 @@ namespace Mezzanine
 {
     namespace Testing
     {
+        SAVE_WARNING_STATE
+        SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
+
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests that all run entirely Interactively.
         /// @details This test is not run automatically, because it requires a human judgement. Tests groups inheriting
@@ -67,6 +70,7 @@ namespace Mezzanine
 
             virtual Boole ShouldRunAutomatically() const override;
         };
+        RESTORE_WARNING_STATE
     }// Testing
 }// Mezzanine
 
