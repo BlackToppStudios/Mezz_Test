@@ -74,10 +74,6 @@ namespace Mezzanine
         /// policy settings in the class Mezzanine::Testing::UnitTestGroup
         #ifndef DEFAULT_TEST_GROUP
             #define DEFAULT_TEST_GROUP(FileName, TestName)                                                             \
-                SAVE_WARNING_STATE                                                                                     \
-                SUPPRESS_VC_WARNING(4625)  /* BS about copy constructor only enabled at W4 */                          \
-                SUPPRESS_VC_WARNING(5026)  /* BS about move constructor only enabled at W4 */                          \
-                SUPPRESS_VC_WARNING(5027)  /* BS about move assignment only enabled at W4 */                           \
                 class MEZZ_LIB FileName : public Mezzanine::Testing::UnitTestGroup                                     \
                 {                                                                                                      \
                     public:                                                                                            \
@@ -86,18 +82,13 @@ namespace Mezzanine
                         virtual Mezzanine::String Name() const override                                                \
                             { return QUOTE(TestName); }                                                                \
                 };                                                                                                     \
-                void FileName ::operator ()()                                                                          \
-                RESTORE_WARNING_STATE
+                void FileName ::operator ()()
         #endif
 
         /// @def AUTOMATIC_TEST_GROUP
         /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::AutomaticTestGroup
         #ifndef AUTOMATIC_TEST_GROUP
             #define AUTOMATIC_TEST_GROUP(FileName, TestName)                                                           \
-                SAVE_WARNING_STATE                                                                                     \
-                SUPPRESS_VC_WARNING(4625)  /* BS about copy constructor only enabled at W4 */                          \
-                SUPPRESS_VC_WARNING(5026)  /* BS about move constructor only enabled at W4 */                          \
-                SUPPRESS_VC_WARNING(5027)  /* BS about move assignment only enabled at W4 */                           \
                 class MEZZ_LIB FileName : public Mezzanine::Testing::AutomaticTestGroup                                \
                 {                                                                                                      \
                     public:                                                                                            \
@@ -106,8 +97,7 @@ namespace Mezzanine
                         virtual Mezzanine::String Name() const override                                                \
                             { return QUOTE(TestName); }                                                                \
                 };                                                                                                     \
-                void FileName ::operator ()()                                                                          \
-                RESTORE_WARNING_STATE
+                void FileName ::operator ()()
         #endif
 
         /// @def BENCHMARK_TEST_GROUP
@@ -115,10 +105,6 @@ namespace Mezzanine
         /// will not run parralel to any other tests and will get its own process.
         #ifndef BENCHMARK_TEST_GROUP
             #define BENCHMARK_TEST_GROUP(FileName, TestName)                                                           \
-                SAVE_WARNING_STATE                                                                                     \
-                SUPPRESS_VC_WARNING(4625)  /* BS about copy constructor only enabled at W4 */                          \
-                SUPPRESS_VC_WARNING(5026)  /* BS about move constructor only enabled at W4 */                          \
-                SUPPRESS_VC_WARNING(5027)  /* BS about move assignment only enabled at W4 */                           \
                 class MEZZ_LIB FileName : public Mezzanine::Testing::BenchmarkTestGroup                                \
                 {                                                                                                      \
                     public:                                                                                            \
@@ -127,8 +113,7 @@ namespace Mezzanine
                         virtual Mezzanine::String Name() const override                                                \
                             { return QUOTE(TestName); }                                                                \
                 };                                                                                                     \
-                void FileName ::operator ()()                                                                          \
-                RESTORE_WARNING_STATE
+                void FileName ::operator ()()
         #endif
 
         /// @def BENCHMARK_THREAD_TEST_GROUP
@@ -136,10 +121,6 @@ namespace Mezzanine
         /// so it will not run parralel to any other tests and will get its own process.
         #ifndef BENCHMARK_THREAD_TEST_GROUP
             #define BENCHMARK_THREAD_TEST_GROUP(FileName, TestName)                                                    \
-                SAVE_WARNING_STATE                                                                                     \
-                SUPPRESS_VC_WARNING(4625)  /* BS about copy constructor only enabled at W4 */                          \
-                SUPPRESS_VC_WARNING(5026)  /* BS about move constructor only enabled at W4 */                          \
-                SUPPRESS_VC_WARNING(5027)  /* BS about move assignment only enabled at W4 */                           \
                 class MEZZ_LIB FileName : public Mezzanine::Testing::BenchmarkThreadTestGroup                          \
                 {                                                                                                      \
                     public:                                                                                            \
@@ -148,8 +129,7 @@ namespace Mezzanine
                         virtual Mezzanine::String Name() const override                                                \
                             { return QUOTE(TestName); }                                                                \
                 };                                                                                                     \
-                void FileName ::operator ()()                                                                          \
-                RESTORE_WARNING_STATE
+                void FileName ::operator ()()
         #endif
 
         /// @def SILENT_TEST_GROUP
@@ -157,10 +137,6 @@ namespace Mezzanine
         /// Mezzanine::Testing::SilentTestGroup so it will not emit normal test reporting until the summary.
         #ifndef SILENT_TEST_GROUP
             #define SILENT_TEST_GROUP(FileName, TestName)                                                              \
-                SAVE_WARNING_STATE                                                                                     \
-                SUPPRESS_VC_WARNING(4625)  /* BS about copy constructor only enabled at W4 */                          \
-                SUPPRESS_VC_WARNING(5026)  /* BS about move constructor only enabled at W4 */                          \
-                SUPPRESS_VC_WARNING(5027)  /* BS about move assignment only enabled at W4 */                           \
                 class MEZZ_LIB FileName : public Mezzanine::Testing::SilentTestGroup                                   \
                 {                                                                                                      \
                     public:                                                                                            \
@@ -169,8 +145,7 @@ namespace Mezzanine
                         virtual Mezzanine::String Name() const override                                                \
                             { return QUOTE(TestName); }                                                                \
                 };                                                                                                     \
-                void FileName ::operator ()()                                                                          \
-                RESTORE_WARNING_STATE
+                void FileName ::operator ()()
         #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
