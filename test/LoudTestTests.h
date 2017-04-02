@@ -61,7 +61,7 @@ AUTOMATIC_TEST_GROUP(WarningLoudTestTests, LoudWarnTests)
 
 /// @brief TestTests to verify that Failure works correctly and emit.
 /// @details This class is not called directly by the Unit Test framework and is just used by LoudTestTests
-AUTOMATIC_TEST_GROUP(NegativeLoudTestTests, LoudWarnTests)
+AUTOMATIC_TEST_GROUP(NegativeLoudTestTests, LoudFailTests)
 {
     // This group should serve as examples of failing tests and do so with loud output.
     TEST("DefaultTestFailing", false);

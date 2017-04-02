@@ -23,6 +23,7 @@ install:
 script:
   - ninja
   - ./Test_Tester
+  - ./Test_Tester skipsummary
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then valgrind --tool=memcheck --leak-check=full --error-exitcode=1 ./Test_Tester; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then valgrind --tool=memcheck --leak-check=full --error-exitcode=1 ./Test_Tester Debug All Skip-LoudTests; fi
 

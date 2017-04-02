@@ -120,8 +120,8 @@ namespace Mezzanine
         /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::BenchmarkThreadTestGroup
         /// so it will not run parralel to any other tests and will get its own process.
         #ifndef BENCHMARK_THREAD_TEST_GROUP
-            #define BENCHMARK_THREAD_TEST_GROUP(FileName, TestName)                                                           \
-                class MEZZ_LIB FileName : public Mezzanine::Testing::BenchmarkThreadTestGroup                                \
+            #define BENCHMARK_THREAD_TEST_GROUP(FileName, TestName)                                                    \
+                class MEZZ_LIB FileName : public Mezzanine::Testing::BenchmarkThreadTestGroup                          \
                 {                                                                                                      \
                     public:                                                                                            \
                         virtual ~FileName() = default;                                                                 \

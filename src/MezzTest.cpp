@@ -170,7 +170,7 @@ namespace Mezzanine
             }
 
             TestResult Worst = GetWorstResults(AllResults);
-            SummaryStream << "\n  Out of " << AllResults.size() << " tests the worst result is: " << Worst << '\n';
+            SummaryStream << "\n  From " << AllResults.size() << " tests the worst result is: " << Worst << '\n';
 
             return Worst;
         }
@@ -270,11 +270,11 @@ namespace Mezzanine
 
                 // Run all of the rest tests right here.
                 TestTimer SingleThreadTimer;
-                if(TestGroupForThread.IsMultiThreadSafe())
+                if(TestGroupForThread.IsMultiProcessSafe())
                 {
-                    TestGroupForThread.operator()();
-                } else {
                     RunSubProcessTest(Options, TestGroupForThread);
+                } else {
+                    TestGroupForThread.operator()();
                 }
 
                 // Synchronize with single threaded part.
