@@ -42,7 +42,7 @@
 
 /// @file
 /// @brief The declaration of the a group of tests that is performance sensitive, but not so sensitive as to require a
-/// whole process
+/// whole process.
 
 #include "UnitTestGroup.h"
 
@@ -50,20 +50,20 @@ namespace Mezzanine
 {
     namespace Testing
     {
-
         SAVE_WARNING_STATE
         SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Benchmarks are performance sensitive, and require special attention.
-        /// @details Much like the @ref BenchmarkTestGroup but in the same thread
+        /// @details Much like the @ref BenchmarkTestGroup but in the same thread.
         class MEZZ_LIB BenchmarkThreadTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
-            public:
-                virtual ~BenchmarkThreadTestGroup() = default;
+        public:
+            /// @brief Default virtual deconstructor to allow for polymorphism.
+            virtual ~BenchmarkThreadTestGroup() = default;
 
-                Boole IsMultiThreadSafe() const override;
-                Boole IsMultiProcessSafe() const override;
+            Boole IsMultiThreadSafe() const override;
+            Boole IsMultiProcessSafe() const override;
         };
         RESTORE_WARNING_STATE
     }// Testing

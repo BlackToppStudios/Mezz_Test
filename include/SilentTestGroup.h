@@ -49,18 +49,17 @@ namespace Mezzanine
 {
     namespace Testing
     {
-
         SAVE_WARNING_STATE
-        SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, desp
+        SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests that all run entirely automatically using most default settings.
         /// @details A normal test groups except it should emit no output. This is used in the tests for
-        /// Mezz_Test itself when a test group is needed that doesn't make any
+        /// Mezz_Test itself when a test group is needed that doesn't make any.
         class MEZZ_LIB SilentTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
         public:
-            /// @brief Default virtual deconstructor to allow for polymorphism
+            /// @brief Default virtual deconstructor to allow for polymorphism.
             Boole EmitIntermediaryTestResults() const override;
 
             virtual ~SilentTestGroup() = default;

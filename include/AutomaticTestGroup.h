@@ -41,7 +41,7 @@
 #define Mezz_Test_AutomaticTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that need no human intervention
+/// @brief The declaration of the a group of tests that need no human intervention.
 
 #include "UnitTestGroup.h"
 
@@ -56,16 +56,16 @@ namespace Mezzanine
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests that all run entirely automatically using most default settings.
-        /// @details Your test group can inherit from this to get detault test group behavior. It will run in the main
+        /// @details Your test group can inherit from this to get default test group behavior. It will run in the main
         /// process, but get its own thread, so that it can run alongside many other tests. This is ideal for most tests
-        /// of simple functionality, things like calling pure functions (functions that don't manuplate outside state)
+        /// of simple functionality, things like calling pure functions (functions that don't manipulate outside state)
         /// or constructing classes that manage their own state. Things that might call out to the network, render
-        /// directly to the screen, write to a database, modify singletons or otherwise intefere with other tests should
+        /// directly to the screen, write to a database, modify singletons or otherwise interfere with other tests should
         /// either be "mocked out" so they don't interfere or use some other test groups rules.
         class MEZZ_LIB AutomaticTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
         public:
-            /// @brief Default virtual deconstructor to allow for polymorphism
+            /// @brief Default virtual deconstructor to allow for polymorphism.
             virtual ~AutomaticTestGroup() = default;
         };
         RESTORE_WARNING_STATE

@@ -58,31 +58,32 @@ namespace Mezzanine
             /// @brief What was it called?
             Mezzanine::String Name;
 
-            /// @brief How long did it take
+            /// @brief How long did it take.
             std::chrono::nanoseconds Duration;
         };
 
         /// @brief An easy way to get the time something took to execute.
         class MEZZ_LIB TestTimer
         {
+        private:
             /// @brief The time this was constructed.
             std::chrono::high_resolution_clock::time_point BeginTimer;
 
-            public:
-                /// @brief Simply Creating this starts the timer
-                TestTimer()
-                    : BeginTimer(std::chrono::high_resolution_clock::now())
-                    {}
+        public:
+            /// @brief Simply Creating this starts the timer.
+            TestTimer()
+                : BeginTimer(std::chrono::high_resolution_clock::now())
+                {}
 
-                /// @brief How long since this started.
-                /// @return An std::chrono::duration in nanoseconds containing the difference between now and when
-                /// timing was started
-                std::chrono::nanoseconds GetLength();
+            /// @brief How long since this started.
+            /// @return An std::chrono::duration in nanoseconds containing the difference between now and when
+            /// timing was started.
+            std::chrono::nanoseconds GetLength();
 
-                /// @brief How long since this started and give it a name for added meaning.
-                /// @param Name The name of the time period that just elapsed.
-                NamedDuration GetNameDuration(const Mezzanine::String& Name);
-        };
+            /// @brief How long since this started and give it a name for added meaning.
+            /// @param Name The name of the time period that just elapsed.
+            NamedDuration GetNameDuration(const Mezzanine::String& Name);
+        };// TestTimer
 
         /// @brief Get a human readable string, annotated with minutes, seconds, etc...
         /// @param Duration Some amount of nano seconds that is probably preposterous for humans to grok.

@@ -71,7 +71,7 @@ namespace Mezzanine
 
         /// @def DEFAULT_TEST_GROUP
         /// @brief The easiest way to declare a test group. This keeps whatever policy settings are in the default
-        /// policy settings in the class Mezzanine::Testing::UnitTestGroup
+        /// policy settings in the class Mezzanine::Testing::UnitTestGroup.
         #ifndef DEFAULT_TEST_GROUP
             #define DEFAULT_TEST_GROUP(FileName, TestName)                                                             \
                 class MEZZ_LIB FileName : public Mezzanine::Testing::UnitTestGroup                                     \
@@ -86,7 +86,7 @@ namespace Mezzanine
         #endif
 
         /// @def AUTOMATIC_TEST_GROUP
-        /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::AutomaticTestGroup
+        /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::AutomaticTestGroup.
         #ifndef AUTOMATIC_TEST_GROUP
             #define AUTOMATIC_TEST_GROUP(FileName, TestName)                                                           \
                 class MEZZ_LIB FileName : public Mezzanine::Testing::AutomaticTestGroup                                \
@@ -102,7 +102,7 @@ namespace Mezzanine
 
         /// @def BENCHMARK_TEST_GROUP
         /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::BenchmarkTestGroup so it
-        /// will not run parralel to any other tests and will get its own process.
+        /// will not run parallel to any other tests and will get its own process.
         #ifndef BENCHMARK_TEST_GROUP
             #define BENCHMARK_TEST_GROUP(FileName, TestName)                                                           \
                 class MEZZ_LIB FileName : public Mezzanine::Testing::BenchmarkTestGroup                                \
@@ -118,7 +118,7 @@ namespace Mezzanine
 
         /// @def BENCHMARK_THREAD_TEST_GROUP
         /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::BenchmarkThreadTestGroup
-        /// so it will not run parralel to any other tests and will get its own process.
+        /// so it will not run parallel to any other tests and will get its own process.
         #ifndef BENCHMARK_THREAD_TEST_GROUP
             #define BENCHMARK_THREAD_TEST_GROUP(FileName, TestName)                                                    \
                 class MEZZ_LIB FileName : public Mezzanine::Testing::BenchmarkThreadTestGroup                          \
@@ -149,15 +149,15 @@ namespace Mezzanine
         #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Tests to use in UnitTestGroupo
+// Tests to use in UnitTestGroup
 
         #ifndef TEST
             /// @def TEST
             /// @brief The easiest way to add a test to the currently running UnitTestGroup.
-            /// @details This captures test location meta data and should be considered the default way to record tests
+            /// @details This captures test location meta data and should be considered the default way to record tests.
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
-            /// AutomaticTestGroup
+            /// AutomaticTestGroup.
             /// @param Name The name of the current test.
             /// @param Conditional A boolean result of some kind.
             #ifdef __FUNCTION__
@@ -178,11 +178,11 @@ namespace Mezzanine
             /// @brief The simplest test for comparing two values in a currently running UnitTestGroup.
             /// @details  This captures test location meta data and should be considered the default way to record
             /// equality tests.
-            /// This uses the types == operator and if inequal uses the types << operator(ostream&) to emit an error
+            /// This uses the types == operator and if in-equal uses the types << operator(ostream&) to emit an error
             /// message displaying the received results and the actual results.
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
-            /// AutomaticTestGroup
+            /// AutomaticTestGroup.
             /// @param Name The name of the current test.
             /// @param ExpectedResults The canonical definition of a correct value.
             /// @param ActualResults Whatever gibberish your code actually emits.
@@ -201,13 +201,13 @@ namespace Mezzanine
 
         #ifndef TEST_EQUAL_EPSILON
             /// @def TEST_EQUAL_EPSILON
-            /// @brief Compare types that might fluctuate because of the impreciion of floating point values.
+            /// @brief Compare types that might fluctuate because of the imprecision of floating point values.
             /// @details This calls the TestEqualEpsilon group on the UnitTestGroup class which in uses
             /// std::numeric_limits<ExpectedResultsType>::epsilon() to determine how big the error should be. This
             /// presumes the epsilon will be no more than one off.
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
-            /// AutomaticTestGroup
+            /// AutomaticTestGroup.
             /// @param Name The name of the current test.
             /// @param ExpectedResults The amount expected, plus or minus the std::numerics_limits epsilon of the type.
             /// @param ActualResults The tested amount that the test process actually produced.
@@ -227,7 +227,7 @@ namespace Mezzanine
         #ifndef TEST_EQUAL_MULTI_EPSILON
             /// @def TEST_EQUAL_MULTI_EPSILON
             /// @details This is only rarely required. TEST_EQUAL_EPSILON should be preferred as this can spuriously
-            /// pass, when the epsilon is too large
+            /// pass, when the epsilon is too large.
             /// @n @n
             /// This calls the TestEqualEpsilon group on the UnitTestGroup class which in uses
             /// std::numeric_limits<ExpectedResultsType>::epsilon() to determine how big the error should be. This
@@ -236,7 +236,7 @@ namespace Mezzanine
             /// more than 5.
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
-            /// AutomaticTestGroup
+            /// AutomaticTestGroup.
             /// @param Name The name of the current test.
             /// @param ExpectedResults The amount expected, plus or minus the std::numerics_limits epsilon of the type.
             /// @param ActualResults The tested amount that the test process actually produced.
@@ -265,7 +265,7 @@ namespace Mezzanine
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
             /// AutomaticTestGroup.
-            /// @param Cond A boolean result of some kind.
+            /// @param Conditional A boolean result of some kind.
             /// @param Name The name of the current test.
             #ifdef __FUNCTION__
                 #define TEST_WARN(Name, Conditional)                                                                   \
@@ -282,7 +282,7 @@ namespace Mezzanine
 
         #ifndef TEST_RESULT
             /// @def TEST_RESULT
-            /// @brief An easy way to add a test and associated data to the currently running UnitTestGroup
+            /// @brief An easy way to add a test and associated data to the currently running UnitTestGroup.
             /// This captures test location meta data and should be considered a good way to record tests that do not
             /// easily break down to a single conditional.
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
@@ -311,7 +311,7 @@ namespace Mezzanine
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
             /// AutomaticTestGroup.
-            /// @param ExpectThrown The type of the thing that should be thrown
+            /// @param ExpectThrown The type of the thing that should be thrown.
             /// @param CodeThatThrows A lambda or other callable code that throws an exception.
             /// @param Name The name of the current test.
             #ifdef __FUNCTION__
@@ -336,8 +336,8 @@ namespace Mezzanine
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
             /// AutomaticTestGroup.
-            /// @param CodeThatMightThrow The type of the thing that should be thrown
-            /// @param Name The name of the current test
+            /// @param CodeThatThrows The type of the thing that should be thrown.
+            /// @param Name The name of the current test.
             #ifdef __FUNCTION___
                 #define TEST_NO_THROW(Name, CodeThatThrows);                                                           \
                     TestNoThrow((Name), (CodeThatThrows),                                                              \
@@ -360,10 +360,10 @@ namespace Mezzanine
             /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
             /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
             /// AutomaticTestGroup.
-            /// @param CodeToTime The code to time
+            /// @param CodeToTime The code to time.
             /// @param ExpectedTime The Expected amount if time in microseconds.
             /// @param Variance Is an amount of microseconds this is allowed to be off in either direction.
-            /// @param Name The name of the current test
+            /// @param Name The name of the current test.
             #ifdef __FUNCTION__
                 #define TEST_TIMED(Name,  ExpectedTime, Variance, CodeToTime);                                         \
                     TestTimed((Name), (ExpectedTime), (Variance), (CodeToTime),                                        \
@@ -386,8 +386,8 @@ namespace Mezzanine
             /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
             /// AutomaticTestGroup.
             /// @param CodeToTime The code to time.
-            /// @param MaxTime The Expected amount if time in microseconds.
-            /// @param Name The name of the current test
+            /// @param MaxAcceptable The Expected amount if time in microseconds.
+            /// @param Name The name of the current test.
             #ifdef __FUNCTION__
                 #define TEST_TIMED_UNDER(Name, MaxAcceptable, CodeToTime);                                             \
                     TestTimedUnder((Name), (MaxAcceptable), (CodeToTime),                                              \
@@ -424,7 +424,6 @@ namespace Mezzanine
                                         __func__, __FILE__, __LINE__ );
             #endif
         #endif
-
     }// Testing
 }// Mezzanine
 

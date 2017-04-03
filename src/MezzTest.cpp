@@ -224,10 +224,10 @@ namespace Mezzanine
             {
                 UnitTestGroup& TestGroupForThread = *(OneTestGroup);
 
-                // Skip the ones that cannot be run here. Run only the tests that love massive parrellelism.
+                // Skip the ones that cannot be run here. Run only the tests that love massive parallelism.
                 if(TestGroupForThread.MustBeSerialized()) { continue; }
 
-                // Store the test and any synchronizaztion inside it.
+                // Store the test and any synchronization inside it.
                 auto DoAndTimeThisTest = [&]()
                 {
                     // Multithreaded part

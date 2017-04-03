@@ -50,7 +50,7 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief Possible ways to exit the UnitTestGroup Program
+        /// @brief Possible ways to exit the UnitTestGroup Program.
         enum class ExitCode
         {
             ExitSuccess             = 0,    ///< Normal exit all tests skipped or better
@@ -60,18 +60,18 @@ namespace Mezzanine
 
         /// @brief Return values from tests.
         /// @details These are loosely order from best to worse, in terms of
-        /// what we want to see from our tests. This takes the midset that
+        /// what we want to see from our tests. This takes the mindset that
         /// knowing about a failure is better than not knowing about it.
         enum class TestResult
         {
-            Success         = 0,        ///< Test was ran and appeared to work
+            Success         = 0,        ///< Test was ran and appeared to work.
             Warning         = 1,        ///< Technically the test passed but there is something that is not quite right.
-            Skipped         = 2,        ///< Test was simply not ran at the behest of the user
+            Skipped         = 2,        ///< Test was simply not ran at the behest of the user.
             Cancelled       = 3,        ///< Was canceled by user, so success is unknown, but user knows test was
                                         /// canceled.
             Inconclusive    = 4,        ///< If a user answers that with "don't know" in a test that involved
                                         /// interaction, The user knows there is a potential issue.
-            Failed          = 5,        ///< Known failure
+            Failed          = 5,        ///< Known failure.
             Unknown         = 6,        ///< Since we don't know what happened this is the worst kind of failure.
             NotApplicable   = 7,        ///< This is not even a kind of failure, This is used to when referencing a
                                         /// test, so if this winds up coming out of a test, then something has failed.
@@ -122,9 +122,9 @@ namespace Mezzanine
         /// @return An unsigned integer for representing Convertable.
         Mezzanine::UInt32 MEZZ_LIB TestResultToUnsignedInt(TestResult Convertable);
 
-        /// @brief Convert a nubmer to a TestResult.
+        /// @brief Convert a number to a TestResult.
         /// @param Convertable The valid number representing a TestResult.
-        /// @return A TestResults with the same internatl representation as Convertable.
+        /// @return A TestResults with the same internal representation as Convertable.
         /// @tparam T hopefully an integer type.
         template<typename T>
         TestResult IntToTestResult(const T& Convertable)
@@ -132,7 +132,7 @@ namespace Mezzanine
 
         /// @brief Calls TestResultToString and sends that to the output stream
         /// @param Output The TestResult to emit.
-        /// @param Stream The outputstream to send the converted TestResult out.
+        /// @param Stream The output stream to send the converted TestResult out.
         std::ostream& MEZZ_LIB operator<< (std::ostream& Stream, TestResult Output);
 
         /// @brief Roughly convert a String to a TestResult.
@@ -140,9 +140,8 @@ namespace Mezzanine
         /// "Unknown" or "N/A" exactly as returned by @ref TestResultToString then a valid result can be returned.
         /// @return The @ref TestResult corresponding to the String passed in.
         /// @throw std::invalid_argument If the string passed in does not match a valid TestResult then this will throw
-        /// an std::invalid_argument with a message descrinbing why and some data about string parsing.
+        /// an std::invalid_argument with a message describing why and some data about string parsing.
         TestResult MEZZ_LIB StringToTestResult(Mezzanine::String Text);
-
     }// Testing
 }// Mezzanine
 

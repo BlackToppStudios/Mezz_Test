@@ -41,7 +41,7 @@
 #define Mezz_Test_InteractiveTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that need human discretion and judgement.
+/// @brief The declaration of the a group of tests that need human discretion and judgment.
 
 #include "UnitTestGroup.h"
 
@@ -54,7 +54,7 @@ namespace Mezzanine
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests that all run entirely Interactively.
-        /// @details This test is not run automatically, because it requires a human judgement. Tests groups inheriting
+        /// @details This test is not run automatically, because it requires a human judgment. Tests groups inheriting
         /// from this might seek to answer questions like: Does this texture look like wood grain? Does this image look
         /// like a robot? Is the text emitted legible?. In principle these are all questions that could be answered some
         /// other way, but subtle behaviors might change the way processes generating these results work. A procedural

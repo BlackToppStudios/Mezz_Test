@@ -74,10 +74,10 @@ namespace Mezzanine
                 /// @brief This will store the name of the command that launched this executable at run time.
                 Mezzanine::String CommandName;
 
-                /// @brief If not ExitCode::ExitSucces then the caller should exit immediately.
+                /// @brief If not ExitCode::ExitSuccess then the caller should exit immediately.
                 ExitCode ExitWithError;
 
-                /// @brief The current process depth as interpretted by Main.
+                /// @brief The current process depth as interpreted by Main.
                 Boole InSubProcess;
 
                 /// @brief Force single threaded to help troubleshoot.
@@ -88,18 +88,18 @@ namespace Mezzanine
 
                 /// @brief Skip writing the summary at the end.
                 Boole SkipSummary;
-            };
+            };// ParsedCommandLineArgs
         RESTORE_WARNING_STATE
 
         /// @brief Deal with all the fine detail of dealing with command like arguments.
         /// @param argc Should be the argc passed in from the system.
         /// @param argv Should be the argv passed in from the system.
         /// @param TestInstances The complete set of tests.
-        /// @return A complete ParsedCommandLineArgs detailing every arg that this handles
-        ParsedCommandLineArgs MEZZ_LIB DealWithdCommandLineArgs(int argc, 
-                                                                char** argv, 
+        /// @return A complete ParsedCommandLineArgs detailing every arg that this handles.
+        ParsedCommandLineArgs MEZZ_LIB DealWithdCommandLineArgs(int argc,
+                                                                char** argv,
                                                                 const CoreTestGroup& TestInstances);
-        /// @brief Print a report of the tests to a stream
+        /// @brief Print a report of the tests to a stream.
         /// @param AllResults All of the results to appear in the summary.
         /// @param SummaryStream Place to print the results.
         /// @return The worst test result.
@@ -112,7 +112,7 @@ namespace Mezzanine
         void MEZZ_LIB RenderTimingsSummary(const std::vector<NamedDuration>& AllTimings,
                                            std::ostream& SummaryStream);
 
-        /// @brief Run a single test that requires a subProcess, UB is it doesn't
+        /// @brief Run a single test that requires a subProcess.
         /// @param Options The parsed command line options.
         /// @param OneTestGroup The test group to execute.
         void MEZZ_LIB RunSubProcessTest(const ParsedCommandLineArgs& Options,
@@ -142,18 +142,19 @@ namespace Mezzanine
                                                              std::vector<NamedDuration>& TestTimings);
 
         /// @brief This is the entry point for the unit test executable.
-        /// @details This will contruct an AllUnitTestGroups with the listing of unit tests available from cmake
+        /// @details This will construct an AllUnitTestGroups with the listing of unit tests available from cmake
         /// generated source file. It will then interpret any command line arguments and direct the created
         /// AllUnitTestGroups about which tests to run and how to run them. In addition to sending the results to the
-        /// standard output a copy of the test results will be written to TestResults.txt, if not configure not to.
+        /// standard output a copy of the test results will be written to TestResults.txt, if not configured not to.
         /// @n @n
         /// If no arguments are passed this will add all the tests to the AllUnitTestGroups
         /// and execute all tests that are not interactive. Print out a default report of them.
         /// @return This will return EXIT_SUCCESS if the tests ran, even if some or all failed,
         /// even if a child process segfaulted, but will return other statuses only if the main
         /// process fails. If the main process cannot create child processes it will return EXIT_FAILURE.
-        /// @param argc Is interpretted as the amount of passed arguments
-        /// @param argv Is interpretted as the arguments passed in from the launching shell.
+        /// @param argc Is interpreted as the amount of passed arguments.
+        /// @param argv Is interpreted as the arguments passed in from the launching shell.
+        /// @param TestInstances A group of tests to be executed.
         ExitCode MEZZ_LIB MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances);
 
         /// @brief When display timings with fixed width columns, this is how wide the name column is.
@@ -173,7 +174,7 @@ namespace Mezzanine
         /// @vopydoc RunInThisProcessToken
         static const Mezzanine::String DebugBToken("debugtests");
 
-        /// @brief A string that if passed forces single threaded execution
+        /// @brief A string that if passed forces single threaded execution.
         static const Mezzanine::String NoThreads("nothreads");
 
         /// @brief A string that if passed on the command tells this to show the usage.
@@ -191,7 +192,7 @@ namespace Mezzanine
         /// @brief The token to pass on the command line to skip the summary.
         static const Mezzanine::String SkipSummaryToken("skipsummary");
 
-        /// @brief The token to pass on the command line to not emit a logfile.
+        /// @brief The token to pass on the command line to not emit a log file.
         static const Mezzanine::String SkipFileToken("skipfile");
 
         /// @brief The token to pass as a prefix to a test to skip it.
