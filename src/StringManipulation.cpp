@@ -44,9 +44,6 @@
 #include "TestEnumerations.h"
 #include "StringManipulation.h"
 
-#include <locale>
-
-
 namespace Mezzanine
 {
     namespace Testing

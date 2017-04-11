@@ -56,22 +56,22 @@ namespace Mezzanine
         Mezzanine::String MEZZ_LIB RightTrim(const Mezzanine::String& Text);
 
         /// @copydoc RightTrim
-        /// @details This is delegates its work to RightTrim, the name just exists to simplify 
+        /// @details This is delegates its work to RightTrim, the name just exists to simplify.
         Mezzanine::String MEZZ_LIB rtrim(const Mezzanine::String& Text);
 
-        /// @brief Makes a c style stron all lowercase with respect to the current locale
+        /// @brief Makes a c style strong all lowercase with respect to the current locale.
         /// @param StringToConvert This string is actually changed.
-        /// @return for convience purposes the string is also returned.
+        /// @return for convenience purposes the string is also returned.
         Mezzanine::String MEZZ_LIB AllLower(const Mezzanine::String& StringToConvert);
 
         /// @brief Get a copy of the passed filename with every unsafe character removed.
         /// @param OriginalFilename A string something like the filename you want.
-        /// @return A string you can actually use as a file name
+        /// @return A string you can actually use as a file name.
         Mezzanine::String MEZZ_LIB SanitizeFileName(const Mezzanine::String& OriginalFilename);
 
         /// @brief Get a copy of the passed possible process command with every unsafe character removed.
         /// @param OriginalProcess A string something like the process you want to launch.
-        /// @return A string you can actually use as a file name
+        /// @return A string you can actually use as a file name.
         Mezzanine::String MEZZ_LIB SanitizeProcessCommand(const Mezzanine::String& OriginalProcess);
     }// Testing
 }// Mezzanine

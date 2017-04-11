@@ -43,6 +43,9 @@
 
 #include "MezzTest.h"
 
+#include <algorithm>
+#include <iostream>
+
 namespace Mezzanine
 {
     namespace Testing
@@ -56,17 +59,90 @@ namespace Mezzanine
             : TestName(Name), FunctionName(FuncName), FileName(File), LineNumber(Line), Results(Result)
         {}
 
-        bool TestData::operator<(const TestData& Rhs) const
+        Boole TestData::operator<(const TestData& Rhs) const
             { return this->TestName < Rhs.TestName; }
 
+        Boole TestData::operator==(const TestData& Rhs) const
+        {
+            return Rhs.LineNumber == this->LineNumber   &&  Rhs.Results == this->Results    &&
+                   Rhs.TestName == this->TestName       &&  Rhs.FileName == this->FileName  &&
+                   Rhs.FunctionName == this->FunctionName;
+        }
+
+        Boole TestData::operator!=(const TestData& Rhs) const
+        {
+            return Rhs.LineNumber != this->LineNumber   ||  Rhs.Results != this->Results    ||
+                   Rhs.TestName != this->TestName       ||  Rhs.FileName != this->FileName  ||
+                   Rhs.FunctionName != this->FunctionName;
+        }
+
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
+        SUPPRESS_GCC_WARNING("-Wsign-conversion")
+        SUPPRESS_VC_WARNING(4365)
         TestData StringToTestData(Mezzanine::String Line)
         {
-            TestData Results;
-            size_t LastSpace=Line.rfind(' ');
-            Results.Results = StringToTestResult(Line.substr(LastSpace+1));
-            Results.TestName=rtrim(Line.substr(0,LastSpace));
-            return Results;
+            using Iterator = Mezzanine::String::const_iterator;
+            using Character = Mezzanine::String::value_type;
+
+            const auto NotSpace = [](const Character& L) { return (L!=' ' && L!='\t' && L!='\r' && L!='\n'); };
+            const String FunctionToken(" in function ");
+            const String FileToken(" at ");
+
+            // Skip whatever to get to '['
+            Iterator OpenBracket = std::find(Line.cbegin(), Line.cend(), '[');
+            if(Line.cend() == OpenBracket) { return TestData{}; }
+
+            // Skip whitespace to Beginning of Result and Pull out the result
+            Iterator ResultsBegin = std::find_if(OpenBracket+1, Line.cend(), NotSpace);
+            if(Line.cend() == ResultsBegin) { return TestData{}; }
+            Iterator ResultsEnd = std::find(ResultsBegin+1, Line.cend(), ' ');
+            if(Line.cend() == ResultsEnd) { return TestData{}; }
+            TestResult Result = StringToTestResult(String(ResultsBegin, ResultsEnd));
+
+            // Skip whatever to '['
+            Iterator CloseBracket = std::find(ResultsEnd+1, Line.cend(), ']');
+            if(Line.cend() == CloseBracket) { return TestData{}; }
+
+            // Read the Name
+            Iterator NameBegin = std::find_if(CloseBracket+1, Line.cend(), NotSpace);
+            if(Line.cend() == NameBegin) { return TestData{}; }
+            Iterator NameEnd;
+            if(TestResult::Success == Result)
+                { NameEnd = Line.cend(); }
+            else
+            {
+                String::size_type NameEndIndex = Line.find(FunctionToken, std::distance(Line.cbegin(), NameBegin));
+                if(String::npos == NameEndIndex) { return TestData{}; }
+                NameEnd = Line.cbegin() + NameEndIndex;
+            }
+            String Name(NameBegin, NameEnd);
+
+            // If successful, we are done, If not find the function name
+            if(TestResult::Success == Result) { return TestData{Name, Result}; }
+            Iterator FunctionBegin = std::find(NameEnd+FunctionToken.size(), Line.cend(), '\'');
+            if(Line.cend() == FunctionBegin) { return TestData{Name, Result, "Bad Function Name, No Start Quote"}; }
+            Iterator FunctionEnd = std::find(FunctionBegin+1, Line.cend(), '\'');
+            if(Line.cend() == FunctionEnd) { return TestData{Name, Result, "Bad Function Name, No End Quote"}; }
+            String FunctionName(FunctionBegin+1, FunctionEnd);
+
+            // Find the start of the file
+            String::size_type FileStartHint = Line.find(FileToken, std::distance(Line.cbegin(), FunctionEnd));
+            if(String::npos == FileStartHint) { return TestData{Name, Result, FunctionName, "Bad Filename no 'at'"}; }
+            Iterator FileStart = Line.cbegin() + FileStartHint + FileToken.size();
+            Iterator FileEnd = std::find(FileStart + 1, Line.cend(), ':');
+            if(Line.cend() == FileEnd) { return TestData{Name, Result, FunctionName, "Bad Filename no ':'"}; }
+            String FileName(FileStart, FileEnd);
+
+            // Get Line number as a Whole
+            String RestOfLine(Line.substr(std::distance(Line.cbegin(), FileEnd)+1));
+            std::stringstream LineNumberConverter( RestOfLine );
+            Whole LineNumber{0};
+            LineNumberConverter >> LineNumber;
+
+            return TestData{Name, Result, FunctionName, FileName, LineNumber};
         }
+        RESTORE_WARNING_STATE
 
         String EscapeTestNameString(const Mezzanine::String& RawName)
         {
@@ -123,13 +199,14 @@ namespace Mezzanine
         std::ostream& operator<<(std::ostream& Stream, const TestData& ToStream)
         {
             Stream << ' ' << TestResultToFixedBoxString(ToStream.Results) << "  "
-                   <<  EscapeTestNameString(ToStream.TestName) << '\n';
+                   <<  EscapeTestNameString(ToStream.TestName);
             if(TestResult::Success != ToStream.Results)
             {
-                Stream << "                      in function '" << ToStream.FunctionName
+                Stream << " in function '" << ToStream.FunctionName
                        << "' at " << ToStream.FileName
-                       << ":" << ToStream.LineNumber << ".\n";
+                       << ":" << ToStream.LineNumber << '.';
             }
+            Stream << '\n';
             return Stream;
         }
 

@@ -47,6 +47,8 @@ namespace Mezzanine
 {
     namespace Testing
     {
+        Boole InteractiveTestGroup::ShouldRunAutomatically() const
+            { return false; }
 
     }// Testing
 }// Mezzanine

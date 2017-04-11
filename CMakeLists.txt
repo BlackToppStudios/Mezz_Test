@@ -44,10 +44,10 @@ message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
 # Download, Verify and setup the Jagati
-set(JagatiChecksum "35100defd5b0355c10f0ffff5ba4f979a2757d7f8e395afdf8dd57\
-c84c3556f4c74569e5c1f65bb727e3676ff3ad3695e1edb59bc73de96274e8fdcd5ed1a019")
+set(JagatiChecksum "e0ccafc0dff997313872574df16547d809b32b9770a9e93864c9e9\
+63061816a3b02855ce0258149cefc04915ecb89eaeefc36bbf609618be86ec5b3202b98fa3")
 file(DOWNLOAD
-    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.15.1/Jagati.cmake"
+    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.16.0/Jagati.cmake"
     "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
     EXPECTED_HASH SHA512=${JagatiChecksum}
 )
@@ -62,6 +62,7 @@ message(STATUS "Determining Source Files.")
 set(TestHeaderFiles
     "${TestIncludeDir}AutomaticTestGroup.h"
     "${TestIncludeDir}BenchmarkTestGroup.h"
+    "${TestIncludeDir}BenchmarkThreadTestGroup.h"
     "${TestIncludeDir}ConsoleLogic.h"
     "${TestIncludeDir}InteractiveTestGroup.h"
     "${TestIncludeDir}MezzTest.h"
@@ -80,6 +81,7 @@ ShowList("Source Files:" "\t" "${TestHeaderFiles}")
 set(TestSourceFiles
     "${TestSourceDir}AutomaticTestGroup.cpp"
     "${TestSourceDir}BenchmarkTestGroup.cpp"
+    "${TestSourceDir}BenchmarkThreadTestGroup.cpp"
     "${TestSourceDir}ConsoleLogic.cpp"
     "${TestSourceDir}InteractiveTestGroup.cpp"
     "${TestSourceDir}MezzTest.cpp"

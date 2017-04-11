@@ -48,11 +48,52 @@
 #include <iomanip>
 #include <thread>
 #include <mutex>
+#include <sstream>
 
 namespace
 {
     /// @brief Create a type for delegating work to something dynamic based on a string based lookup.
     typedef std::map<Mezzanine::String, std::function<void()>> CallingTableType;
+
+    using namespace Mezzanine::Testing;
+
+    CallingTableType CreateMainArgsCallingTable(const CoreTestGroup& TestInstances, ParsedCommandLineArgs& Results)
+    {
+       CallingTableType CallingTable;
+
+       CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = ExitCode::ExitFailure; };
+       CallingTable[RunInThisProcessToken] = [&Results]{ Results.InSubProcess = true; };
+       CallingTable[NoThreads] = [&Results]{ Results.ForceSingleThread = true; };
+
+       // Debug does both Single thread and Single process.
+       auto RunHere = [&Results]{ Results.InSubProcess = true; Results.ForceSingleThread = true; };
+       CallingTable[DebugAToken] = RunHere;
+       CallingTable[DebugBToken] = RunHere;
+
+       CallingTable[AllToken] = [&Results, &TestInstances]()
+       {
+           Results.TestsToRun.clear();
+           for(CoreTestGroup::value_type OneTest : TestInstances)
+               { Results.TestsToRun.push_back(OneTest.second); }
+       };
+
+       CallingTable[AutomaticToken] = [&Results, &TestInstances]()
+       {
+           for(CoreTestGroup::value_type OneTest : TestInstances)
+               { if(OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
+       };
+
+       CallingTable[InteractiveToken] = [&Results, &TestInstances]()
+       {
+           for(CoreTestGroup::value_type OneTest : TestInstances)
+               { if(!OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
+       };
+
+       CallingTable[SkipSummaryToken] = [&Results](){ Results.SkipSummary = true; };
+       CallingTable[SkipFileToken] = [&Results](){ Results.SkipFile = true; };
+
+       return CallingTable;
+    }
 }
 
 /// @file
@@ -68,7 +109,7 @@ namespace Mezzanine
     {
         ParsedCommandLineArgs DealWithdCommandLineArgs(int argc, char** argv, const CoreTestGroup& TestInstances)
         {
-            ParsedCommandLineArgs Results{ {}, "Mezz_Tester", ExitCode::ExitSuccess, false, false, false};
+            ParsedCommandLineArgs Results{ {}, "Mezz_Tester", ExitCode::ExitSuccess, false, false, false, false};
 
             if (argc > 0) //Not really sure how this would happen, but I would rather test and not have silent failures.
                 { Results.CommandName = argv[0]; }
@@ -76,56 +117,37 @@ namespace Mezzanine
                 { Results.ExitWithError = ExitCode::ExitInvalidArguments; }
 
             // Construct a delegation table that can take a huge variety of actions based on strings.
-            CallingTableType CallingTable;
+            CallingTableType CallingTable = CreateMainArgsCallingTable(TestInstances, Results);
 
-            CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = ExitCode::ExitFailure; };
-
-            auto RunHere = [&Results](){ Results.InSubProcess = true; };
-            CallingTable[RunInThisProcessToken] = RunHere;
-            CallingTable[DebugAToken] = RunHere;
-            CallingTable[DebugBToken] = RunHere;
-
-            CallingTable[AllToken] = [&Results, &TestInstances]()
+            // Loop over the argv and make a decision for each arg.
+            for (int c=1; c<argc; ++c)
             {
-                Results.TestsToRun.clear();
-                for(CoreTestGroup::value_type OneTest : TestInstances)
-                    { Results.TestsToRun.push_back(OneTest.second); }
-            };
-
-            CallingTable[AutomaticToken] = [&Results, &TestInstances]()
-            {
-                for(CoreTestGroup::value_type OneTest : TestInstances)
-                    { if(OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
-            };
-
-            CallingTable[InteractiveToken] = [&Results, &TestInstances]()
-            {
-                for(CoreTestGroup::value_type OneTest : TestInstances)
-                    { if(!OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
-            };
-
-            CallingTable[SkipSummaryToken] = [&Results](){ Results.SkipSummary = true; };
-            CallingTable[SkipFileToken] = [&Results](){ Results.SkipFile = true; };
-
-            for (int c=1; c<argc; ++c) // Check Command line for keywords and get all the test names
-            {
-                if(ExitCode::ExitSuccess != Results.ExitWithError) { break; }
-                const Mezzanine::String ThisArg(AllLower(argv[c]));
-                if(CallingTable.count(ThisArg))
+                if(ExitCode::ExitSuccess != Results.ExitWithError) { break; } // Something bogus bail
+                const Mezzanine::String ThisArg(AllLower(argv[c]));           // Insure case insensitivity
+                if(CallingTable.count(ThisArg))                               // check for keywords that aren't tests.
+                    { CallingTable[ThisArg](); }
+                else if(TestInstances.count(ThisArg)) // Wasn't a keyword, could it be a test?
+                    { Results.TestsToRun.push_back(TestInstances.at(ThisArg)); }
+                else if(ThisArg.size()>SkipTestToken.size() &&
+                        TestInstances.count(ThisArg.substr(SkipTestToken.size())))
                 {
-                    CallingTable[ThisArg](); // Handle the storing of the setting this arg requires.
-                } else {
-                    if(TestInstances.count(ThisArg))
-                    {
-                        Results.TestsToRun.push_back(TestInstances.at(ThisArg)); // Handle a specific test
-                    } else {
-                        std::cerr << "Argument '" << ThisArg << "' not valid." << std::endl; // bogus
-                        Results.ExitWithError = ExitCode::ExitInvalidArguments;
-                    }
+                    auto FilterTestByName =
+                            [&](UnitTestGroup* T){ return ThisArg.substr(SkipTestToken.size()) == T->Name(); };
+                    Results.TestsToRun.erase(
+                        std::remove_if(Results.TestsToRun.begin(), Results.TestsToRun.end(), FilterTestByName),
+                        Results.TestsToRun.end()
+                    );
+                }
+                else
+                {
+                    std::cerr << ThisArg.substr(SkipTestToken.size()) << std::endl
+                              << "Argument '" << ThisArg << "' not valid." << std::endl; // bogus
+                    Results.ExitWithError = ExitCode::ExitInvalidArguments;
                 }
             }
 
-            if(0==Results.TestsToRun.size()){ CallingTable[AllToken](); }
+            if(0==Results.TestsToRun.size())
+                { CallingTable[AllToken](); }
 
             if(ExitCode::ExitSuccess != Results.ExitWithError) { Usage(Results.CommandName, TestInstances); }
             return Results;
@@ -148,7 +170,7 @@ namespace Mezzanine
             }
 
             TestResult Worst = GetWorstResults(AllResults);
-            SummaryStream << "\n  Out of " << AllResults.size() << " tests the worst result is: " << Worst << '\n';
+            SummaryStream << "\n  From " << AllResults.size() << " tests the worst result is: " << Worst << '\n';
 
             return Worst;
         }
@@ -168,9 +190,27 @@ namespace Mezzanine
         void RunSubProcessTest(const ParsedCommandLineArgs& Options,
                                UnitTestGroup& OneTestGroup)
         {
-// check if we are in a subprocess and run the test.
-// capture and parse the stdout if we are not in the subprocess.
-            std::cout << Options.CommandName << OneTestGroup.Name(); // temp code
+            if(Options.InSubProcess)
+            {
+                OneTestGroup(); // Run tests and discard results, the parent process will grab it.
+            } else {
+                String ProcessLog = RunCommand(
+                    Options.CommandName + " " + OneTestGroup.Name() + " " +
+                        RunInThisProcessToken + " " + SkipSummaryToken,
+                    OneTestGroup.Name() + "_SubProcess.log"
+                );
+                std::istringstream LogStream(ProcessLog);
+                Mezzanine::String OneLine;
+                while( std::getline(LogStream, OneLine) )
+                {
+                    TestData PossibleResults( StringToTestData(OneLine) );
+                    if(TestData{} != PossibleResults)
+                    {
+                        PossibleResults.TestName = "SubProcess::" + PossibleResults.TestName;
+                        OneTestGroup.AddTestResultWithoutName(std::move(PossibleResults));
+                    }
+                }
+            }
         }
 
         void RunParallelThreads(const ParsedCommandLineArgs& Options,
@@ -184,30 +224,35 @@ namespace Mezzanine
             {
                 UnitTestGroup& TestGroupForThread = *(OneTestGroup);
 
-                // Skip the ones that cannot be run here. Run only the tests that love massive parrellelism.
-                if(!TestGroupForThread.IsMultiProcessSafe()) { continue; }
-                TestThreads.emplace_back(
-                    [&]()
-                    {
-                        // Multithreaded part
-                        TestTimer SingleThreadTimer;
-                        if(TestGroupForThread.IsMultiThreadSafe())
-                        {
-                            TestGroupForThread.operator()();
-                        } else {
-                            std::cout << ("Subprocess Test not run " + TestGroupForThread.Name() + "\n");
-                            RunCommand(Options.CommandName + TestGroupForThread.Name(),
-                                       TestGroupForThread.Name() + "_SubProcess.log");
-                        }
+                // Skip the ones that cannot be run here. Run only the tests that love massive parallelism.
+                if(TestGroupForThread.MustBeSerialized()) { continue; }
 
-                        // Synchronize with single threaded part.
-                        std::lock_guard<std::mutex> Lock(ResultsMutex);
-                        AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
-                        std::cout << TestGroupForThread.GetTestLog(); // Publish the Thread Specific TestLogs.
-                        TestTimings.emplace_back
-                            (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
+                // Store the test and any synchronization inside it.
+                auto DoAndTimeThisTest = [&]()
+                {
+                    // Multithreaded part
+                    TestTimer SingleThreadTimer;
+                    if(TestGroupForThread.IsMultiThreadSafe())
+                    {
+                        TestGroupForThread.operator()();
+                    } else {
+                        RunSubProcessTest(Options, TestGroupForThread);
                     }
-                );
+
+                    // Synchronize with single threaded part.
+                    std::lock_guard<std::mutex> Lock(ResultsMutex);
+                    AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
+                    std::cout << TestGroupForThread.GetTestLog(); // Publish the Thread Specific TestLogs.
+                    TestTimings.emplace_back (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
+                };
+
+                // Run it here if forced or in a thread otherwise.
+                if(Options.ForceSingleThread)
+                    { DoAndTimeThisTest(); }
+                else
+                    { TestThreads.emplace_back(DoAndTimeThisTest); }
+
+
             }
             for(std::thread& OneTestThread : TestThreads) { OneTestThread.join(); }
         }
@@ -220,25 +265,22 @@ namespace Mezzanine
             {
                 UnitTestGroup& TestGroupForThread = *(OneTestGroup);
 
-                // skip the ones that cannot be run here because they can't stand parrellelism.
-                if(TestGroupForThread.IsMultiProcessSafe()) { continue; }
+                // Skip the ones that cannot be run here because they can't stand parrellelism.
+                if(TestGroupForThread.CanBeParallel()) { continue; }
 
-
+                // Run all of the rest tests right here.
                 TestTimer SingleThreadTimer;
-                if(TestGroupForThread.IsMultiThreadSafe())
+                if(TestGroupForThread.IsMultiProcessSafe())
                 {
-                    TestGroupForThread.operator()();
+                    RunSubProcessTest(Options, TestGroupForThread);
                 } else {
-                    std::cout << ("Subprocess Test not run " + TestGroupForThread.Name() + "\n");
-                    RunCommand(Options.CommandName + TestGroupForThread.Name(),
-                               TestGroupForThread.Name() + "_SubProcess.log");
+                    TestGroupForThread.operator()();
                 }
 
                 // Synchronize with single threaded part.
                 AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
-                std::cout << TestGroupForThread.GetTestLog(); // Publish the Thread Specific TestLogs.
-                TestTimings.emplace_back
-                    (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
+                std::cout << TestGroupForThread.GetTestLog(); // Publish the Test Specific Logs.
+                TestTimings.emplace_back (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-S "));
 
             }
         }
@@ -247,24 +289,12 @@ namespace Mezzanine
                                                     std::vector<NamedDuration>& TestTimings)
         {
             UnitTestGroup::TestDataStorageType AllResults;
-
             RunParallelThreads(Options, AllResults, TestTimings);
             RunSerializedTests(Options, AllResults, TestTimings);
-
-//                if(TestInstance.RequiresSubProcess())
-//                {
-//                    //
-//                } else {
-
-//                }
-
-
-
-
             return AllResults;
         }
 
-        ExitCode MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances)
+        ExitCode MainImplementation(int argc, char** argv, const CoreTestGroup& TestInstances)
         {
             // Start by timing everything, because somehow that is important.
             TestTimer TotalTimer;

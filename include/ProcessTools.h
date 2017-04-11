@@ -50,7 +50,7 @@ namespace Mezzanine
     namespace Testing
     {
         /// @brief Run a process and capture its console output.
-        /// @param Command The command to attempt to crun and capture its output.
+        /// @param Command The command to attempt to run and capture its output.
         /// @param TempFileName The file to put all the console output of the command to be transferred back here.
         /// @return Everything the subprocess emits to the console (stdout or stderr) as a single concatenated string.
         /// @details This launches a process, redirects its output to a file and reads that file to return that output.
@@ -59,13 +59,10 @@ namespace Mezzanine
         Mezzanine::String MEZZ_LIB RunCommand(const Mezzanine::String& Command,
                                               const Mezzanine::String& TempFileName);
 
-
         /// @brief Get all the text in a file.
         /// @param Filename The file to read.
         /// @return A string with the contents.
-        Mezzanine::String GetFileContents(const Mezzanine::String& Filename);
-
-
+        Mezzanine::String MEZZ_LIB GetFileContents(const Mezzanine::String& Filename);
     }// Testing
 }// Mezzanine
 

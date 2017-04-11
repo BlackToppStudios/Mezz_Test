@@ -49,6 +49,9 @@
 using Mezzanine::Testing::StringToTestResult;
 using Mezzanine::Testing::TestResult;
 
+SAVE_WARNING_STATE
+SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
+                          // Any time you don't use the test group macros you might need to handle VS warnings.
 class ConversionTests : public Mezzanine::Testing::AutomaticTestGroup
 {
     public:
@@ -58,6 +61,8 @@ class ConversionTests : public Mezzanine::Testing::AutomaticTestGroup
         virtual Mezzanine::String Name() const override
             { return "Conversion"; }
 };
+
+RESTORE_WARNING_STATE
 
 void ConversionTests::operator ()()
 {
@@ -79,9 +84,6 @@ void ConversionTests::operator ()()
     TEST_THROW("BadFStringTestResults", std::invalid_argument, []{ StringToTestResult("FThatIsYouGradeNow"); } );
     TEST_THROW("BadNStringTestResults", std::invalid_argument, []{ StringToTestResult("NeverApplicable"); } );
 
-    Mezzanine::Testing::TestData FromLine{ Mezzanine::Testing::StringToTestData("SampleTestName    Success") };
-    TEST_EQUAL("LineToTestDataName", "SampleTestName", FromLine.TestName);
-    TEST_EQUAL("LineToTestDataResults", Mezzanine::Testing::TestResult::Success, FromLine.Results);
 }
 
 #endif

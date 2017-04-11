@@ -37,11 +37,12 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_BenchmarkTestGroup_h
-#define Mezz_Test_BenchmarkTestGroup_h
+#ifndef Mezz_Test_BenchmarkThreadTestGroup_h
+#define Mezz_Test_BenchmarkThreadTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that is performance sensitive.
+/// @brief The declaration of the a group of tests that is performance sensitive, but not so sensitive as to require a
+/// whole process.
 
 #include "UnitTestGroup.h"
 
@@ -50,23 +51,16 @@ namespace Mezzanine
     namespace Testing
     {
         SAVE_WARNING_STATE
-        //SUPPRESS_CLANG_WARNING("-Wpadded") // Temporary
-        //SUPPRESS_CLANG_WARNING("-Wweak-vtables") // Temporary
         SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Benchmarks are performance sensitive, and require special attention.
-        /// @details Because the smallest load can affect performance, nothing else should running while a
-        /// benchmark runs. Since many benchmarks are sensitive to what was just run (pre-filled caches, extra
-        /// allocated memory, etc...) each test inheriting from this test group will get several safeguards. Inheritors
-        /// tests will be run in their own process to guarantee isolation. No other threads or processes will be run
-        /// while this test group runs, but the main process will still be alive, but in a waiting state until this
-        /// test group finishes.
-        class MEZZ_LIB BenchmarkTestGroup : public Mezzanine::Testing::UnitTestGroup
+        /// @details Much like the @ref BenchmarkTestGroup but in the same thread.
+        class MEZZ_LIB BenchmarkThreadTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism.
-            virtual ~BenchmarkTestGroup() = default;
+            virtual ~BenchmarkThreadTestGroup() = default;
 
             Boole IsMultiThreadSafe() const override;
             Boole IsMultiProcessSafe() const override;

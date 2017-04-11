@@ -13,8 +13,6 @@ compiler:
 before_script:
   - mkdir build
   - cd build
-  - mkdir JagatiPackages
-  - export JAGATI_DIR=`pwd`/JagatiPackages
   - cmake -G"Ninja" .. -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON
 
 install:
@@ -25,8 +23,11 @@ install:
 script:
   - ninja
   - ./Test_Tester
+  - ./Test_Tester skipsummary
+  - ./Test_Tester automatic
+  - ./Test_Tester Debug All Skip-LoudTests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then valgrind --tool=memcheck --leak-check=full --error-exitcode=1 ./Test_Tester; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then valgrind --tool=memcheck --leak-check=full --error-exitcode=1 ./Test_Tester debugtests Test; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] ; then valgrind --tool=memcheck --leak-check=full --error-exitcode=1 ./Test_Tester Debug All Skip-LoudTests; fi
 
 after_success:
   - ninja TestCoverage

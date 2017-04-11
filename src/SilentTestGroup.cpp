@@ -41,12 +41,14 @@
 /// @file
 /// @brief The definition of the a group of tests that need no human intervention
 
-#include "AutomaticTestGroup.h"
+#include "SilentTestGroup.h"
 
 namespace Mezzanine
 {
     namespace Testing
     {
+        Boole SilentTestGroup::EmitIntermediaryTestResults() const
+            { return false; }
 
     }// Testing
 }// Mezzanine

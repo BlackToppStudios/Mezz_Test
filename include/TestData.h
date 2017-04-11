@@ -55,25 +55,24 @@ namespace Mezzanine
     /// @brief This contains all the items (except the tests themselves) that make the unit tests work.
     namespace Testing
     {
-
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wpadded")
         ///////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief The information about a test and how to easily find it in the filesystem
+        /// @brief The information about a test and how to easily find it in the filesystem.
         struct MEZZ_LIB TestData
         {
-            /// @brief The name of a given test
+            /// @brief The name of a given test.
             Mezzanine::String TestName;
-            /// @brief The function the test was called from
+            /// @brief The function the test was called from.
             Mezzanine::String FunctionName;
-            /// @brief The File The test happened in
+            /// @brief The File The test happened in.
             Mezzanine::String FileName;
-            /// @brief What line in the file this test occurred when the test was compiled
+            /// @brief What line in the file this test occurred when the test was compiled.
             Mezzanine::Whole LineNumber;
-            /// @brief How did the test turn out
+            /// @brief How did the test turn out.
             TestResult Results;
 
-            /// @brief Create a TestData
+            /// @brief Create a TestData.
             /// @param Name the name of the test, defaults to "".
             /// @param Result A TestResult, defaults to Testing::Success.
             /// @param FuncName The name of the function this test was called from, Defaults to "".
@@ -85,15 +84,15 @@ namespace Mezzanine
                               const String& File = "",
                               Mezzanine::Whole Line = 0);
 
-            /// @brief Default copy constructable.
+            /// @brief Default copy constructible.
             /// @param ToCopy Other TestDataToCopy.
             TestData(const TestData& ToCopy) = default;
 
-            /// @brief Default move constructable.
+            /// @brief Default move constructible.
             /// @param ToMove Other TestDataToCopy.
             TestData(TestData&& ToMove) = default;
 
-            /// @brief Default copy constructable.
+            /// @brief Default copy constructible.
             /// @param ToCopy Other TestDataToCopy.
             /// @return A reference to the assigned TestData.
             TestData& operator=(const TestData& ToCopy) = default;
@@ -106,12 +105,22 @@ namespace Mezzanine
             /// @brief Used to sort TestData in std::std and other sorted containers, by TestName.
             /// @param Rhs the right hand operand when using the less than comparison operator.
             /// @return A bool with the same value as this->TestName < Rhs.TestName.
-            bool operator<(const TestData& Rhs) const;
-        };
+            Boole operator<(const TestData& Rhs) const;
+
+            /// @brief Used to compare two TestData mostly for testing purposes.
+            /// @param Rhs the right hand operand when using the == operator.
+            /// @return True if every member matches, false otherwise.
+            Boole operator==(const TestData& Rhs) const;
+
+            /// @brief Used to compare two TestData for inequality.
+            /// @param Rhs the right hand operand when using the ~= operator.
+            /// @return True if any members differ, false otherwise.
+            Boole operator!=(const TestData& Rhs) const;
+        };// TestData
         RESTORE_WARNING_STATE
 
         /// @brief Trim the whitespace from a line of text and try to interpret the remains as TestResults and a
-        /// testname.
+        /// test name.
         /// @param Line A line of Test that starts with whitespace, then a TestResult String, then has a whitesapce
         /// delimiter and a ends with the name of test.
         /// @return A parsed TestData.
@@ -122,7 +131,7 @@ namespace Mezzanine
         /// @return A String with all backslashes and carriage returns escaped with more backslashes.
         Mezzanine::String MEZZ_LIB EscapeTestNameString(const Mezzanine::String& RawName);
 
-        /// @brief Test names in files are not suitable for reading directly, this fixes thait.
+        /// @brief Test names in files are not suitable for reading directly, this fixes that.
         /// @param MungedName A name of test that needs to be made safe for human viewing.
         /// @return A String with all backslashes and carriage returns put back how they belong.
         Mezzanine::String MEZZ_LIB UnescapeTestNameString(const Mezzanine::String& MungedName);
@@ -132,7 +141,6 @@ namespace Mezzanine
         /// @param ToStream The TestData to Write.
         /// @return the stream after modification.
         std::ostream& MEZZ_LIB operator<< (std::ostream& Stream, const TestData& ToStream);
-
     }// Testing
 }// Mezzanine
 

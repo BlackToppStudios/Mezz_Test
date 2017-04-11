@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of the Stealer/silencer/guard of output buffers
+/// @brief The definition of theSStealer/silencer/guard of output buffers.
 
 #include "OutputBufferGuard.h"
 

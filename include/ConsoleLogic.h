@@ -50,25 +50,28 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief Print a message for the user onf the standard output that briefly describes how to use this.
-        /// @param ThisName The name of the current executable
+        /// @brief Print a message for the user on the standard output that briefly describes how to use this.
+        /// @param ThisName The name of the current executable.
         /// @param TestGroups This is searched for the current list of valid test names.
-        /// @details This just prints what GetUsageString returns
+        /// @details This just prints what GetUsageString returns.
         void MEZZ_LIB Usage(const Mezzanine::String& ThisName, const Mezzanine::Testing::CoreTestGroup& TestGroups);
 
-        /// @param ThisName The name of the current executable
+        /// @param ThisName The name of the current executable.
         /// @param TestGroups This is searched for the current list of valid test names.
         /// @return A human readable string suitable for explaining how to use this executable.
         Mezzanine::String MEZZ_LIB GetUsageString(const Mezzanine::String& ThisName,
                                                   const Mezzanine::Testing::CoreTestGroup& TestGroups);
 
-        /// @brief Print all the names of all the tests to stdout and try to keep the size under the passed width
+        /// @brief Print all the names of all the tests to stdout and try to keep the size under the passed width.
         /// @param TargetWidth The expected width of the console. If a test name is longer than this it will print past
         /// this width.
         /// @TestGroups The testgroup to print the names of.
         Mezzanine::String MEZZ_LIB GetPrintableTestList(const Mezzanine::String::size_type TargetWidth,
                                                         const CoreTestGroup& TestGroups);
 /*
+        // Most remarked code ought to be removed swiftly, This feature will be re-added as soon as a scheme for
+        // testing it exists.
+
         /// @brief Asked the user a question on the std output and get a TestResult as an answer.
         /// @param Question The question to ask the user.
         /// Status otherwise they will return Warnings.
@@ -80,10 +83,6 @@ namespace Mezzanine
         ///     -  "Unsure", "Inconclusive" as Inconclusive.
         /// @return Depends on users input
         TestResult MEZZ_LIB GetTestAnswerFromStdin(Mezzanine::String Question);
-
-        /// @brief Execute a command in a process, piping its standard output to a file.
-        /// @return The contents of the file as String.
-        String MEZZ_LIB GetCommandResults(String Command);
 */
         /// @brief Convert one human readable character to a TestResults by inferring things like 'Y' is "yes" which is
         /// "success", 'F' is 'Fail' is a test "Failure" etc...
@@ -93,7 +92,6 @@ namespace Mezzanine
         /// TestResult::Warning. Any of 'U', 'u', 'I', 'i' return TestResult::Inconclusive. Anything else returns
         /// TestResult::Unknown.
         TestResult MEZZ_LIB Char8ToTestResults(Mezzanine::Char8 Answer);
-
     }// Testing
 }// Mezzanine
 

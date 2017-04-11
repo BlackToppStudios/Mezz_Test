@@ -54,6 +54,7 @@ using Mezzanine::Testing::TestData;
 using Mezzanine::Testing::EscapeTestNameString;
 using Mezzanine::Testing::UnescapeTestNameString;
 using Mezzanine::Testing::TestResult;
+using Mezzanine::Testing::StringToTestData;
 using Mezzanine::String;
 
 /// @brief Tests for the class to store test data results.
@@ -74,13 +75,47 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
     TEST_EQUAL("TestDataConstruction.FileName",     String("file.cpp"),     Constructed.FileName);
     TEST_EQUAL("TestDataConstruction.LineNumber",   Mezzanine::Whole{42},   Constructed.LineNumber);
 
-
     // Sorting
     std::vector<TestData> Sorted = {TestData("Ocelot"), TestData("Aardvark"), TestData("Zebra")};
     std::sort(Sorted.begin(), Sorted.end());
     TEST_EQUAL("TestDataSorting.A", String("Aardvark"), Sorted[0].TestName);
     TEST_EQUAL("TestDataSorting.B", String("Ocelot"), Sorted[1].TestName);
     TEST_EQUAL("TestDataSorting.C", String("Zebra"), Sorted[2].TestName);
+
+    // Equality
+    TEST_EQUAL("DefaultEqual", TestData(),  TestData());
+    TEST_EQUAL("InequalName", false,
+               TestData("foob", TestResult::Skipped) == TestData("foo", TestResult::Skipped));
+    TEST_EQUAL("InequalResult", false,
+               TestData("foo", TestResult::Warning) == TestData("foo", TestResult::Skipped));
+    TEST_EQUAL("InequalFunc", false,
+               TestData("foo", TestResult::Warning, "bar") == TestData("foo", TestResult::Warning, "baz"));
+    TEST_EQUAL("InequalFile", false,
+               TestData("foo", TestResult::Warning, "baz", "a.c") ==
+               TestData("foo", TestResult::Warning, "baz", "a.h"));
+    TEST_EQUAL("InequalLine", false,
+               TestData("foo", TestResult::Warning, "baz", "a.h", 12) ==
+               TestData("foo", TestResult::Warning, "baz", "a.h", 13));
+    TEST_EQUAL("EqualFull", false,
+               TestData("foo", TestResult::Warning, "bar", "a.h", 12) ==
+               TestData("foo", TestResult::Warning, "baz", "a.h", 12));
+
+    // Inequality
+    TEST_EQUAL("NotEqualName", true,
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 12) !=
+               TestData("baz", TestResult::Warning, "lorem", "a.h", 12));
+    TEST_EQUAL("NotEqualResult", true,
+               TestData("bar", TestResult::Unknown, "lorem", "a.h", 12) !=
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 12));
+    TEST_EQUAL("NotEqualFunction", true,
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 12) !=
+               TestData("bar", TestResult::Warning, "ipsum", "a.h", 12));
+    TEST_EQUAL("NotEqualFile", true,
+               TestData("bar", TestResult::Warning, "lorem", "b.h", 12) !=
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 12));
+    TEST_EQUAL("NotEqualLine", true,
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 12) !=
+               TestData("bar", TestResult::Warning, "lorem", "a.h", 11));
 
     // Escaping tests
     TEST_EQUAL("EscapeTestNameString-PassThrough",      String("Foo"),          EscapeTestNameString("Foo"));
@@ -96,14 +131,14 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
     TEST_EQUAL("UnescapeTestNameString-IgnoredSlashT",  String("Foo\\tBar"),    UnescapeTestNameString("Foo\\tBar"));
     TEST_EQUAL("UnescapeTestNameString-EscapedSlashT",  String("Foo\\tBar"),    UnescapeTestNameString("Foo\\\\tBar"));
 
+    // Serialization
     {
         TestData Streamable("StreamedTestNameWarning", TestResult::Warning, "FunctionWithProblem", "file.cpp", 123);
         std::stringstream SampleStream;
         SampleStream << Streamable;
         TEST_EQUAL("StreamSimpleWarning",
-                   String(" [    Warning    ]  StreamedTestNameWarning\n"
-                          "                      in function 'FunctionWithProblem' at file.cpp:123.\n"),
-                   SampleStream.str())
+            String(" [    Warning    ]  StreamedTestNameWarning in function 'FunctionWithProblem' at file.cpp:123.\n"),
+            SampleStream.str())
     }
 
     {
@@ -123,6 +158,31 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
                    String(" [    Success    ]  Streamed\\nTest\\nName\\nNewline\n"),
                    SampleStream.str())
     }
+
+    // Deserialization
+    TestData FromLine{ StringToTestData(" [    Success    ]  Fred") };
+    TEST_EQUAL("StringToTestData-Success-Name",         "Fred",                 FromLine.TestName);
+    TEST_EQUAL("StringToTestData-Success-Results",      TestResult::Success,    FromLine.Results);
+    TEST_EQUAL("StringToTestData-Success-FunctionName", String(""),             FromLine.FunctionName);
+    TEST_EQUAL("StringToTestData-Success-LineNumber",   Mezzanine::Whole{0},    FromLine.LineNumber);
+    TEST_EQUAL("StringToTestData-Success-FileName",     String(""),             FromLine.FileName);
+
+    TestData FailedLine{ StringToTestData("[    Failed     ]  Scooby in function 'snack' at MysteryMachine.h:147.") };
+    TEST_EQUAL("StringToTestData-Failed-Name",          "Scooby",                   FailedLine.TestName);
+    TEST_EQUAL("StringToTestData-Failed-Results",       TestResult::Failed,         FailedLine.Results);
+    TEST_EQUAL("StringToTestData-Failed-FunctionName",  String("snack"),            FailedLine.FunctionName);
+    TEST_EQUAL("StringToTestData-Failed-LineNumber",    Mezzanine::Whole{147},      FailedLine.LineNumber);
+    TEST_EQUAL("StringToTestData-Failed-FileName",      String("MysteryMachine.h"), FailedLine.FileName);
+
+    TestData BogusLine{ StringToTestData(" Shaggy is probably a stoner, but there was never any on screen.") };
+    TEST_EQUAL("StringToTestData-CompletelyBogus", TestData{}, BogusLine);
+
+
+    TEST_THROW("StringToTestData-BadStatusThrows",
+               std::invalid_argument,
+               []{ StringToTestData(" [    Daphne    ]  Fred"); });
+
+    // Add throw tests
 }
 
 #endif

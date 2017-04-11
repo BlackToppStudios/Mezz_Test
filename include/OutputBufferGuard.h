@@ -41,7 +41,7 @@
 #define Mezz_Test_OutputBufferGuard_h
 
 /// @file
-/// @brief Definition of a class for stealing and returning rdbuf from OutputStreams
+/// @brief Definition of a class for stealing and returning the rdbuf to and from OutputStreams.
 
 #include <iostream>
 
@@ -52,11 +52,11 @@ namespace Mezzanine
     namespace Testing
     {
         /// @internal
-        /// @brief Used to apply RAII to Stdout and STDERR buffers/streams
+        /// @brief Used to apply RAII to STDOUT and STDERR buffers/streams.
         class MEZZ_LIB OutputBufferGuard
         {
         private:
-            /// @brief A place to store output that would go to the original stream;
+            /// @brief A place to store output that would go to the original stream.
             std::stringstream StreamOuputSink;
 
             /// @brief Store a reference to the original stream so we can restore it in the end.
@@ -74,10 +74,10 @@ namespace Mezzanine
             /// @brief Moving one of these guards is probably just fine, but it has been deleted until needed.
             OutputBufferGuard(OutputBufferGuard&&) = delete;
             /// @brief Move assigning one of these guards might be just fine, but it has been deleted until needed.
-            OutputBufferGuard& operator=(OutputBufferGuard&&) = delete; // WHY?
+            OutputBufferGuard& operator=(OutputBufferGuard&&) = delete;
 
             /// @brief Captures Output buffers and configures test outputs on creation.
-            /// @param StreamToSilence The stream to silence and guard from outputing anything
+            /// @param StreamToSilence The stream to silence and guard from outputting anything
             /// until the destructor is called.
             explicit OutputBufferGuard(std::ostream& StreamToSilence);
 
@@ -85,11 +85,10 @@ namespace Mezzanine
             /// @return a String with the whole of the contents sunk into the original Stream.
             Mezzanine::String GetSunkOutput() const;
 
-            /// @brief Restores original output  buffers on creation
+            /// @brief Restores original output buffers on creation.
             virtual ~OutputBufferGuard();
-        };
-
-    }
+        };// OutputBufferGuard
+    }// Testing
 }// Mezzanine
 
 #endif

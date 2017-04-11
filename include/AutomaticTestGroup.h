@@ -41,7 +41,7 @@
 #define Mezz_Test_AutomaticTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that need no human intervention
+/// @brief The declaration of the a group of tests that need no human intervention.
 
 #include "UnitTestGroup.h"
 
@@ -49,17 +49,24 @@ namespace Mezzanine
 {
     namespace Testing
     {
-
         SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wpadded") // Temporary
-        SUPPRESS_CLANG_WARNING("-Wweak-vtables") // Temporary
+        SUPPRESS_CLANG_WARNING("-Wweak-vtables") // Not a real issue, all translation unit having this is like 1 cache
+                                                 // miss per test case.
+        SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests that all run entirely automatically using most default settings.
+        /// @details Your test group can inherit from this to get default test group behavior. It will run in the main
+        /// process, but get its own thread, so that it can run alongside many other tests. This is ideal for most tests
+        /// of simple functionality, things like calling pure functions (functions that don't manipulate outside state)
+        /// or constructing classes that manage their own state. Things that might call out to the network, render
+        /// directly to the screen, write to a database, modify singletons or otherwise interfere with other tests should
+        /// either be "mocked out" so they don't interfere or use some other test groups rules.
         class MEZZ_LIB AutomaticTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
-            public:
-                virtual ~AutomaticTestGroup() = default;
+        public:
+            /// @brief Default virtual deconstructor to allow for polymorphism.
+            virtual ~AutomaticTestGroup() = default;
         };
         RESTORE_WARNING_STATE
     }// Testing

@@ -47,7 +47,7 @@
 #include "UnitTestGroup.h"
 
 SAVE_WARNING_STATE
-SUPPRESS_VC_WARNING(4668)
+SUPPRESS_VC_WARNING(4668) // A Prprocessor macro was used and never defined, because the VS Headers are poorly written.
 
 #include <vector>
 #include <sstream>
@@ -79,15 +79,18 @@ namespace Mezzanine
                                          const Mezzanine::Testing::CoreTestGroup& TestGroups)
         {
             return Mezzanine::String("\nUsage: ") + ThisName + (
-                    " [help] [summary] [testlist] [interactive|automatic] [all]\n\t[skipfile] Test Group Names ...\n\n"
-                    "All:         All test groups will be run.\n"
-                    "Interactive: Only interactive tests will be performed on specified test groups.\n"
-                    "Automatic:   Only automated tests will be performed on specified test groups.\n"
-                    "Summary:     Display a count of failures and successes.\n"
-                    "SkipFile:    Do not store a copy of the results in TestResults.txt.\n"
-                    "DebugTests:  Run tests in the current process. Skips crash protection,\n"
-                    "             but eases test debugging.\n"
-                    "Help:        Display this message.\n\n"
+                    " [help] [summary] [testlist] [interactive|automatic] [all]\n\t[skipfile] <Test Names>...\n\n"
+                    "<Test Name>      Add this test to the list of tests to run.\n"
+                    "Skip-<Test Name> Remove this from the list of tests to run.\n\n"
+                    "All:             All test groups will be run.\n"
+                    "Interactive:     Only interactive tests will be performed on specified test groups.\n"
+                    "Automatic:       Only automated tests will be performed on specified test groups.\n"
+                    "Summary:         Display a count of failures and successes.\n"
+                    "SkipFile:        Do not store a copy of the results in TestResults.txt.\n"
+                    "DebugTests:      Run tests in the current process in single thread. Skips crash protection,\n"
+                    "                 but eases test debugging.\n"
+                    "NoThreads:       Half of Debugtests, forces single threaded, but allows subprocesses"
+                    "Help:            Display this message.\n\n"
                     "If only test group names are entered, then all tests in those groups are run.\n"
                     "This command is not case sensitive.\n\n"
                     "Current Test Groups:\n"
@@ -186,7 +189,6 @@ namespace Mezzanine
                     return Testing::TestResult::Unknown;
             }
         }
-
 
     }// Testing
 }// Mezzanine

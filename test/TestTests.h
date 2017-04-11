@@ -48,6 +48,13 @@
 #include <stdexcept>
 #include <thread>
 
+SAVE_WARNING_STATE
+SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
+SUPPRESS_VC_WARNING(5026) // more BS about move constructors implicitly removed
+SUPPRESS_VC_WARNING(5027) // Why are there garbage warnings like these three even in vs?
+                          // Any time you don't use the test group macros you might need to handle VS warnings.
+
+
 // This class is not called directly by the Unit Test framework and is just used by
 // TestTests to verify that Failing works correctly. Every test here should fail.
 class MEZZ_LIB NegativeTestTests : public Mezzanine::Testing::AutomaticTestGroup
@@ -71,7 +78,9 @@ void NegativeTestTests::operator ()()
     TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing", 0.1, 1.2, 2);
     TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed);
     TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
+    TEST_THROW("TestThrowFailingNonException", std::invalid_argument, []{ throw std::string("pass"); });
     TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); });
+    TEST_NO_THROW("TestNoThrowFailingNonException", []{ throw std::string("Fail"); });
     TEST_STRING_CONTAINS("TestStringContainsFailing", Mezzanine::String("Foo"), Mezzanine::String("Fubar"));
 }
 
@@ -97,7 +106,7 @@ void WarningTestTests::operator ()()
 }
 
 /// @brief This is the actual Test class. This tests our Test Macros.
-class MEZZ_LIB TestTests : public Mezzanine::Testing::BenchmarkTestGroup
+class MEZZ_LIB TestTests : public Mezzanine::Testing::AutomaticTestGroup
 {
     public:
         virtual void operator()() override;
@@ -136,13 +145,25 @@ void TestTests::operator ()()
     Negation();
     for(const Mezzanine::Testing::TestData& SingleResult : Negation)
         { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Failed, SingleResult.Results); }
+    TEST_EQUAL("GetWorstShouldReturnFailure", Mezzanine::Testing::TestResult::Failed, Negation.GetWorstResults());
 
     // Warning Tests
     class WarningTestTests Warnifier;
     Warnifier();
     for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
         { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
+    TEST_EQUAL("GetWorstShouldReturnWarning", Mezzanine::Testing::TestResult::Warning, Warnifier.GetWorstResults());
 
+    int TestCount = 0;
+    int ConstTestCount = 0;
+    for(UnitTestGroup::iterator iter = Warnifier.begin(); iter != Warnifier.end(); iter++)
+        { TestCount++; }
+    for(UnitTestGroup::const_iterator iter = Warnifier.cbegin(); iter != Warnifier.cend(); iter++)
+        { ConstTestCount++; }
+
+    TEST_EQUAL("ConstAndNormalIterationOverTestGroupSame", TestCount, ConstTestCount);
 }
+
+RESTORE_WARNING_STATE
 
 #endif
