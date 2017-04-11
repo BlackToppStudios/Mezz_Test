@@ -294,7 +294,7 @@ namespace Mezzanine
             return AllResults;
         }
 
-        ExitCode MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances)
+        ExitCode MainImplementation(int argc, char** argv, const CoreTestGroup& TestInstances)
         {
             // Start by timing everything, because somehow that is important.
             TestTimer TotalTimer;

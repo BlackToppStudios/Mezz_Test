@@ -155,7 +155,7 @@ namespace Mezzanine
         /// @param argc Is interpreted as the amount of passed arguments.
         /// @param argv Is interpreted as the arguments passed in from the launching shell.
         /// @param TestInstances A group of tests to be executed.
-        ExitCode MEZZ_LIB MainImplementation(int argc, char** argv, CoreTestGroup& TestInstances);
+        ExitCode MEZZ_LIB MainImplementation(int argc, char** argv, const CoreTestGroup& TestInstances);
 
         /// @brief When display timings with fixed width columns, this is how wide the name column is.
         static const Mezzanine::Whole TimingNameColumnWidth = 30;
