@@ -67,8 +67,13 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
         TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(200), std::chrono::milliseconds(60),
                []{ std::this_thread::sleep_for( std::chrono::milliseconds(200) ); });
     #else
-        TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(5), std::chrono::milliseconds(2),
+        #ifdef MEZZ_CompilerIsEmscripten
+            TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(20), std::chrono::milliseconds(4),
+               []{ std::this_thread::sleep_for( std::chrono::milliseconds(20) ); });
+        #else
+            TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(5), std::chrono::milliseconds(2),
                []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
+        #endif
     #endif
 
     TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(15000), []{ });
