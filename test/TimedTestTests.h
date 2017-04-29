@@ -71,7 +71,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
     #endif
 
-    TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ });
+    TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(15000), []{ });
 
     // Warning Timed Tests
     class WarningTimedTestTests Warnifier;
