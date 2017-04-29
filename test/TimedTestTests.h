@@ -63,15 +63,9 @@ SILENT_TEST_GROUP(WarningTimedTestTests, WarningTimedTest)
 BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 {
     // Positive tests This should serve as examples for how to use this and get tests that passed.
-    #ifdef MEZZ_Windows
-        TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(200), std::chrono::milliseconds(60),
-               []{ std::this_thread::sleep_for( std::chrono::milliseconds(200) ); });
-    #else
-        TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(5), std::chrono::milliseconds(2),
-               []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
-    #endif
-
-    TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ });
+    TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(200), std::chrono::milliseconds(60),
+           []{ std::this_thread::sleep_for( std::chrono::milliseconds(200) ); });
+    TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(15000), []{ });
 
     // Warning Timed Tests
     class WarningTimedTestTests Warnifier;
