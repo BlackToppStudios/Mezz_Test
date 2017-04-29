@@ -44,6 +44,7 @@
 /// @brief TestData, TestDataStorage and UnitTestGroup class definitions.
 
 #include "DataTypes.h"
+#include "SuppressWarnings.h"
 
 #include <chrono>
 
@@ -52,15 +53,18 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief A simple piece of data to represent the length of a named period of time.
-        struct MEZZ_LIB NamedDuration
-        {
-            /// @brief What was it called?
-            Mezzanine::String Name;
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wpadded") // Emscripten complains here.
+            /// @brief A simple piece of data to represent the length of a named period of time.
+            struct MEZZ_LIB NamedDuration
+            {
+                /// @brief What was it called?
+                Mezzanine::String Name;
 
-            /// @brief How long did it take.
-            std::chrono::nanoseconds Duration;
-        };
+                /// @brief How long did it take.
+                std::chrono::nanoseconds Duration;
+            };
+        RESTORE_WARNING_STATE
 
         /// @brief An easy way to get the time something took to execute.
         class MEZZ_LIB TestTimer

@@ -64,7 +64,7 @@ namespace Mezzanine
     namespace Testing
     {
         SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wpadded") // Temporary
+        SUPPRESS_CLANG_WARNING("-Wpadded")
             /// @brief A struct storing everything that might be passed in on the command line.
             struct MEZZ_LIB ParsedCommandLineArgs
             {

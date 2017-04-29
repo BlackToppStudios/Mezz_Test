@@ -132,7 +132,7 @@ namespace Mezzanine
                         TestInstances.count(ThisArg.substr(SkipTestToken.size())))
                 {
                     auto FilterTestByName =
-                            [&](UnitTestGroup* T){ return ThisArg.substr(SkipTestToken.size()) == T->Name(); };
+                        [&](UnitTestGroup* T){ return ThisArg.substr(SkipTestToken.size()) == AllLower(T->Name()); };
                     Results.TestsToRun.erase(
                         std::remove_if(Results.TestsToRun.begin(), Results.TestsToRun.end(), FilterTestByName),
                         Results.TestsToRun.end()
