@@ -51,11 +51,11 @@ try {
     }
 
     stage('SendMail') {
-        notifyMail("Success!", "Build of ${env.JOB_NAME}" Successful.")
+        notifyMail("Success!", "Build of ${env.JOB_NAME} Successful.")
     }
 }
 catch(buildException) {
-    notifyMail("Failure!", "Build of ${env.JOB_NAME}" Failed!\nException: ${buildException}")
+    notifyMail("Failure!", "Build of ${env.JOB_NAME} Failed!\nException: ${buildException}")
     throw buildException
 }
 
