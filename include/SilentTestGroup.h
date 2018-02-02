@@ -62,7 +62,7 @@ namespace Mezzanine
             /// @brief Default virtual deconstructor to allow for polymorphism.
             Boole EmitIntermediaryTestResults() const override;
 
-            virtual ~SilentTestGroup() = default;
+            virtual ~SilentTestGroup() override = default;
         };
         RESTORE_WARNING_STATE
     }// Testing

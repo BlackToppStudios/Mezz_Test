@@ -108,9 +108,9 @@ AddJagatiLibrary()
 CreateCoverageTarget(${TestLib} "${TestSourceFiles}")
 
 # This has only three tests and they could  be added as follows.
-#AddTestFile("Boilerplate.h") # Not a real test but we want our example to build
-#AddTestFile("Conversion.h")
-#AddTestFile("Test.h")
+# AddTestFile("Boilerplate.h") # Not a real test but we want our example to build
+# AddTestFile("Conversion.h")
+# AddTestFile("Test.h")
 
 # Instead we can also add all the tests in the test directory with the following:
 AddTestDirectory(${${PROJECT_NAME}TestDir})

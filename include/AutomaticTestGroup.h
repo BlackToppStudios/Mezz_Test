@@ -66,7 +66,7 @@ namespace Mezzanine
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism.
-            virtual ~AutomaticTestGroup() = default;
+            virtual ~AutomaticTestGroup() override = default;
         };
         RESTORE_WARNING_STATE
     }// Testing

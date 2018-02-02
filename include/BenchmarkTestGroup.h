@@ -66,7 +66,7 @@ namespace Mezzanine
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism.
-            virtual ~BenchmarkTestGroup() = default;
+            virtual ~BenchmarkTestGroup() override = default;
 
             Boole IsMultiThreadSafe() const override;
             Boole IsMultiProcessSafe() const override;

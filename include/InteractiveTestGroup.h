@@ -66,7 +66,7 @@ namespace Mezzanine
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism
-            virtual ~InteractiveTestGroup() = default;
+            virtual ~InteractiveTestGroup() override = default;
 
             virtual Boole ShouldRunAutomatically() const override;
         };
