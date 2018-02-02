@@ -355,9 +355,15 @@ namespace Mezzanine
                 return ExitCode::ExitFailure;
 
             }
+            catch(std::exception e)
+            {
+                std::cout << "Uncaught exception of type std::exception made it to main. it says:\n"
+                          << e.what() << std::endl;
+                return ExitCode::ExitFailure;
+            }
             catch (...)
             {
-                std::cout << "Uncaught exception made it to main." << std::endl;
+                std::cout << "Uncaught exception of unknown type made it to main." << std::endl;
                 return ExitCode::ExitFailure;
             }
 
