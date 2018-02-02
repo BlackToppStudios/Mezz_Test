@@ -55,7 +55,7 @@ SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explic
 class ConversionTests : public Mezzanine::Testing::AutomaticTestGroup
 {
     public:
-        virtual ~ConversionTests() = default;
+        virtual ~ConversionTests() override = default;
 
         virtual void operator ()() override;
         virtual Mezzanine::String Name() const override
