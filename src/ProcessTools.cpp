@@ -69,7 +69,7 @@ namespace Mezzanine
 
             // The return of std::system is only defined in certain situations, and not this one, so this result is
             // useless, but we cannot ignore because of hard to suppress warnings.
-            if(ResultThatIsIgnored > std::numeric_limits<int>::max()) { std::cout << ""; } 
+            if(ResultThatIsIgnored > std::numeric_limits<int>::max()) { std::cout << ""; }
 
             return GetFileContents(SafeTempFileName);
         }
