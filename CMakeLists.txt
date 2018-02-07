@@ -78,7 +78,6 @@ AddHeaderFile("TimingTools.h")
 AddHeaderFile("UnitTestGroup.h")
 ShowList("Source Files:" "\t" "${TestHeaderFiles}")
 
-AddSourceFile("AutomaticTestGroup.cpp")
 AddSourceFile("BenchmarkTestGroup.cpp")
 AddSourceFile("BenchmarkThreadTestGroup.cpp")
 AddSourceFile("ConsoleLogic.cpp")
