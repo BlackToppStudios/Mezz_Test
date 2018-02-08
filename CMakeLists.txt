@@ -1,4 +1,4 @@
-# © Copyright 2010 - 2017 BlackTopp Studios Inc.
+# © Copyright 2010 - 2018 BlackTopp Studios Inc.
 # This file is part of The Mezzanine Engine.
 #
 #    The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -44,8 +44,8 @@ message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
 # Download, Verify and setup the Jagati
-set(JagatiChecksum "a64cd1bfa71c72fab744741094f9e4269a576177593bc861c64dd8\
-763c9083797fad83c46e561efe3ee7034a02b97527cad2823d48c70b7c8c3c44fa88bc57fa")
+set(JagatiChecksum "7143962fefaf0c3e50aebb916037235d61fc5c50dbfafd61bf9479\
+be66ca786cd93c3267de03b1cf0900946906b4cf5c1ec54da1ed33e9883da2671dbc77d357")
 file(DOWNLOAD
     "https://raw.githubusercontent.com/BlackToppStudios/Jagati/Proposed-bigleap/Jagati.cmake"
     "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
