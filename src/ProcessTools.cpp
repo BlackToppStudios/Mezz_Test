@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2017 BlackTopp Studios Inc.
+// © Copyright 2010 - 2018 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -50,12 +50,14 @@
 #include <cstdlib>
 
 #include <iostream>
+#include <limits>
 
 namespace Mezzanine
 {
     namespace Testing
     {
-
+        SAVE_WARNING_STATE
+        SUPPRESS_GCC_WARNING("-Wunused-result") // The result from std::system is useless here.
         Mezzanine::String RunCommand(const Mezzanine::String& Command, const Mezzanine::String& TempFileName)
         {
             const Mezzanine::String SafeCommand(SanitizeProcessCommand(Command));
@@ -63,9 +65,15 @@ namespace Mezzanine
             if(SafeCommand != Command)
                 { throw std::runtime_error("Command name included unsafe characters, it would not run correctly."); }
             const Mezzanine::String CommandToRun(SafeCommand + " 2>&1 > " + SafeTempFileName);
-            std::system(CommandToRun.c_str());
+            int ResultThatIsIgnored = std::system(CommandToRun.c_str());
+
+            // The return of std::system is only defined in certain situations, and not this one, so this result is
+            // useless, but we cannot ignore because of hard to suppress warnings.
+            if(ResultThatIsIgnored > std::numeric_limits<int>::max()) { std::cout << ""; }
+
             return GetFileContents(SafeTempFileName);
         }
+        RESTORE_WARNING_STATE
 
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wsign-conversion") // std::streamoff are signed with the string constructor takes

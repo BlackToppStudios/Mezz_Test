@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2017 BlackTopp Studios Inc.
+// © Copyright 2010 - 2018 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -60,7 +60,7 @@ namespace Mezzanine
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism.
-            virtual ~BenchmarkThreadTestGroup() = default;
+            virtual ~BenchmarkThreadTestGroup() override = default;
 
             Boole IsMultiThreadSafe() const override;
             Boole IsMultiProcessSafe() const override;

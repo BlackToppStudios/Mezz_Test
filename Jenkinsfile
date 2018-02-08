@@ -44,7 +44,7 @@ try {
             node('UbuntuEmscripten') {
                 sh """ export PATH=$PATH:/home/cisadmin/emsdk-portable/node/4.1.1_64bit/bin                           &&
                        cd build                                                                                       &&
-                       node Test_Tester.js all skip-process
+                       node Test_Tester.js all skip-process NoThreads
                 """
             }
         }

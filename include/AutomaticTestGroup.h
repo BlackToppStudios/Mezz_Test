@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2017 BlackTopp Studios Inc.
+// © Copyright 2010 - 2018 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -66,7 +66,7 @@ namespace Mezzanine
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism.
-            virtual ~AutomaticTestGroup() = default;
+            virtual ~AutomaticTestGroup() override = default;
         };
         RESTORE_WARNING_STATE
     }// Testing

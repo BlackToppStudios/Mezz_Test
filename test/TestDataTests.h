@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2017 BlackTopp Studios Inc.
+// © Copyright 2010 - 2018 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -181,6 +181,21 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
     TEST_THROW("StringToTestData-BadStatusThrows",
                std::invalid_argument,
                []{ StringToTestData(" [    Daphne    ]  Fred"); });
+
+    // Assignment and move tests
+    TestData DestAssign("DestinationAssign", TestResult::Unknown);
+    TestData DestMove("DestinationMove", TestResult::Unknown);
+    TestData Source("Source", TestResult::Success);
+
+    TEST_EQUAL("PreCopyTargetDestAssign",   TestData("DestinationAssign", TestResult::Unknown), DestAssign);
+    TEST_EQUAL("PreCopyTargetDestMove",     TestData("DestinationMove", TestResult::Unknown),   DestMove);
+    TEST_EQUAL("PreCopyTargetSource",       TestData("Source", TestResult::Success),            Source);
+
+    DestAssign = Source;
+    DestMove = std::move(Source);
+
+    TEST_EQUAL("PostCopyTargetDestAssign",  TestData("Source", TestResult::Success),    DestAssign);
+    TEST_EQUAL("PostCopyTargetDestMove",    TestData("Source", TestResult::Success),    DestMove);
 
     // Add throw tests
 }

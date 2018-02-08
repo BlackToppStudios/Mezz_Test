@@ -5,14 +5,9 @@ environment:
   matrix:
   - GENERATOR: MinGW Makefiles
     CompilerPath: C:\msys64\mingw32\bin
-    TestPath: "."
   - GENERATOR: MinGW Makefiles
     CompilerPath: C:\msys64\mingw64\bin
-    TestPath: "."
-#  - GENERATOR: Visual Studio 14 2015
-#    TestPath: "./%configuration%"
   - GENERATOR: Visual Studio 14 2015 Win64
-    TestPath: "./%configuration%"
 
 configuration:
   - Debug
@@ -43,7 +38,6 @@ build_script:
 
 test_script:
   - cmd: cd C:\projects\Mezz_Test\build
-  - cmd: cd %TestPath%
   - cmd: Test_Tester
 
 notifications:

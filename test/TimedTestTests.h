@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2017 BlackTopp Studios Inc.
+// © Copyright 2010 - 2018 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -63,13 +63,9 @@ SILENT_TEST_GROUP(WarningTimedTestTests, WarningTimedTest)
 BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 {
     // Positive tests This should serve as examples for how to use this and get tests that passed.
-    #ifdef MEZZ_Windows
-        TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(200), std::chrono::milliseconds(60),
-               []{ std::this_thread::sleep_for( std::chrono::milliseconds(200) ); });
-    #else
-        TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(5), std::chrono::milliseconds(2),
-               []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
-    #endif
+    // These amounts of time very short to be measuring this way. longer running tests can be more precise.
+    TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(200), std::chrono::milliseconds(100),
+            []{ std::this_thread::sleep_for( std::chrono::milliseconds(200) ); });
 
     TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ });
 

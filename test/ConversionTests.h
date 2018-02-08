@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2017 BlackTopp Studios Inc.
+// © Copyright 2010 - 2018 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explic
 class ConversionTests : public Mezzanine::Testing::AutomaticTestGroup
 {
     public:
-        virtual ~ConversionTests() = default;
+        virtual ~ConversionTests() override = default;
 
         virtual void operator ()() override;
         virtual Mezzanine::String Name() const override

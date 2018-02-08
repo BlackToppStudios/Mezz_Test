@@ -1,4 +1,4 @@
-# © Copyright 2010 - 2017 BlackTopp Studios Inc.
+# © Copyright 2010 - 2018 BlackTopp Studios Inc.
 # This file is part of The Mezzanine Engine.
 #
 #    The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -44,13 +44,14 @@ message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
 # Download, Verify and setup the Jagati
-set(JagatiChecksum "e0ccafc0dff997313872574df16547d809b32b9770a9e93864c9e9\
-63061816a3b02855ce0258149cefc04915ecb89eaeefc36bbf609618be86ec5b3202b98fa3")
+set(JagatiChecksum "7143962fefaf0c3e50aebb916037235d61fc5c50dbfafd61bf9479\
+be66ca786cd93c3267de03b1cf0900946906b4cf5c1ec54da1ed33e9883da2671dbc77d357")
 file(DOWNLOAD
-    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.16.0/Jagati.cmake"
+    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/Proposed-bigleap/Jagati.cmake"
     "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
     EXPECTED_HASH SHA512=${JagatiChecksum}
 )
+
 include("${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake")
 
 StandardJagatiSetup()
@@ -59,54 +60,44 @@ IncludeJagatiPackage("StaticFoundation")
 ########################################################################################################################
 # Add Sources
 message(STATUS "Determining Source Files.")
-set(TestHeaderFiles
-    "${TestIncludeDir}AutomaticTestGroup.h"
-    "${TestIncludeDir}BenchmarkTestGroup.h"
-    "${TestIncludeDir}BenchmarkThreadTestGroup.h"
-    "${TestIncludeDir}ConsoleLogic.h"
-    "${TestIncludeDir}InteractiveTestGroup.h"
-    "${TestIncludeDir}MezzTest.h"
-    "${TestIncludeDir}OutputBufferGuard.h"
-    "${TestIncludeDir}ProcessTools.h"
-    "${TestIncludeDir}SilentTestGroup.h"
-    "${TestIncludeDir}StringManipulation.h"
-    "${TestIncludeDir}TestData.h"
-    "${TestIncludeDir}TestEnumerations.h"
-    "${TestIncludeDir}TestMacros.h"
-    "${TestIncludeDir}TimingTools.h"
-    "${TestIncludeDir}UnitTestGroup.h"
-)
+
+AddHeaderFile("AutomaticTestGroup.h")
+AddHeaderFile("BenchmarkTestGroup.h")
+AddHeaderFile("BenchmarkThreadTestGroup.h")
+AddHeaderFile("ConsoleLogic.h")
+AddHeaderFile("InteractiveTestGroup.h")
+AddHeaderFile("MezzTest.h")
+AddHeaderFile("OutputBufferGuard.h")
+AddHeaderFile("ProcessTools.h")
+AddHeaderFile("SilentTestGroup.h")
+AddHeaderFile("StringManipulation.h")
+AddHeaderFile("TestData.h")
+AddHeaderFile("TestEnumerations.h")
+AddHeaderFile("TestMacros.h")
+AddHeaderFile("TimingTools.h")
+AddHeaderFile("UnitTestGroup.h")
 ShowList("Source Files:" "\t" "${TestHeaderFiles}")
 
-set(TestSourceFiles
-    "${TestSourceDir}AutomaticTestGroup.cpp"
-    "${TestSourceDir}BenchmarkTestGroup.cpp"
-    "${TestSourceDir}BenchmarkThreadTestGroup.cpp"
-    "${TestSourceDir}ConsoleLogic.cpp"
-    "${TestSourceDir}InteractiveTestGroup.cpp"
-    "${TestSourceDir}MezzTest.cpp"
-    "${TestSourceDir}OutputBufferGuard.cpp"
-    "${TestSourceDir}ProcessTools.cpp"
-    "${TestSourceDir}SilentTestGroup.cpp"
-    "${TestSourceDir}StringManipulation.cpp"
-    "${TestSourceDir}TestData.cpp"
-    "${TestSourceDir}TestEnumerations.cpp"
-    "${TestSourceDir}TestMacros.cpp"
-    "${TestSourceDir}TimingTools.cpp"
-    "${TestSourceDir}UnitTestGroup.cpp"
-)
+AddSourceFile("BenchmarkTestGroup.cpp")
+AddSourceFile("BenchmarkThreadTestGroup.cpp")
+AddSourceFile("ConsoleLogic.cpp")
+AddSourceFile("InteractiveTestGroup.cpp")
+AddSourceFile("MezzTest.cpp")
+AddSourceFile("OutputBufferGuard.cpp")
+AddSourceFile("ProcessTools.cpp")
+AddSourceFile("SilentTestGroup.cpp")
+AddSourceFile("StringManipulation.cpp")
+AddSourceFile("TestData.cpp")
+AddSourceFile("TestEnumerations.cpp")
+AddSourceFile("TimingTools.cpp")
+AddSourceFile("UnitTestGroup.cpp")
 ShowList("Source Files:" "\t" "${TestSourceFiles}")
 
-set(TestSwigFiles
-    ""
-)
+#AddSwigEntryPoint("NotYet.h")
 ShowList("Swig Input Files:" "\t" "${TestSwigFiles}")
 
-set(TestDoxFiles
-    "${TestDoxDir}Dox.h"
-)
+AddJagatiDoxInput("Dox.h")
 ShowList("Doxygen Input Files:" "\t" "${TestDoxFiles}")
-AddJagatiDoxInput("${TestDoxFiles}")
 
 ########################################################################################################################
 # Build targets
@@ -116,9 +107,9 @@ AddJagatiLibrary()
 CreateCoverageTarget(${TestLib} "${TestSourceFiles}")
 
 # This has only three tests and they could  be added as follows.
-#AddTestClass("Boilerplate") # Not a real test but we want our example to build
-#AddTestClass("Conversion")
-#AddTestClass("Test")
+# AddTestFile("Boilerplate.h") # Not a real test but we want our example to build
+# AddTestFile("Conversion.h")
+# AddTestFile("Test.h")
 
 # Instead we can also add all the tests in the test directory with the following:
 AddTestDirectory(${${PROJECT_NAME}TestDir})
