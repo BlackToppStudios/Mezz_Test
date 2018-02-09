@@ -44,8 +44,8 @@ message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ##########################################################################|#############################################
 # Download, Verify and setup the Jagati
-set(JagatiChecksum "7143962fefaf0c3e50aebb916037235d61fc5c50dbfafd61bf9479\
-be66ca786cd93c3267de03b1cf0900946906b4cf5c1ec54da1ed33e9883da2671dbc77d357")
+set(JagatiChecksum "7b9256fbe0769f80b14013e458673c399251940890833a5b9e0b09\
+72b7734f8f3ee4e967f9ece84f4131b1aad3151e0e8cedd9a6d4c28ce2e0167c463a5dc093")
 file(DOWNLOAD
     "https://raw.githubusercontent.com/BlackToppStudios/Jagati/Proposed-bigleap/Jagati.cmake"
     "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
