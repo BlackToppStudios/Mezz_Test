@@ -26,6 +26,7 @@
 
 # QT Creator Items
 CMakeLists.txt.user*
+.directory
 
 # Doxygen Temp Files
 *.tmp
@@ -44,12 +45,8 @@ doxygen_sqlite3.db
 # Mac OS X spotlight
 .DS_Store
 
-
 # Ignore libincludes mercurial files
 .hg*
 
 # other git files
 .git/*
-
-# Build directories
-build/
