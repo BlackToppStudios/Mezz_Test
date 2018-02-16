@@ -47,7 +47,7 @@ message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 set(JagatiChecksum "4b3c45888ba921acb73f91328a13cdacd504575e1495056da18736\
 e6a3fb9095a8566c85092767c8c090ee794dc4ad4294688f765875df47df85b559b3ce5e20")
 file(DOWNLOAD
-    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/Proposed-bigleap/Jagati.cmake"
+    "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.20.0/Jagati.cmake"
     "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake"
     EXPECTED_HASH SHA512=${JagatiChecksum}
 )
