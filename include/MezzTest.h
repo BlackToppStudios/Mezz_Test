@@ -88,6 +88,9 @@ namespace Mezzanine
 
                 /// @brief Skip writing the summary at the end.
                 Boole SkipSummary;
+
+                /// @brief Create Junit Xml output files?
+                Boole EmitJunitXml;
             };// ParsedCommandLineArgs
         RESTORE_WARNING_STATE
 
@@ -134,6 +137,8 @@ namespace Mezzanine
                                          UnitTestGroup::TestDataStorageType& AllResults,
                                          std::vector<NamedDuration>& TestTimings);
 
+        void MEZZ_LIB EmitJunitResults(const UnitTestGroup::TestDataStorageType& AllResults);
+
         /// @brief Run all the tests per their normal execution policies.
         /// @param Options The options about what tests to run.
         /// @param TestTimings A collection of timings this will add to.
@@ -169,10 +174,15 @@ namespace Mezzanine
 
         /// @brief A string that if passed on the command tells the tests not to launch sub processes.
         static const Mezzanine::String RunInThisProcessToken("thisprocess");
-        /// @vopydoc RunInThisProcessToken
+        /// @copydoc RunInThisProcessToken
         static const Mezzanine::String DebugAToken("debug");
-        /// @vopydoc RunInThisProcessToken
+        /// @copydoc RunInThisProcessToken
         static const Mezzanine::String DebugBToken("debugtests");
+
+        /// @brief A string that if passed on the command tells this to emit Junit XML test results.
+        static const Mezzanine::String JunitXMLAToken("xml");
+        /// @brief Another string that if passed on the command tells this to emit Junit XML test results.
+        static const Mezzanine::String JunitXMLBToken("junit");
 
         /// @brief A string that if passed forces single threaded execution.
         static const Mezzanine::String NoThreads("nothreads");

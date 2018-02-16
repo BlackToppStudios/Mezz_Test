@@ -64,6 +64,8 @@ namespace
        CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = ExitCode::ExitFailure; };
        CallingTable[RunInThisProcessToken] = [&Results]{ Results.InSubProcess = true; };
        CallingTable[NoThreads] = [&Results]{ Results.ForceSingleThread = true; };
+       CallingTable[JunitXMLAToken] = [&Results]{ Results.EmitJunitXml = true; };
+       CallingTable[JunitXMLBToken] = [&Results]{ Results.EmitJunitXml = true; };
 
        // Debug does both Single thread and Single process.
        auto RunHere = [&Results]{ Results.InSubProcess = true; Results.ForceSingleThread = true; };
@@ -109,7 +111,7 @@ namespace Mezzanine
     {
         ParsedCommandLineArgs DealWithdCommandLineArgs(int argc, char** argv, const CoreTestGroup& TestInstances)
         {
-            ParsedCommandLineArgs Results{ {}, "Mezz_Tester", ExitCode::ExitSuccess, false, false, false, false};
+            ParsedCommandLineArgs Results{ {}, "Mezz_Tester", ExitCode::ExitSuccess, false, false, false, false, false};
 
             if (argc > 0) //Not really sure how this would happen, but I would rather test and not have silent failures.
                 { Results.CommandName = argv[0]; }
@@ -285,12 +287,55 @@ namespace Mezzanine
             }
         }
 
+
+        void EmitJunitResults(const UnitTestGroup::TestDataStorageType& AllResults)
+        {
+            std::stringstream XmlContents;
+            XmlContents << "<testsuite tests=\"" << AllResults.size() << "\">\n";
+            for(UnitTestGroup::TestDataStorageType::value_type OneResult : AllResults)
+            {
+                switch(OneResult.Results)
+                {
+                    case TestResult::Success:
+                        XmlContents << "    <testcase classname=\"" << OneResult.FileName<< "\" name=\""
+                                        << OneResult.TestName << "\" />\n";
+                        break;
+
+                    case TestResult::Skipped:
+                        XmlContents << "    <testcase classname=\"" << OneResult.FileName<< "\" name=\""
+                                        << OneResult.TestName << "\">\n"
+                                    << "        <skipped />\n"
+                                    << "    </testcase>\n";
+                        break;
+
+                    case TestResult::Cancelled:
+                    case TestResult::Failed:
+                    case TestResult::Inconclusive:
+                    case TestResult::NotApplicable:
+                    case TestResult::Unknown:
+                    case TestResult::Warning:
+                        XmlContents << "    <testcase classname=\"" << OneResult.FileName<< "\" name=\""
+                                        << OneResult.TestName << "\">\n"
+                                    << "        <failure type=\"" << OneResult.Results << "\">\n"
+                                    << "            " << OneResult
+                                    << "        </failure>\n"
+                                    << "    </testcase>\n";
+                }
+            }
+            XmlContents << "</testsuite>";
+
+            std::ofstream JunitCompatibleXML("Mezz_Test_Results.xml");
+            JunitCompatibleXML << XmlContents.str() << std::endl;
+        }
+
         UnitTestGroup::TestDataStorageType RunTests(const ParsedCommandLineArgs& Options,
                                                     std::vector<NamedDuration>& TestTimings)
         {
             UnitTestGroup::TestDataStorageType AllResults;
             RunParallelThreads(Options, AllResults, TestTimings);
             RunSerializedTests(Options, AllResults, TestTimings);
+            if(Options.EmitJunitXml)
+                { EmitJunitResults(AllResults); }
             return AllResults;
         }
 
@@ -368,5 +413,6 @@ namespace Mezzanine
             }
 
         }
+
     }// Testing
 }// Mezzanine

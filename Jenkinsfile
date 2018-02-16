@@ -51,15 +51,12 @@ pipeline {
             parallel {
                 stage('FedoraGcc') {
                     agent { label "FedoraGcc" }
-                    environment {
-                        MEZZ_PACKAGE_DIR = '/home/cisadmin/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-debug'
                         dir('build-debug') { sh """
                             cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
-                            ./Test_Tester
+                            ./Test_Tester xml
                         """ }
                     }
                     post {
@@ -70,16 +67,13 @@ pipeline {
                 }
                 stage('MacOSSierra') {
                     agent { label "MacOSSierra" }
-                    environment {
-                        MEZZ_PACKAGE_DIR = '/home/cisadmin/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-debug'
                         dir('build-debug') { sh """
                             export PATH='$PATH:/usr/local/bin/' &&
                             cmake -G"Xcode" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             cmake --build . &&
-                           ./Test_Tester
+                           ./Test_Tester xml
                         """ }
                     }
                     post {
@@ -90,18 +84,13 @@ pipeline {
                 }
                 stage('RaspianJessie') {
                     agent { label "RaspianJessie" }
-                    environment {
-                        CC = 'gcc-6'
-                        CXX = 'g++-6'
-                        MEZZ_PACKAGE_DIR = '/home/pi/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-debug'
                         dir('build-debug') { sh """
                             export MEZZ_PACKAGE_DIR=/home/pi/Code/ &&
                             cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
-                            ./Test_Tester
+                            ./Test_Tester xml
                          """ }
                     }
                     post {
@@ -112,17 +101,12 @@ pipeline {
                 }
                 stage('UbuntuClang') {
                     agent { label "UbuntuClang" }
-                    environment {
-                        CC = 'clang'
-                        CXX = 'clang++'
-                        MEZZ_PACKAGE_DIR = '/home/cisadmin/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-debug'
                         dir('build-debug') { sh """
                             cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja  &&
-                            ./Test_Tester
+                            ./Test_Tester xml
                          """ }
                      }
                      post {
@@ -133,11 +117,6 @@ pipeline {
                 }
                 stage('UbuntuEmscripten') {
                     agent { label "UbuntuEmscripten" }
-                    environment {
-                        CC = 'emcc'
-                        CXX = 'em++'
-                        MEZZ_PACKAGE_DIR = '/home/cisadmin/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-debug'
                         dir('build-debug') { sh """
@@ -150,15 +129,12 @@ pipeline {
                 }
                 stage('UbuntuGcc') {
                     agent { label "UbuntuGcc" }
-                    environment {
-                        MEZZ_PACKAGE_DIR = '/home/cisadmin/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-debug'
                         dir('build-debug') { sh """
                             cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
-                            ./Test_Tester
+                            ./Test_Tester xml
                         """ }
                     }
                     post {
@@ -174,7 +150,7 @@ pipeline {
                         dir('build-debug') {
                             bat 'cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF'
                             bat 'ninja'
-                            bat 'Test_Tester'
+                            bat 'Test_Tester xml'
                         }
                     }
                     post {
@@ -190,7 +166,7 @@ pipeline {
                         dir('build-debug') {
                             bat 'cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF'
                             bat 'ninja'
-                            bat 'Test_Tester'
+                            bat 'Test_Tester xml'
                         }
                     }
                     post {
@@ -206,7 +182,7 @@ pipeline {
                         dir('build-debug') {
                             bat '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat" x86_amd64 && cmake -G"Visual Studio 15 2017 Win64" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF'
                             bat 'cmake --build .'
-                            bat 'Test_Tester'
+                            bat 'Test_Tester xml'
                         }
                     }
                     post {
@@ -222,15 +198,12 @@ pipeline {
             parallel {
                 stage('FedoraGcc') {
                     agent { label "FedoraGcc" }
-                    environment {
-                        MEZZ_PACKAGE_DIR = '/home/cisadmin/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """
                             cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
-                            ./Test_Tester
+                            ./Test_Tester xml
                         """ }
                     }
                     post {
@@ -241,16 +214,13 @@ pipeline {
                 }
                 stage('MacOSSierra') {
                     agent { label "MacOSSierra" }
-                    environment {
-                        MEZZ_PACKAGE_DIR = '/home/cisadmin/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """
                             export PATH='$PATH:/usr/local/bin/' &&
                             cmake -G"Xcode" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             cmake --build . &&
-                           ./Test_Tester
+                           ./Test_Tester xml
                         """ }
                     }
                     post {
@@ -261,18 +231,13 @@ pipeline {
                 }
                 stage('RaspianJessie') {
                     agent { label "RaspianJessie" }
-                    environment {
-                        CC = 'gcc-6'
-                        CXX = 'g++-6'
-                        MEZZ_PACKAGE_DIR = '/home/pi/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """
                             export MEZZ_PACKAGE_DIR=/home/pi/Code/ &&
                             cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
-                            ./Test_Tester
+                            ./Test_Tester xml
                          """ }
                     }
                     post {
@@ -283,17 +248,12 @@ pipeline {
                 }
                 stage('UbuntuClang') {
                     agent { label "UbuntuClang" }
-                    environment {
-                        CC = 'clang'
-                        CXX = 'clang++'
-                        MEZZ_PACKAGE_DIR = '/home/cisadmin/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """
                             cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja  &&
-                            ./Test_Tester
+                            ./Test_Tester xml
                          """ }
                      }
                      post {
@@ -304,32 +264,24 @@ pipeline {
                 }
                 stage('UbuntuEmscripten') {
                     agent { label "UbuntuEmscripten" }
-                    environment {
-                        CC = 'emcc'
-                        CXX = 'em++'
-                        MEZZ_PACKAGE_DIR = '/home/cisadmin/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """
                             cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
-                            ./Test_Tester
+                            node Test_Tester.js all skip-process NoThreads
                         """ }
                     }
                     // Don't capture Emscripten logs, because it cannot make files
                 }
                 stage('UbuntuGcc') {
                     agent { label "UbuntuGcc" }
-                    environment {
-                        MEZZ_PACKAGE_DIR = '/home/cisadmin/Code/'
-                    }
                     steps {
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """
                             cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
-                            ./Test_Tester
+                            ./Test_Tester xml
                         """ }
                     }
                     post {
@@ -345,7 +297,7 @@ pipeline {
                         dir('build-release') {
                             bat 'cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF'
                             bat 'ninja'
-                            bat 'Test_Tester'
+                            bat 'Test_Tester xml'
                         }
                     }
                     post {
@@ -361,7 +313,7 @@ pipeline {
                         dir('build-release') {
                             bat 'cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF'
                             bat 'ninja'
-                            bat 'Test_Tester'
+                            bat 'Test_Tester xml'
                         }
                     }
                     post {
@@ -377,7 +329,7 @@ pipeline {
                         dir('build-release') {
                             bat '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat" x86_amd64 && cmake -G"Visual Studio 15 2017 Win64" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF'
                             bat 'cmake --build .'
-                            bat 'Test_Tester'
+                            bat 'Test_Tester xml'
                         }
                     }
                     post {
