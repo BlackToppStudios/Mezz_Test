@@ -119,7 +119,7 @@ EmitTestCode()
 AddTestTarget()
 
 # Some extra creating of targets for other development related tasks
-AddIDEVisibility("")
+AddIDEVisibility("Jenkinsfile")
 SetCodeCoverage()
 
 message(STATUS "${PROJECT_NAME} - Ending Configuration.")
