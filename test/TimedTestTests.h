@@ -64,8 +64,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 {
     // Positive tests This should serve as examples for how to use this and get tests that passed.
     // These amounts of time very short to be measuring this way. longer running tests can be more precise.
-    TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(200), std::chrono::milliseconds(100),
-            []{ std::this_thread::sleep_for( std::chrono::milliseconds(200) ); });
+    TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(300), std::chrono::milliseconds(100),
+            []{ std::this_thread::sleep_for( std::chrono::milliseconds(300) ); });
 
     TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ });
 
