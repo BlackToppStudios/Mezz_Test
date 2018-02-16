@@ -38,7 +38,7 @@ build_script:
 
 test_script:
   - cmd: cd C:\projects\Mezz_Test\build
-  - cmd: Test_Tester
+  - cmd: Test_Tester xml
 
 notifications:
 - provider: Email
