@@ -22,7 +22,7 @@ install:
 
 script:
   - ninja
-  - ./Test_Tester
+  - ./Test_Tester xml
   - ./Test_Tester skipsummary
   - ./Test_Tester automatic
   - ./Test_Tester Debug All Skip-LoudTests

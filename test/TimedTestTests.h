@@ -47,10 +47,12 @@
 
 #include <stdexcept>
 #include <thread>
+#include <random>
 
 
 /// @brief TestTests to verify that Warnings works correctly.
-/// @details This class is not called directly by the Unit Test framework and is just used by
+/// @details This class is not called directly by the Unit Test framework and is called by the TimedTestTest
+/// to verify everything fails.
 SILENT_TEST_GROUP(WarningTimedTestTests, WarningTimedTest)
 {
     // Here are some examples of test that should warn.
@@ -62,10 +64,19 @@ SILENT_TEST_GROUP(WarningTimedTestTests, WarningTimedTest)
 /// @brief This is the actual Test class. This tests our Test Macros that are time sensitive.
 BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 {
+    // lets make a random time for these tests so if this is run on a bunch of VMs on the same hardware there will be
+    // subtle variations in the timing and it won't cause all the VMs to wake at the same time and possibly delay some
+    // of the tests
+    std::mt19937 MersennTwisterRandomSource;
+    MersennTwisterRandomSource.seed(std::random_device()());
+    std::uniform_int_distribution<std::mt19937::result_type> DistLength(1000,1500);
+    std::uniform_int_distribution<std::mt19937::result_type>::result_type SleepTime =
+            DistLength(MersennTwisterRandomSource);
+
     // Positive tests This should serve as examples for how to use this and get tests that passed.
     // These amounts of time very short to be measuring this way. longer running tests can be more precise.
-    TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(200), std::chrono::milliseconds(100),
-            []{ std::this_thread::sleep_for( std::chrono::milliseconds(200) ); });
+    TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(SleepTime), std::chrono::milliseconds(200),
+            [SleepTime]{ std::this_thread::sleep_for( std::chrono::milliseconds(SleepTime) ); });
 
     TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ });
 
@@ -74,7 +85,6 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     Warnifier();
     for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
         { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
-
 }
 
 #endif
