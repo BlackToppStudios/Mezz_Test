@@ -77,7 +77,7 @@ namespace Mezzanine
                 class MEZZ_LIB FileName : public Mezzanine::Testing::UnitTestGroup                                     \
                 {                                                                                                      \
                     public:                                                                                            \
-                        virtual ~FileName() override = default;                                                                 \
+                        virtual ~FileName() override = default;                                                        \
                         virtual void operator ()() override;                                                           \
                         virtual Mezzanine::String Name() const override                                                \
                             { return QUOTE(TestName); }                                                                \
@@ -92,7 +92,7 @@ namespace Mezzanine
                 class MEZZ_LIB FileName : public Mezzanine::Testing::AutomaticTestGroup                                \
                 {                                                                                                      \
                     public:                                                                                            \
-                        virtual ~FileName() override = default;                                                                 \
+                        virtual ~FileName() override = default;                                                        \
                         virtual void operator ()() override;                                                           \
                         virtual Mezzanine::String Name() const override                                                \
                             { return QUOTE(TestName); }                                                                \
@@ -108,7 +108,7 @@ namespace Mezzanine
                 class MEZZ_LIB FileName : public Mezzanine::Testing::BenchmarkTestGroup                                \
                 {                                                                                                      \
                     public:                                                                                            \
-                        virtual ~FileName() override = default;                                                                 \
+                        virtual ~FileName() override = default;                                                        \
                         virtual void operator ()() override;                                                           \
                         virtual Mezzanine::String Name() const override                                                \
                             { return QUOTE(TestName); }                                                                \
@@ -124,7 +124,7 @@ namespace Mezzanine
                 class MEZZ_LIB FileName : public Mezzanine::Testing::BenchmarkThreadTestGroup                          \
                 {                                                                                                      \
                     public:                                                                                            \
-                        virtual ~FileName() override = default;                                                                 \
+                        virtual ~FileName() override = default;                                                        \
                         virtual void operator ()() override;                                                           \
                         virtual Mezzanine::String Name() const override                                                \
                             { return QUOTE(TestName); }                                                                \
@@ -140,7 +140,7 @@ namespace Mezzanine
                 class MEZZ_LIB FileName : public Mezzanine::Testing::SilentTestGroup                                   \
                 {                                                                                                      \
                     public:                                                                                            \
-                        virtual ~FileName() override = default;                                                                 \
+                        virtual ~FileName() override = default;                                                        \
                         virtual void operator ()() override;                                                           \
                         virtual Mezzanine::String Name() const override                                                \
                             { return QUOTE(TestName); }                                                                \
