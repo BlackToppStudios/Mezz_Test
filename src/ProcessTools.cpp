@@ -58,6 +58,7 @@ namespace Mezzanine
     {
         SAVE_WARNING_STATE
         SUPPRESS_GCC_WARNING("-Wunused-result") // The result from std::system is useless here.
+        SUPPRESS_GCC_WARNING("-Wtautological-type-limit-compare") // The result from std::system is useless here.
         Mezzanine::String RunCommand(const Mezzanine::String& Command, const Mezzanine::String& TempFileName)
         {
             const Mezzanine::String SafeCommand(SanitizeProcessCommand(Command));
