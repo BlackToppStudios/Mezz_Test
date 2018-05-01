@@ -52,49 +52,64 @@
 
 namespace
 {
+    using namespace Mezzanine::Testing;
+
     /// @brief Create a type for delegating work to something dynamic based on a string based lookup.
     typedef std::map<Mezzanine::String, std::function<void()>> CallingTableType;
 
-    using namespace Mezzanine::Testing;
+    Mezzanine::String SanitizeTestNameForJunit(const Mezzanine::String& ToSanitize)
+    {
+        Mezzanine::String Sanitized;
+        Sanitized.reserve(ToSanitize.size());
+        for( Mezzanine::String::value_type CurrChar : ToSanitize )
+        {
+            if( CurrChar == '&' ) {
+                Sanitized.append("&amp;");
+            }else{
+                Sanitized.append(1,CurrChar);
+            }
+        }
+        return Sanitized;
+    }
 
     CallingTableType CreateMainArgsCallingTable(const CoreTestGroup& TestInstances, ParsedCommandLineArgs& Results)
     {
-       CallingTableType CallingTable;
+        CallingTableType CallingTable;
 
-       CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = ExitCode::ExitFailure; };
-       CallingTable[RunInThisProcessToken] = [&Results]{ Results.InSubProcess = true; };
-       CallingTable[NoThreads] = [&Results]{ Results.ForceSingleThread = true; };
-       CallingTable[JunitXMLAToken] = [&Results]{ Results.EmitJunitXml = true; };
-       CallingTable[JunitXMLBToken] = [&Results]{ Results.EmitJunitXml = true; };
+        CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = ExitCode::ExitFailure; };
+        CallingTable[RunInThisProcessToken] = [&Results]{ Results.InSubProcess = true; };
+        CallingTable[NoThreads] = [&Results]{ Results.ForceSingleThread = true; };
+        CallingTable[JunitXMLAToken] = [&Results]{ Results.EmitJunitXml = true; };
+        CallingTable[JunitXMLBToken] = [&Results]{ Results.EmitJunitXml = true; };
 
-       // Debug does both Single thread and Single process.
-       auto RunHere = [&Results]{ Results.InSubProcess = true; Results.ForceSingleThread = true; };
-       CallingTable[DebugAToken] = RunHere;
-       CallingTable[DebugBToken] = RunHere;
+        // Debug does both Single thread and Single process.
+        auto RunHere = [&Results]{ Results.InSubProcess = true; Results.ForceSingleThread = true; };
+        CallingTable[DebugAToken] = RunHere;
+        CallingTable[DebugBToken] = RunHere;
 
-       CallingTable[AllToken] = [&Results, &TestInstances]()
-       {
-           Results.TestsToRun.clear();
-           for(CoreTestGroup::value_type OneTest : TestInstances)
-               { Results.TestsToRun.push_back(OneTest.second); }
-       };
+        CallingTable[AllToken] = [&Results, &TestInstances]()
+        {
+            Results.TestsToRun.clear();
+            for(CoreTestGroup::value_type OneTest : TestInstances)
+                { Results.TestsToRun.push_back(OneTest.second); }
+        };
 
-       CallingTable[AutomaticToken] = [&Results, &TestInstances]()
-       {
-           for(CoreTestGroup::value_type OneTest : TestInstances)
-               { if(OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
-       };
+        CallingTable[AutomaticToken] = [&Results, &TestInstances]()
+        {
+            for(CoreTestGroup::value_type OneTest : TestInstances)
+                { if(OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
+        };
 
-       CallingTable[InteractiveToken] = [&Results, &TestInstances]()
-       {
-           for(CoreTestGroup::value_type OneTest : TestInstances)
-               { if(!OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
-       };
+        CallingTable[InteractiveToken] = [&Results, &TestInstances]()
+        {
+            for(CoreTestGroup::value_type OneTest : TestInstances)
+                { if(!OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
+        };
 
-       CallingTable[SkipSummaryToken] = [&Results](){ Results.SkipSummary = true; };
-       CallingTable[SkipFileToken] = [&Results](){ Results.SkipFile = true; };
+        CallingTable[SkipSummaryToken] = [&Results](){ Results.SkipSummary = true; };
+        CallingTable[SkipFileToken] = [&Results](){ Results.SkipFile = true; };
 
-       return CallingTable;
+        return CallingTable;
     }
 }
 
@@ -298,12 +313,12 @@ namespace Mezzanine
                 {
                     case TestResult::Success:
                         XmlContents << "    <testcase classname=\"" << OneResult.FileName<< "\" name=\""
-                                        << OneResult.TestName << "\" />\n";
+                                        << SanitizeTestNameForJunit(OneResult.TestName) << "\" />\n";
                         break;
 
                     case TestResult::Skipped:
                         XmlContents << "    <testcase classname=\"" << OneResult.FileName<< "\" name=\""
-                                        << OneResult.TestName << "\">\n"
+                                        << SanitizeTestNameForJunit(OneResult.TestName) << "\">\n"
                                     << "        <skipped />\n"
                                     << "    </testcase>\n";
                         break;
@@ -315,7 +330,7 @@ namespace Mezzanine
                     case TestResult::Unknown:
                     case TestResult::Warning:
                         XmlContents << "    <testcase classname=\"" << OneResult.FileName<< "\" name=\""
-                                        << OneResult.TestName << "\">\n"
+                                        << SanitizeTestNameForJunit(OneResult.TestName) << "\">\n"
                                     << "        <failure type=\"" << OneResult.Results << "\">\n"
                                     << "            " << OneResult
                                     << "        </failure>\n"
