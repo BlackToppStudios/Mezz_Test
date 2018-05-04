@@ -84,6 +84,14 @@ void ConversionTests::operator ()()
     TEST_THROW("BadFStringTestResults", std::invalid_argument, []{ StringToTestResult("FThatIsYouGradeNow"); } );
     TEST_THROW("BadNStringTestResults", std::invalid_argument, []{ StringToTestResult("NeverApplicable"); } );
 
+    // These tests aresort of an odd. These tests that XML output which is read by Jenkins and other test
+    // result aggregation tools creates properly formatted XML when the test name might interfere. These won't
+    // be reported in tests directly but will break our BTS Continuous integration if they don't work.
+    TEST("Test&Ampersands&InTestNamesBreaksNothing&", true);
+    TEST("Test\"QupteInTestNamesBreaksNothing\"", true);
+    TEST("Test'ApostropheInTestNamesBreaksNothing'", true);
+    TEST("Test>GreaterThanInTestNamesBreaksNothing>", true);
+    TEST("Test<LessThanInTestNamesBreaksNothing<", true);
 }
 
 #endif
