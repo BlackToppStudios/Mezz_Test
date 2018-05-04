@@ -63,10 +63,14 @@ namespace
         Sanitized.reserve(ToSanitize.size());
         for( Mezzanine::String::value_type CurrChar : ToSanitize )
         {
-            if( CurrChar == '&' ) {
-                Sanitized.append("&amp;");
-            }else{
-                Sanitized.append(1,CurrChar);
+            switch (CurrChar)
+            {
+                case '&':   Sanitized.append("&amp;"); break;
+                case '<':   Sanitized.append("&lt;"); break;
+                case '>':   Sanitized.append("&gt;"); break;
+                case '"':   Sanitized.append("&quot;"); break;
+                case '\'':  Sanitized.append("&apos;"); break;
+                default:    Sanitized.append(1, CurrChar); break;
             }
         }
         return Sanitized;
