@@ -50,6 +50,7 @@
 #include <vector>
 #include <chrono>
 #include <functional>
+#include <type_traits>
 
 namespace Mezzanine
 {
@@ -274,9 +275,10 @@ namespace Mezzanine
                                   const String& File = "",
                                   Mezzanine::Whole Line = 0)
             {
+                static_assert(std::is_floating_point<ExpectedResultsType>::value, "Non-float type used to test epsilon.");
                 auto Epsilon(std::numeric_limits<ExpectedResultsType>::epsilon());
-                Boole Within{ (ExpectedResults-Epsilon*PreciseReal(EpsilonCount)) <= ActualResults &&
-                                        (ActualResults <= ExpectedResults+Epsilon*PreciseReal(EpsilonCount)) };
+                Boole Within{ (ExpectedResults-Epsilon*ExpectedResultsType(EpsilonCount)) <= ActualResults &&
+                                        (ActualResults <= ExpectedResults+Epsilon*ExpectedResultsType(EpsilonCount)) };
                 TestResult Result = Test( TestName, Within, IfFalse, IfTrue, FuncName, File, Line);
                 if(EmitIntermediaryTestResults() && Mezzanine::Testing::TestResult::Success != Result)
                 {
