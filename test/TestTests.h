@@ -74,8 +74,10 @@ void NegativeTestTests::operator ()()
     // This group should serve as examples of failing tests.
     TEST("DefaultTestFailing", false);
     TEST_EQUAL("EqualityTestFailing", 1, 2);
-    TEST_EQUAL_EPSILON("EqualEpsilonFailing", 0.1, 0.2);
-    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing", 0.1, 1.2, 2);
+    TEST_EQUAL_EPSILON("EqualEpsilonFailing-Float", 0.1f, 0.2f);
+    TEST_EQUAL_EPSILON("EqualEpsilonFailing-Double", 0.1, 0.2);
+    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing-Float", 0.1f, 1.2f, 2);
+    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing-Double", 0.1, 1.2, 2);
     TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed);
     TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
     TEST_THROW("TestThrowFailingNonException", std::invalid_argument, []{ throw std::string("pass"); });
@@ -120,8 +122,10 @@ void TestTests::operator ()()
     TEST("DefaultTestPassing", true);
     TEST_EQUAL("EqualityTestPassing", 1, 1);
     TEST_WARN("WarningTestPassing", true);
-    TEST_EQUAL_EPSILON("EqualEpsilonPassing", 0.1, 0.1);
-    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing", 0.1, 0.1*1.00, 2);
+    TEST_EQUAL_EPSILON("EqualEpsilonPassing-Float", 0.1f, 0.1f);
+    TEST_EQUAL_EPSILON("EqualEpsilonPassing-Double", 0.1, 0.1);
+    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing-Float", 0.1f, 0.1f * 1.00f, 2);
+    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing-Double", 0.1, 0.1 * 1.00, 2);
     TEST_RESULT("TestResultPassing", Mezzanine::Testing::TestResult::Success);
     TEST_THROW("TestThrowPassing", std::invalid_argument, []{ throw std::invalid_argument("pass"); });
     TEST_NO_THROW("TestNoThrowPassing", []{});
