@@ -43,8 +43,6 @@
 /// @file
 /// @brief Definition of a class for stealing and returning the rdbuf to and from OutputStreams.
 
-#include <iostream>
-
 #include "DataTypes.h"
 
 namespace Mezzanine
