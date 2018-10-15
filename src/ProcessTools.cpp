@@ -46,12 +46,18 @@
 #include "StringManipulation.h"
 #include "SuppressWarnings.h"
 
+SAVE_WARNING_STATE
+SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's implementation 
+                          // of malloc.h where they use a comma in an assert.
+
 #include <exception>
 #include <cstdlib>
 
 #include <iostream>
 #include <fstream>
 #include <limits>
+
+RESTORE_WARNING_STATE
 
 namespace Mezzanine
 {
