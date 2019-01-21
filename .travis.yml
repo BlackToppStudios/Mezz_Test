@@ -19,7 +19,7 @@ before_script:
   - cmake -E env CXXFLAGS="-fno-var-tracking" cmake -G"Xcode" .. -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCMAKE_CXX_FLAGS="$CXX_FLAGS" -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON
 
 script:
-  - ninja
+  - cmake --build .
   - ./Test_Tester xml
   - ./Test_Tester skipsummary
   - ./Test_Tester automatic
