@@ -14,7 +14,7 @@ pipeline {
                     agent { label "FedoraGcc" }
                     steps {
                         checkout scm
-                        sh 'mkdir -p build-debug'
+                        sh 'mkdir -p build-debug && rm build-debug -r && mkdir -p build-debug'
                         dir('build-debug') { sh """#!/bin/bash
                             cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON &&
                             ninja &&
