@@ -195,13 +195,9 @@ pipeline {
                         checkout scm
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """#!/bin/bash
-                            cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON &&
-                            cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON &&
+                            cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
-                            ./Test_Tester xml &&
-                            ninja TestCoverage &&
-                            export CODECOV_TOKEN="4f81c60c-7487-4b51-9c59-18e668c77032" &&
-                            bash <(curl -s https://codecov.io/bash)
+                            ./Test_Tester xml
                         """ }
                     }
                     post {
