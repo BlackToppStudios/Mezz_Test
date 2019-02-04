@@ -43,6 +43,8 @@
 /// @file
 /// @brief The declaration of a number of tools to help with the main function implementation.
 
+#include "DataTypes.h"
+
 #include "AutomaticTestGroup.h"
 #include "BenchmarkTestGroup.h"
 #include "BenchmarkThreadTestGroup.h"
