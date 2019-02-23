@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@
 #define Mezz_Test_OutputBufferGuard_h
 
 /// @file
-/// @brief Definition of a class for stealing and returning the rdbuf to and from OutputStreams.
+/// @brief Definition of a class for intercepting and returning the rdbuf to and from OutputStreams.
 
 #include "DataTypes.h"
 
@@ -57,7 +57,7 @@ namespace Mezzanine
             /// @brief A place to store output that would go to the original stream.
             std::stringstream StreamOuputSink;
 
-            /// @brief Store a reference to the original stream so we can restore it in the end.
+            /// @brief Stores a reference to the original stream so we can restore it in the end.
             std::ostream& StreamToGaurd;
 
             /// @brief Storage to hold a non-owning pointer to the original read buffer.
@@ -75,12 +75,12 @@ namespace Mezzanine
             OutputBufferGuard& operator=(OutputBufferGuard&&) = delete;
 
             /// @brief Captures Output buffers and configures test outputs on creation.
-            /// @param StreamToSilence The stream to silence and guard from outputting anything
-            /// until the destructor is called.
+            /// @param StreamToSilence The stream to silence and guard from outputting anything until the destructor
+            /// is called.
             explicit OutputBufferGuard(std::ostream& StreamToSilence);
 
-            /// @brief Get anything sent to the guarded stream.
-            /// @return a String with the whole of the contents sunk into the original Stream.
+            /// @brief Captures anything sent to the guarded stream.
+            /// @return A String with the whole of the contents sunk into the original Stream.
             Mezzanine::String GetSunkOutput() const;
 
             /// @brief Restores original output buffers on creation.

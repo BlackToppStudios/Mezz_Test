@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -41,11 +41,11 @@
 #define Mezz_Test_OutputBufferGuardTests_h
 
 /// @file
-/// @brief Test for a class that steals, holds onto  then returns read buffers to ostream instances.
+/// @brief Test for a class that intercepts, holds onto, then returns read buffers to ostream instances.
 
 #include "MezzTest.h"
 
-/// @brief The OutputBufferGuard is simple it only needs to two things steal and restore read buffers
+/// @brief The OutputBufferGuard is simple it only needs to do two things, intercept and restore read buffers.
 AUTOMATIC_TEST_GROUP(OutputBufferGuardTests, OutputBufferGuard)
 {
     std::stringstream Guarded;

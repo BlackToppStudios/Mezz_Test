@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@
 #define Mezz_Test_TimedTests_h
 
 /// @file
-/// @brief Header for unit tests for the testing framework, but only the time sensitive parts
+/// @brief Header for unit tests for the testing framework, but only the time sensitive parts.
 
 #include "MezzTest.h"
 
@@ -50,37 +50,37 @@
 #include <random>
 
 
-/// @brief TestTests to verify that Warnings works correctly.
-/// @details This class is not called directly by the Unit Test framework and is called by the TimedTestTest
-/// to verify everything fails.
+/// @brief TestTests to verify that warnings works correctly.
+/// @details This class is not called directly by the Unit Test framework and is called by the TimedTestTest to verify
+/// everything fails.
 SILENT_TEST_GROUP(WarningTimedTestTests, WarningTimedTest)
 {
-    // Here are some examples of test that should warn.
+    // Here are some examples of tests that should warn.
     TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{});
     TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
                []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
 }
 
-/// @brief This is the actual Test class. This tests our Test Macros that are time sensitive.
+/// @brief This is the actual test class. This tests our test macros that are time sensitive.
 BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 {
-    // lets make a random time for these tests so if this is run on a bunch of VMs on the same hardware there will be
-    // subtle variations in the timing and it won't cause all the VMs to wake at the same time and possibly delay some
-    // of the tests
+    // Lets you make a random time for these tests so if this is run on a bunch of VMs on the same hardware there will
+    // be subtle variations in the timing and it won't cause all the VMs to wake at the same time and possibly delay
+    // some of the tests.
     std::mt19937 MersennTwisterRandomSource;
     MersennTwisterRandomSource.seed(std::random_device()());
     std::uniform_int_distribution<std::mt19937::result_type> DistLength(1000,1500);
     std::uniform_int_distribution<std::mt19937::result_type>::result_type SleepTime =
             DistLength(MersennTwisterRandomSource);
 
-    // Positive tests This should serve as examples for how to use this and get tests that passed.
-    // These amounts of time very short to be measuring this way. longer running tests can be more precise.
+    // Positive tests. This group should serve as examples of passing tests.
+    // These amounts of time are too short to be measuring this way, longer running tests can be more precise.
     TEST_TIMED("TestTimedPassing", std::chrono::milliseconds(SleepTime), std::chrono::milliseconds(200),
             [SleepTime]{ std::this_thread::sleep_for( std::chrono::milliseconds(SleepTime) ); });
 
     TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ });
 
-    // Warning Timed Tests
+    // Warning timed tests.
     class WarningTimedTestTests Warnifier;
     Warnifier();
     for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)

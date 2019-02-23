@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ using Mezzanine::Testing::GetFileContents;
 /// @brief Tests for the class to store test data results.
 AUTOMATIC_TEST_GROUP(ProcessTests, Process)
 {
-    // make file and read it back.
+    // Make file and read it back.
     const Mezzanine::String TestFilename("ProcessTestFile.txt");
     const Mezzanine::String TestToken(
                 "I've seen things you people wouldn't believe. Attack ships on fire off the "
@@ -67,7 +67,7 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
     TEST_EQUAL("GetFileContents", TestToken, GetFileContents(TestFilename));
 
 
-    // Try launching a process and reading its stdout
+    // Try launching a process and reading its stdout.
     TEST_STRING_CONTAINS("RunCommand-stdout",
                          Mezzanine::String("foo"),
                          RunCommand("cmake -E echo \"foo\"", "RunCommandScratch.txt"));

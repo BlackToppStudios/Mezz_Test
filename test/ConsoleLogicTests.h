@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@
 /// @file
 /// @brief A header full of tests for functions that make the console stuff work correctly.
 
-// Add other headers you need here
+// Add other headers you need here.
 #include "MezzTest.h"
 
 using Mezzanine::String;
@@ -80,13 +80,12 @@ AUTOMATIC_TEST_GROUP(ConsoleLogicTests, ConsoleLogic)
     TEST_EQUAL("Char8ToTestResults::TabIsUnknown",              TestResult::Unknown, Char8ToTestResults('\t'));
     TEST_EQUAL("Char8ToTestResults::NullTerminatorIsUnknown",   TestResult::Unknown, Char8ToTestResults('\0'));
 
-    // This fails to build on Ubuntu because it is a multi-byte char. Does it fail on windows too?
+    // This fails to build on Ubuntu because it is a multi-byte char. Does it fail on Windows too?
     //TEST_EQUAL("Char8ToTestResults::ñIsUnknown",
     //           Mezzanine::Testing::TestResult::Unknown,
     //           Mezzanine::Testing::Char8ToTestResults('ñ'));
 
-    // This fails to build on Ubuntu because it is beyond the range of a signed sign char. Does it fail on
-    // windows too?
+    // This fails to build on Ubuntu because it is beyond the range of a signed sign char. Does it fail on Windows too?
     //TEST_EQUAL("Char8ToTestResults::RawByte244IsUnknown",
     //           Mezzanine::Testing::TestResult::Unknown,
     //          Mezzanine::Testing::Char8ToTestResults(244));
@@ -104,7 +103,7 @@ AUTOMATIC_TEST_GROUP(ConsoleLogicTests, ConsoleLogic)
     TEST_STRING_CONTAINS("Usage::HasTestNaem",   ConsoleLogicInstance.Name(), GetUsageString("Tester", FakeTestGroup));
     TEST_STRING_CONTAINS("GetPrintableTestList", ConsoleLogicInstance.Name(), GetPrintableTestList(80, FakeTestGroup));
 
-    // Lets test usage, because we can
+    // Let's test usage, because we can.
     {
         Mezzanine::Testing::OutputBufferGuard CerrGuard(std::cerr);
         Mezzanine::Testing::Usage("Foo", FakeTestGroup)

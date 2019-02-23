@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -39,16 +39,16 @@
 */
 
 /// @file
-/// @brief The implementation of items important a commandline tool to work correctly without need to be available to
-/// test developers.
+/// @brief The implementation of items important for a commandline tool to work correctly without the need to be
+/// available to test developers.
 
 #include "ProcessTools.h"
 #include "StringManipulation.h"
 #include "SuppressWarnings.h"
 
 SAVE_WARNING_STATE
-SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's implementation 
-                          // of malloc.h where they use a comma in an assert.
+SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's implementation of malloc.h where they use a
+                          // comma in an assert.
 
 #include <exception>
 #include <cstdlib>
@@ -71,7 +71,7 @@ namespace Mezzanine
                 { throw std::runtime_error("Command name included unsafe characters, it would not run correctly."); }
             const Mezzanine::String CommandToRun(SafeCommand + " 2>&1 > " + SafeTempFileName);
 
-            // erase the file and only write out
+            // Erase the file and only write out.
             std::ofstream IgnoredResultCode(SafeTempFileName + ".return.txt", std::ios::trunc | std::ios::out);
             // The result from std::system is useless here but suppresssing this is non-trivial.
             IgnoredResultCode << std::system(CommandToRun.c_str());
@@ -80,11 +80,11 @@ namespace Mezzanine
         }
 
         SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wsign-conversion") // std::streamoff are signed with the string constructor takes
+        SUPPRESS_CLANG_WARNING("-Wsign-conversion") // The std::streamoff are signed but the string constructor takes
         // size_type which is unsigned. So this is only good for files with fewer than 2^31 bytes.
         SUPPRESS_GCC_WARNING("-Wconversion") // The same issue but an extra warning GCC raises.
-        SUPPRESS_VC_WARNING(4244) // Same conversion issue, why is there not a better way in std to handle this.
-        SUPPRESS_VC_WARNING(4365) // Why does the same code throw multiple warnings
+        SUPPRESS_VC_WARNING(4244) // Same conversion issue. Why is there not a better way in std to handle this.
+        SUPPRESS_VC_WARNING(4365) // Why does the same code throw multiple warnings.
         Mezzanine::String GetFileContents(const Mezzanine::String& Filename)
         {
             std::ifstream ResultReader(Filename, std::ios::binary | std::ios::ate);

@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of the string manipulation functions the unit tests use
+/// @brief The definition of the string manipulation functions the unit tests use.
 
 #include "MezzTest.h"
 
@@ -89,22 +89,22 @@ namespace Mezzanine
             const String FunctionToken(" in function ");
             const String FileToken(" at ");
 
-            // Skip whatever to get to '['
+            // Skip whatever to get to '['.
             Iterator OpenBracket = std::find(Line.cbegin(), Line.cend(), '[');
             if(Line.cend() == OpenBracket) { return TestData{}; }
 
-            // Skip whitespace to Beginning of Result and Pull out the result
+            // Skip whitespace to beginning of result and pull out the result.
             Iterator ResultsBegin = std::find_if(OpenBracket+1, Line.cend(), NotSpace);
             if(Line.cend() == ResultsBegin) { return TestData{}; }
             Iterator ResultsEnd = std::find(ResultsBegin+1, Line.cend(), ' ');
             if(Line.cend() == ResultsEnd) { return TestData{}; }
             TestResult Result = StringToTestResult(String(ResultsBegin, ResultsEnd));
 
-            // Skip whatever to '['
+            // Skip whatever to get to ']'.
             Iterator CloseBracket = std::find(ResultsEnd+1, Line.cend(), ']');
             if(Line.cend() == CloseBracket) { return TestData{}; }
 
-            // Read the Name
+            // Read the name.
             Iterator NameBegin = std::find_if(CloseBracket+1, Line.cend(), NotSpace);
             if(Line.cend() == NameBegin) { return TestData{}; }
             Iterator NameEnd;
@@ -118,7 +118,7 @@ namespace Mezzanine
             }
             String Name(NameBegin, NameEnd);
 
-            // If successful, we are done, If not find the function name
+            // If successful, we are done. If not, find the function name.
             if(TestResult::Success == Result) { return TestData{Name, Result}; }
             Iterator FunctionBegin = std::find(NameEnd+FunctionToken.size(), Line.cend(), '\'');
             if(Line.cend() == FunctionBegin) { return TestData{Name, Result, "Bad Function Name, No Start Quote"}; }
@@ -126,7 +126,7 @@ namespace Mezzanine
             if(Line.cend() == FunctionEnd) { return TestData{Name, Result, "Bad Function Name, No End Quote"}; }
             String FunctionName(FunctionBegin+1, FunctionEnd);
 
-            // Find the start of the file
+            // Find the start of the file.
             String::size_type FileStartHint = Line.find(FileToken, std::distance(Line.cbegin(), FunctionEnd));
             if(String::npos == FileStartHint) { return TestData{Name, Result, FunctionName, "Bad Filename no 'at'"}; }
             Iterator FileStart = Line.cbegin() + FileStartHint + FileToken.size();
@@ -134,7 +134,7 @@ namespace Mezzanine
             if(Line.cend() == FileEnd) { return TestData{Name, Result, FunctionName, "Bad Filename no ':'"}; }
             String FileName(FileStart, FileEnd);
 
-            // Get Line number as a Whole
+            // Get line number as a whole.
             String RestOfLine(Line.substr(std::distance(Line.cbegin(), FileEnd)+1));
             std::stringstream LineNumberConverter( RestOfLine );
             Whole LineNumber{0};
@@ -147,7 +147,7 @@ namespace Mezzanine
         String EscapeTestNameString(const Mezzanine::String& RawName)
         {
             Mezzanine::String Results;
-            Results.reserve(RawName.size() + RawName.size()/10); // A little extra space in case we need to escape stuff
+            Results.reserve(RawName.size() + RawName.size()/10); // A little extra space in case we need to escape stuff.
             for(const char& OneLetter : RawName)
             {
                 switch (OneLetter)

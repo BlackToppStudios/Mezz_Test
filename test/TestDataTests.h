@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -41,9 +41,9 @@
 #define Mezz_Test_TestDataTests_h
 
 /// @file
-/// @brief A Test header suitable for copying as a starting point for tests.
+/// @brief A test header suitable for copying as a starting point for tests.
 
-// Add other headers you need here
+// Add other headers you need here.
 #include "MezzTest.h"
 
 #include <vector>
@@ -60,7 +60,7 @@ using Mezzanine::String;
 /// @brief Tests for the class to store test data results.
 AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
 {
-    // Simple construction tests
+    // Simple construction tests.
     TestData DefaultConstructed;
     TEST_EQUAL("TestDataDefaultConstruction.TestName",      String(""),             DefaultConstructed.TestName);
     TEST_EQUAL("TestDataDefaultConstruction.Results",       TestResult::Success,    DefaultConstructed.Results);
@@ -75,14 +75,14 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
     TEST_EQUAL("TestDataConstruction.FileName",     String("file.cpp"),     Constructed.FileName);
     TEST_EQUAL("TestDataConstruction.LineNumber",   Mezzanine::Whole{42},   Constructed.LineNumber);
 
-    // Sorting
+    // Sorting.
     std::vector<TestData> Sorted = {TestData("Ocelot"), TestData("Aardvark"), TestData("Zebra")};
     std::sort(Sorted.begin(), Sorted.end());
     TEST_EQUAL("TestDataSorting.A", String("Aardvark"), Sorted[0].TestName);
     TEST_EQUAL("TestDataSorting.B", String("Ocelot"), Sorted[1].TestName);
     TEST_EQUAL("TestDataSorting.C", String("Zebra"), Sorted[2].TestName);
 
-    // Equality
+    // Equality.
     TEST_EQUAL("DefaultEqual", TestData(),  TestData());
     TEST_EQUAL("InequalName", false,
                TestData("foob", TestResult::Skipped) == TestData("foo", TestResult::Skipped));
@@ -100,7 +100,7 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
                TestData("foo", TestResult::Warning, "bar", "a.h", 12) ==
                TestData("foo", TestResult::Warning, "baz", "a.h", 12));
 
-    // Inequality
+    // Inequality.
     TEST_EQUAL("NotEqualName", true,
                TestData("bar", TestResult::Warning, "lorem", "a.h", 12) !=
                TestData("baz", TestResult::Warning, "lorem", "a.h", 12));
@@ -117,7 +117,7 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
                TestData("bar", TestResult::Warning, "lorem", "a.h", 12) !=
                TestData("bar", TestResult::Warning, "lorem", "a.h", 11));
 
-    // Escaping tests
+    // Escaping tests.
     TEST_EQUAL("EscapeTestNameString-PassThrough",      String("Foo"),          EscapeTestNameString("Foo"));
     TEST_EQUAL("EscapeTestNameString-Slashes",          String("Foo\\\\Bar"),   EscapeTestNameString("Foo\\Bar"));
     TEST_EQUAL("EscapeTestNameString-Newline",          String("Foo\\nBar"),    EscapeTestNameString("Foo\nBar"));
@@ -131,7 +131,7 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
     TEST_EQUAL("UnescapeTestNameString-IgnoredSlashT",  String("Foo\\tBar"),    UnescapeTestNameString("Foo\\tBar"));
     TEST_EQUAL("UnescapeTestNameString-EscapedSlashT",  String("Foo\\tBar"),    UnescapeTestNameString("Foo\\\\tBar"));
 
-    // Serialization
+    // Serialization.
     {
         TestData Streamable("StreamedTestNameWarning", TestResult::Warning, "FunctionWithProblem", "file.cpp", 123);
         std::stringstream SampleStream;
@@ -159,7 +159,7 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
                    SampleStream.str())
     }
 
-    // Deserialization
+    // Deserialization.
     TestData FromLine{ StringToTestData(" [    Success    ]  Fred") };
     TEST_EQUAL("StringToTestData-Success-Name",         "Fred",                 FromLine.TestName);
     TEST_EQUAL("StringToTestData-Success-Results",      TestResult::Success,    FromLine.Results);
@@ -182,7 +182,7 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
                std::invalid_argument,
                []{ StringToTestData(" [    Daphne    ]  Fred"); });
 
-    // Assignment and move tests
+    // Assignment and move tests.
     TestData DestAssign("DestinationAssign", TestResult::Unknown);
     TestData DestMove("DestinationMove", TestResult::Unknown);
     TestData Source("Source", TestResult::Success);
@@ -197,7 +197,7 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
     TEST_EQUAL("PostCopyTargetDestAssign",  TestData("Source", TestResult::Success),    DestAssign);
     TEST_EQUAL("PostCopyTargetDestMove",    TestData("Source", TestResult::Success),    DestMove);
 
-    // Add throw tests
+    // Add throw tests.
 }
 
 #endif

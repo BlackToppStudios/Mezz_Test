@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -50,10 +50,10 @@ namespace Mezzanine
     namespace Testing
     {
         /// @brief Run a process and capture its console output.
-        /// @param Command The command to attempt to run and capture its output.
+        /// @param Command The command to attempt to run the process and capture its output.
         /// @param TempFileName The file to put all the console output of the command to be transferred back here.
         /// @return Everything the subprocess emits to the console (stdout or stderr) as a single concatenated string.
-        /// @details This launches a process, redirects its output to a file and reads that file to return that output.
+        /// @details This launches a process, redirects its output to a file, and reads that file to return its output.
         /// This is a simple wrapper around std::system, concatenating output redirection to the command. Because of
         /// this "|", "<" and ">" are not allowed in commands passed to this.
         Mezzanine::String MEZZ_LIB RunCommand(const Mezzanine::String& Command,

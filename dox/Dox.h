@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -43,9 +43,9 @@
 /// @file
 /// @brief The main documentation header to include for the testing part of this library.
 
-/// @page Mezz_Test Jagati Library Test
-/// This is library provides basic testing facilities. This library provides tools for unit testing and aggregating the
-/// results of those test. This is tightly integrated with CMake to make adding new tests as seemless as possible.
+/// @page Mezz_Test Jagati Library Test.
+/// This is the library providing basic testing facilities. The library provides tools for unit testing and aggregating
+/// the results of those tests. This is tightly integrated with CMake to make adding new tests as seamless as possible.
 ///
 
 #endif

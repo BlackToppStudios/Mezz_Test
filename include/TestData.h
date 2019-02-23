@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -63,21 +63,21 @@ namespace Mezzanine
         {
             /// @brief The name of a given test.
             Mezzanine::String TestName;
-            /// @brief The function the test was called from.
+            /// @brief The function that called the test.
             Mezzanine::String FunctionName;
-            /// @brief The File The test happened in.
+            /// @brief The file where the test happened.
             Mezzanine::String FileName;
-            /// @brief What line in the file this test occurred when the test was compiled.
+            /// @brief The line in the file where this test occurred when the test was compiled.
             Mezzanine::Whole LineNumber;
-            /// @brief How did the test turn out.
+            /// @brief The results of the test.
             TestResult Results;
 
             /// @brief Create a TestData.
-            /// @param Name the name of the test, defaults to "".
+            /// @param Name The name of the test, defaults to "".
             /// @param Result A TestResult, defaults to Testing::Success.
-            /// @param FuncName The name of the function this test was called from, Defaults to "".
-            /// @param File The name of the file in which the test exists, Defaults to "".
-            /// @param Line The line in the file in which the test exists, Defaults to 0.
+            /// @param FuncName The name of the function that called the test, Defaults to "".
+            /// @param File The name of the file where the test exists, Defaults to "".
+            /// @param Line The line in the file where the test exists, Defaults to 0.
             explicit TestData(const String& Name = "",
                               TestResult Result = Testing::TestResult::Success,
                               const String& FuncName = "",
@@ -103,17 +103,17 @@ namespace Mezzanine
             TestData& operator=(TestData&& ToMove) = default;
 
             /// @brief Used to sort TestData in std::std and other sorted containers, by TestName.
-            /// @param Rhs the right hand operand when using the less than comparison operator.
+            /// @param Rhs The right hand operand when using the less than comparison operator.
             /// @return A bool with the same value as this->TestName < Rhs.TestName.
             Boole operator<(const TestData& Rhs) const;
 
             /// @brief Used to compare two TestData mostly for testing purposes.
-            /// @param Rhs the right hand operand when using the == operator.
+            /// @param Rhs The right hand operand when using the == operator.
             /// @return True if every member matches, false otherwise.
             Boole operator==(const TestData& Rhs) const;
 
             /// @brief Used to compare two TestData for inequality.
-            /// @param Rhs the right hand operand when using the ~= operator.
+            /// @param Rhs The right hand operand when using the ~= operator.
             /// @return True if any members differ, false otherwise.
             Boole operator!=(const TestData& Rhs) const;
         };// TestData
@@ -137,9 +137,9 @@ namespace Mezzanine
         Mezzanine::String MEZZ_LIB UnescapeTestNameString(const Mezzanine::String& MungedName);
 
         /// @brief Send a TestData down a stream.
-        /// @param Stream the stream to write to.
-        /// @param ToStream The TestData to Write.
-        /// @return the stream after modification.
+        /// @param Stream The stream where it writes.
+        /// @param ToStream The TestData to write.
+        /// @return The stream after modification.
         std::ostream& MEZZ_LIB operator<< (std::ostream& Stream, const TestData& ToStream);
     }// Testing
 }// Mezzanine

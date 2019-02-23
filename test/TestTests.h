@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -50,13 +50,13 @@
 
 SAVE_WARNING_STATE
 SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
-SUPPRESS_VC_WARNING(5026) // more BS about move constructors implicitly removed
-SUPPRESS_VC_WARNING(5027) // Why are there garbage warnings like these three even in vs?
+SUPPRESS_VC_WARNING(5026) // More BS about move constructors implicitly removed.
+SUPPRESS_VC_WARNING(5027) // Why are garbage warnings like these three even in VS?
                           // Any time you don't use the test group macros you might need to handle VS warnings.
 
 
-// This class is not called directly by the Unit Test framework and is just used by
-// TestTests to verify that Failing works correctly. Every test here should fail.
+// This class is not called directly by the Unit Test framework and is just used by it.
+// TestTests to verify that failing works correctly. Every test here should fail.
 class MEZZ_LIB NegativeTestTests : public Mezzanine::Testing::AutomaticTestGroup
 {
      public:
@@ -64,14 +64,14 @@ class MEZZ_LIB NegativeTestTests : public Mezzanine::Testing::AutomaticTestGroup
         virtual Mezzanine::String Name() const override
             { return "NegativeTests"; }
 
-        /// @brief Don't print Failures that are supposed to happen.
+        /// @brief Don't print failures that are supposed to happen.
         virtual Mezzanine::Boole EmitIntermediaryTestResults() const override
             { return false; }
 };
 
 void NegativeTestTests::operator ()()
 {
-    // This group should serve as examples of failing tests.
+    // Negative tests. This group should serve as examples of failing tests.
     TEST("DefaultTestFailing", false);
     TEST_EQUAL("EqualityTestFailing", 1, 2);
     TEST_EQUAL_EPSILON("EqualEpsilonFailing-Float", 0.1f, 0.2f);
@@ -86,8 +86,8 @@ void NegativeTestTests::operator ()()
     TEST_STRING_CONTAINS("TestStringContainsFailing", Mezzanine::String("Foo"), Mezzanine::String("Fubar"));
 }
 
-// This class is not called directly by the Unit Test framework and is just used by
-/// @brief TestTests to verify that Warnings works correctly.
+// This class is not called directly by the Unit Test framework and is just used by it.
+/// @brief TestTests to verify that warnings works correctly.
 class MEZZ_LIB WarningTestTests : public Mezzanine::Testing::AutomaticTestGroup
 {
     public:
@@ -95,19 +95,19 @@ class MEZZ_LIB WarningTestTests : public Mezzanine::Testing::AutomaticTestGroup
         virtual Mezzanine::String Name() const override
             { return "WarningTests"; }
 
-        /// @brief Don't print Warnings that are supposed to happen.
+        /// @brief Don't print warnings that are supposed to happen.
         virtual Mezzanine::Boole EmitIntermediaryTestResults() const override
             { return false; }
 };
 
 void WarningTestTests::operator ()()
 {
-    // Here are some examples of test that should warn.
+    // Here are some examples of tests that should warn.
     TEST_WARN("WarningTestWarning", false);
     TEST_RESULT("TestResultWarning", Mezzanine::Testing::TestResult::Warning);
 }
 
-/// @brief This is the actual Test class. This tests our Test Macros.
+/// @brief This is the actual test class. This tests our test macros.
 class MEZZ_LIB TestTests : public Mezzanine::Testing::AutomaticTestGroup
 {
     public:
@@ -118,7 +118,7 @@ class MEZZ_LIB TestTests : public Mezzanine::Testing::AutomaticTestGroup
 
 void TestTests::operator ()()
 {
-    // Positive tests This should serve as examples for how to use this and get tests that passed.
+    // Positive tests. This group should serve as examples of passing tests.
     TEST("DefaultTestPassing", true);
     TEST_EQUAL("EqualityTestPassing", 1, 1);
     TEST_WARN("WarningTestPassing", true);
@@ -131,8 +131,8 @@ void TestTests::operator ()()
     TEST_NO_THROW("TestNoThrowPassing", []{});
     TEST_STRING_CONTAINS("TestStringContains", Mezzanine::String("Foo"), Mezzanine::String("Foobar"));
 
-    // AddTestResult is the function that runs all these test macros. This should verify that calling those
-    // macros twice with the same name fails
+    // AddTestResult is the function that runs all these test macros. This should verify that calling those macros
+    // twice with the same name fails.
     TEST_THROW("TwoIdenticalTestNamesFail", std::runtime_error,
         [this]{
             AddTestResult( Mezzanine::Testing::TestData( ("TwoIdenticalTestNamesFailImpl"),
@@ -144,14 +144,14 @@ void TestTests::operator ()()
         }
     );
 
-    // Failing Tests
+    // Failing tests.
     class NegativeTestTests Negation;
     Negation();
     for(const Mezzanine::Testing::TestData& SingleResult : Negation)
         { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Failed, SingleResult.Results); }
     TEST_EQUAL("GetWorstShouldReturnFailure", Mezzanine::Testing::TestResult::Failed, Negation.GetWorstResults());
 
-    // Warning Tests
+    // Warning tests.
     class WarningTestTests Warnifier;
     Warnifier();
     for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)

@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -56,12 +56,12 @@ namespace Mezzanine
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Benchmarks are performance sensitive, and require special attention.
-        /// @details Because the smallest load can affect performance, nothing else should running while a
+        /// @details Because the smallest load can affect performance, nothing else should be running while a
         /// benchmark runs. Since many benchmarks are sensitive to what was just run (pre-filled caches, extra
-        /// allocated memory, etc...) each test inheriting from this test group will get several safeguards. Inheritors
+        /// allocated memory, etc) each test inheriting from this test group will get several safeguards. Inheritors'
         /// tests will be run in their own process to guarantee isolation. No other threads or processes will be run
-        /// while this test group runs, but the main process will still be alive, but in a waiting state until this
-        /// test group finishes.
+        /// while this test group runs, but the main process will still be alive in a waiting state until this test
+        /// group finishes.
         class MEZZ_LIB BenchmarkTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
         public:

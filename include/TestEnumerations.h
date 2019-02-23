@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@
 #define Mezz_Test_UnitTestEnumerations_h
 
 /// @file
-/// @brief Enumerations and constant values associated with the Unit tests.
+/// @brief Enumerations and constant values associated with the Unit Tests.
 
 #include "DataTypes.h"
 #include "SuppressWarnings.h"
@@ -53,28 +53,27 @@ namespace Mezzanine
         /// @brief Possible ways to exit the UnitTestGroup Program.
         enum class ExitCode
         {
-            ExitSuccess             = 0,    ///< Normal exit all tests skipped or better
-            ExitInvalidArguments    = 1,    ///< At least some invalid args were passed on the command line
-            ExitFailure             = 2     ///< At least one test return worse then skipped
+            ExitSuccess             = 0,    ///< Normal exit all tests skipped or better.
+            ExitInvalidArguments    = 1,    ///< At least some invalid args were passed on the command line.
+            ExitFailure             = 2     ///< At least one test return worse than skipped.
         };
 
         /// @brief Return values from tests.
-        /// @details These are loosely order from best to worse, in terms of
-        /// what we want to see from our tests. This takes the mindset that
-        /// knowing about a failure is better than not knowing about it.
+        /// @details These are loosely ordered from best to worse, in terms of what we want to see from our tests. This
+        /// takes the mindset that knowing about a failure is better than not knowing about it.
         enum class TestResult
         {
-            Success         = 0,        ///< Test was ran and appeared to work.
+            Success         = 0,        ///< Test ran and appeared to work.
             Warning         = 1,        ///< Technically the test passed but there is something that is not quite right.
-            Skipped         = 2,        ///< Test was simply not ran at the behest of the user.
+            Skipped         = 2,        ///< Test was simply not run at the behest of the user.
             Cancelled       = 3,        ///< Was canceled by user, so success is unknown, but user knows test was
                                         /// canceled.
             Inconclusive    = 4,        ///< If a user answers that with "don't know" in a test that involved
-                                        /// interaction, The user knows there is a potential issue.
+                                        /// interaction, the user knows there is a potential issue.
             Failed          = 5,        ///< Known failure.
             Unknown         = 6,        ///< Since we don't know what happened this is the worst kind of failure.
-            NotApplicable   = 7,        ///< This is not even a kind of failure, This is used to when referencing a
-                                        /// test, so if this winds up coming out of a test, then something has failed.
+            NotApplicable   = 7,        ///< This is not even a kind of failure. This is used to when referencing a
+                                        /// test, so if this winds up coming out of a test then something has failed.
             Highest = TestResult::NotApplicable  ///< Highest will always match the highest value of the class enum,
                                                  /// to make it easier to inspect.
         };
@@ -107,7 +106,7 @@ namespace Mezzanine
         /// @return  A string like "Success" or "Inconclusive" or similar.
         Mezzanine::String MEZZ_LIB TestResultToString(TestResult Convertable);
 
-        /// @brief This converts A test result into a String matching the in a fixed width box.
+        /// @brief This converts a test result into a String matching the result in a fixed width box.
         /// @param Convertable A TestResult inclusively between Success and NotApplicable.
         /// @return  A string like "[    Success    ]" or "[    Warning    ]" or similar.
         Mezzanine::String MEZZ_LIB TestResultToFixedBoxString(TestResult Convertable);
@@ -132,7 +131,7 @@ namespace Mezzanine
 
         /// @brief Calls TestResultToString and sends that to the output stream
         /// @param Output The TestResult to emit.
-        /// @param Stream The output stream to send the converted TestResult out.
+        /// @param Stream The output stream to send out the converted TestResult.
         std::ostream& MEZZ_LIB operator<< (std::ostream& Stream, TestResult Output);
 
         /// @brief Roughly convert a String to a TestResult.

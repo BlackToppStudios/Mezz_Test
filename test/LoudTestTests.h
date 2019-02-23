@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@
 #define Mezz_Test_LoudTests_h
 
 /// @file
-/// @brief Header for unit tests for the testing framework, but only the time sensitive parts
+/// @brief Header for unit tests for the testing framework, but only the time sensitive parts.
 
 #include "MezzTest.h"
 
@@ -49,21 +49,21 @@
 #include <thread>
 
 
-/// @brief TestTests to verify that Warnings works correctly and emit messages.
-/// @details This class is not called directly by the Unit Test framework and is just used by LoudTestTests
+/// @brief TestTests to verify that warnings works correctly and emit messages.
+/// @details This class is not called directly by the Unit Test framework and is just used by LoudTestTests.
 AUTOMATIC_TEST_GROUP(WarningLoudTestTests, LoudWarnTests)
 {
-    // Here are some examples of test that should warn and do so with loud output
+    // Here are some examples of test that should warn and do so with loud output.
     TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{});
     TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
                []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
 }
 
-/// @brief TestTests to verify that Failure works correctly and emit.
-/// @details This class is not called directly by the Unit Test framework and is just used by LoudTestTests
+/// @brief TestTests to verify that failure works correctly and emits "Failed".
+/// @details This class is not called directly by the Unit Test framework and is just used by LoudTestTests.
 AUTOMATIC_TEST_GROUP(NegativeLoudTestTests, LoudFailTests)
 {
-    // This group should serve as examples of failing tests and do so with loud output.
+    // This group should serve as examples of failing tests and fail with loud output.
     TEST("DefaultTestFailing", false);
     TEST_EQUAL("EqualityTestFailing", 1, 2);
     TEST_EQUAL_EPSILON("EqualEpsilonFailing", 0.1, 0.2);
@@ -76,12 +76,12 @@ AUTOMATIC_TEST_GROUP(NegativeLoudTestTests, LoudFailTests)
     TEST_STRING_CONTAINS("TestStringContainsFailing", Mezzanine::String("Foo"), Mezzanine::String("Fubar"));
 }
 
-/// @brief This is the actual Test class. This tests our Test Macros that are time sensitive.
+/// @brief This is the actual test class. This tests our test macros that are time sensitive.
 BENCHMARK_THREAD_TEST_GROUP(LoudTestTests, LoudTests)
 {
     TestLog << "--=================-- --=================--\nNow some tests that print failure messages in Success\n";
 
-    // Warning Tests
+    // Warning tests.
     class WarningLoudTestTests Warnifier;
     Warnifier();
     Mezzanine::String WarnifierOutput(Warnifier.GetTestLog());
@@ -90,7 +90,7 @@ BENCHMARK_THREAD_TEST_GROUP(LoudTestTests, LoudTests)
     for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
         { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
 
-    // Failing Tests
+    // Failing tests.
     class NegativeLoudTestTests Negation;
     Negation();
     Mezzanine::String NegationOutput(Negation.GetTestLog());

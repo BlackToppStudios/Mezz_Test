@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -57,7 +57,7 @@
 #include "TimingTools.h"
 #include "UnitTestGroup.h"
 
-#include <stdexcept> // Used to throw for TEST_THROW
+#include <stdexcept> // Used to throw for TEST_THROW.
 
 namespace Mezzanine
 {
@@ -89,7 +89,7 @@ namespace Mezzanine
                 /// @brief Skip writing the summary at the end.
                 Boole SkipSummary;
 
-                /// @brief Create Junit Xml output files?
+                /// @brief Create Junit Xml output files.
                 Boole EmitJunitXml;
             };// ParsedCommandLineArgs
         RESTORE_WARNING_STATE
@@ -150,13 +150,13 @@ namespace Mezzanine
         /// @details This will construct an AllUnitTestGroups with the listing of unit tests available from cmake
         /// generated source file. It will then interpret any command line arguments and direct the created
         /// AllUnitTestGroups about which tests to run and how to run them. In addition to sending the results to the
-        /// standard output a copy of the test results will be written to TestResults.txt, if not configured not to.
+        /// standard output, a copy of the test results will be written to TestResults.txt if not configured otherwise.
         /// @n @n
-        /// If no arguments are passed this will add all the tests to the AllUnitTestGroups
-        /// and execute all tests that are not interactive. Print out a default report of them.
-        /// @return This will return EXIT_SUCCESS if the tests ran, even if some or all failed,
-        /// even if a child process segfaulted, but will return other statuses only if the main
-        /// process fails. If the main process cannot create child processes it will return EXIT_FAILURE.
+        /// If no arguments are passed this will add all the tests to the AllUnitTestGroups and execute all tests that
+        /// are not interactive. Prints out a default report of them.
+        /// @return This will return EXIT_SUCCESS if the tests ran, even if some or all failed, even if a child process
+        /// segfaulted, but will return other statuses only if the main process fails.  If the main process cannot
+        /// create child processes it will return EXIT_FAILURE.
         /// @param argc Is interpreted as the amount of passed arguments.
         /// @param argv Is interpreted as the arguments passed in from the launching shell.
         /// @param TestInstances A group of tests to be executed.

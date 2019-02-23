@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -58,7 +58,7 @@ namespace Mezzanine
             /// @brief A simple piece of data to represent the length of a named period of time.
             struct MEZZ_LIB NamedDuration
             {
-                /// @brief What was it called?
+                /// @brief What it is called.
                 Mezzanine::String Name;
 
                 /// @brief How long did it take.
@@ -74,7 +74,7 @@ namespace Mezzanine
             std::chrono::high_resolution_clock::time_point BeginTimer;
 
         public:
-            /// @brief Simply Creating this starts the timer.
+            /// @brief Simply creating this starts the timer.
             TestTimer()
                 : BeginTimer(std::chrono::high_resolution_clock::now())
                 {}
@@ -94,7 +94,7 @@ namespace Mezzanine
         Mezzanine::String MEZZ_LIB PrettyDurationString(std::chrono::nanoseconds Duration);
 
         /// @brief Pretty print a NamedDuration.
-        /// @param Stream the stream, likely cout to send it.
+        /// @param Stream The target stream, likely cout.
         /// @param TimingToStream A single NameDuration.
         /// @return The modified stream.
         std::ostream& MEZZ_LIB operator<<(std::ostream& Stream, const NamedDuration& TimingToStream);

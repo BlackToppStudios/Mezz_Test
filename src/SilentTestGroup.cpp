@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of the a group of tests that need no human intervention
+/// @brief The definition of the group of tests that need no human intervention.
 
 #include "SilentTestGroup.h"
 

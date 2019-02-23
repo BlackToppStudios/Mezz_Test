@@ -17,18 +17,18 @@ configuration:
   - Release
 
 before_build:
-  # Workaround for CMake not wanting sh.exe on PATH for MinGW
+  # Workaround for CMake not wanting sh.exe on PATH for MinGW.
   - set PATH=%PATH:C:\Program Files\Git\bin;=%
   - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
   - set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
   - set PATH=%PATH:C:\Program Files (x86)\Git\usr\bin;=%
-  # Move the non-mingw-w64 install to the end of the PATH
+  # Move the non-mingw-w64 install to the end of the PATH.
   - set PATH=%PATH:C:\MinGW\bin;=%
-  # Ensure the appropriate install is in the PATH
+  # Ensure the appropriate install is in the PATH.
   - set PATH=%CompilerPath%;%PATH%
-  # Stop useless Xamarin Build targets from making messages
+  # Stop useless Xamarin Build targets from making messages.
   - del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
-  # Finalize build prep
+  # Finalize build prep.
   - mkdir build
   - cd build
   - mkdir JagatiPackages

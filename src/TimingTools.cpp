@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The implementation of stuff that must be run in the context of a TestData
+/// @brief The implementation of stuff that must be run in the context of TestData.
 
 #include "TimingTools.h"
 #include "MezzTest.h"
@@ -57,9 +57,9 @@ using std::chrono::duration_cast;
 namespace
 {
     /// @internal
-    /// @brief Turn one part of a useless count of nanoseconds into a meaning string of minutes, seconds and subseconds.
+    /// @brief Turn part of a useless count of nanoseconds into a meaningful string of minutes, seconds and subseconds.
     /// @tparam UnitType A std::chrono::duration to break out of the nanoseconds.
-    /// @param Duration the nanoseconds to break into larger units.
+    /// @param Duration The nanoseconds to break into larger units.
     /// @param Suffix A string to decribe the unit.
     /// @param Stream The place to send the newly created useful string.
     /// @return The new Duration with all of the whole instances of the specified unit removed.

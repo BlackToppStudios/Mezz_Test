@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -39,15 +39,15 @@
 */
 
 /// @file
-/// @brief The implementation of items important a commandline tool to work correctly without need to be available to
-/// test developers.
+/// @brief The implementation of items important for a commandline tool to work correctly without the need to be
+/// available to test developers.
 
 #include "ConsoleLogic.h"
 #include "StringManipulation.h"
 #include "UnitTestGroup.h"
 
 SAVE_WARNING_STATE
-SUPPRESS_VC_WARNING(4668) // A Prprocessor macro was used and never defined, because the VS Headers are poorly written.
+SUPPRESS_VC_WARNING(4668) // A Preprocessor macro was used and never defined because the VS Headers are poorly written.
 
 #include <vector>
 #include <sstream>
@@ -94,7 +94,7 @@ namespace Mezzanine
                     "If only test group names are entered, then all tests in those groups are run.\n"
                     "This command is not case sensitive.\n\n"
                     "Current Test Groups:\n"
-            ) + GetPrintableTestList(80, TestGroups); // This presumes the console is 80 chars wide
+            ) + GetPrintableTestList(80, TestGroups); // This presumes the console is 80 chars wide.
         }
 
         Mezzanine::String GetPrintableTestList(const Mezzanine::String::size_type TargetWidth,
@@ -102,7 +102,7 @@ namespace Mezzanine
         {
             std::stringstream Assembler;
 
-            // Replace with std::max_element once we get C++17
+            // Replace with std::max_element once we get C++17.
             Mezzanine::String::size_type LongestName = 0;
             for(const std::pair<Mezzanine::String,UnitTestGroup*>& Entry: TestGroups)
             {
@@ -128,7 +128,7 @@ namespace Mezzanine
                 CurrentWidth += Entry.first.size() + 1;
 
 
-                // Written this way because std::clamp would solve it in a simple formula but not until c++17
+                // Written this way because std::clamp would solve it in a simple formula but not until C++17.
                 for(Mezzanine::String::size_type SpaceD=Entry.first.size()+1; SpaceD<=ColumnWidth; SpaceD++)
                 {
                     Assembler << " ";
@@ -145,32 +145,7 @@ namespace Mezzanine
             Assembler << '\n';
             return Assembler.str();
         }
-/*
-        TestResult GetTestAnswerFromStdin(Mezzanine::String Question)
-        {
-            Mezzanine::String Input;
-            Mezzanine::Char8 Answer;
 
-            while(true)
-            {
-                std::cout << Question;
-                getline(std::cin, Input);
-                std::stringstream InputStream(Input);
-                if (InputStream >> Answer)
-                {
-                    Answer=static_cast<Mezzanine::Char8>(tolower(Answer));
-                    if ('t'==Answer || 'y'==Answer || 'f'==Answer || 'n'==Answer ||
-                        'c'==Answer || 'u'==Answer || 'i'==Answer || 'W'==Answer)
-                        { break; }
-                }
-
-                std::cout << std::endl << "Expected (T)rue/(Y)es for Success, (F)alse/(N)o for Failure,\n"
-                          << " (C)anceled to cancel this test, or (U)nsure/(I)nconclusive if you don't know.\n"
-                          << std::endl;
-            }
-            return Char8ToTestResults(Answer);
-        }
-*/
         TestResult Char8ToTestResults(Mezzanine::Char8 Answer)
         {
             switch(static_cast<Mezzanine::Char8>(tolower(Answer)))

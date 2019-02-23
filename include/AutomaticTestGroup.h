@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -57,11 +57,11 @@ namespace Mezzanine
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests that all run entirely automatically using most default settings.
         /// @details Your test group can inherit from this to get default test group behavior. It will run in the main
-        /// process, but get its own thread, so that it can run alongside many other tests. This is ideal for most tests
-        /// of simple functionality, things like calling pure functions (functions that don't manipulate outside state)
-        /// or constructing classes that manage their own state. Things that might call out to the network, render
-        /// directly to the screen, write to a database, modify singletons or otherwise interfere with other tests should
-        /// either be "mocked out" so they don't interfere or use some other test groups rules.
+        /// process, but get its own thread, so that it can run alongside many other tests. This is ideal for most
+        /// tests of simple functionality, things like calling pure functions (functions that don't manipulate outside
+        /// state), or constructing classes that manage their own state. Things that might call out to the network,
+        /// render directly to the screen, write to a database, modify singletons, or otherwise interfere with other
+        /// tests should either be "mocked out" so they don't interfere or use some other test groups rules.
         class MEZZ_LIB AutomaticTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
         public:

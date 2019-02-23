@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ namespace
 {
     using namespace Mezzanine::Testing;
 
-    /// @brief Create a type for delegating work to something dynamic based on a string based lookup.
+    /// @brief Create a type for delegating work to something dynamic using a string-based lookup.
     typedef std::map<Mezzanine::String, std::function<void()>> CallingTableType;
 
     Mezzanine::String SanitizeTestNameForJunit(const Mezzanine::String& ToSanitize)
@@ -86,7 +86,7 @@ namespace
         CallingTable[JunitXMLAToken] = [&Results]{ Results.EmitJunitXml = true; };
         CallingTable[JunitXMLBToken] = [&Results]{ Results.EmitJunitXml = true; };
 
-        // Debug does both Single thread and Single process.
+        // Debug does both single thread and single process.
         auto RunHere = [&Results]{ Results.InSubProcess = true; Results.ForceSingleThread = true; };
         CallingTable[DebugAToken] = RunHere;
         CallingTable[DebugBToken] = RunHere;
@@ -119,11 +119,9 @@ namespace
 
 /// @file
 /// @brief This file is the entry point for the unit test framework.
-/// @details If you need to change the nature of the executable this is the
-/// file to change. This is where the simple (but robust) sub process
-/// mechanism is implemented. Very little of the rest of the code in the
-/// unit test frame work makes calls to this file, and everything that does
-/// does so through the UnitTestGroup class via polymorphism.
+/// @details If you need to change the nature of the executable this is the file to change. This is where the simple
+/// (but robust) sub process mechanism is implemented. Very little of the rest of the code in the unit test frame work
+/// makes calls to this file, and everything that does will do so through the UnitTestGroup class via polymorphism.
 namespace Mezzanine
 {
     namespace Testing
@@ -143,9 +141,9 @@ namespace Mezzanine
             // Loop over the argv and make a decision for each arg.
             for (int c=1; c<argc; ++c)
             {
-                if(ExitCode::ExitSuccess != Results.ExitWithError) { break; } // Something bogus bail
-                const Mezzanine::String ThisArg(AllLower(argv[c]));           // Insure case insensitivity
-                if(CallingTable.count(ThisArg))                               // check for keywords that aren't tests.
+                if(ExitCode::ExitSuccess != Results.ExitWithError) { break; } // If something is bogus, bail.
+                const Mezzanine::String ThisArg(AllLower(argv[c]));           // Ensure case insensitivity.
+                if(CallingTable.count(ThisArg))                               // Check for keywords that aren't tests.
                     { CallingTable[ThisArg](); }
                 else if(TestInstances.count(ThisArg)) // Wasn't a keyword, could it be a test?
                     { Results.TestsToRun.push_back(TestInstances.at(ThisArg)); }
@@ -245,7 +243,7 @@ namespace Mezzanine
             {
                 UnitTestGroup& TestGroupForThread = *(OneTestGroup);
 
-                // Skip the ones that cannot be run here. Run only the tests that love massive parallelism.
+                // Skip the ones that cannot run here. Run only the tests that love massive parallelism.
                 if(TestGroupForThread.MustBeSerialized()) { continue; }
 
                 // Store the test and any synchronization inside it.
@@ -263,7 +261,7 @@ namespace Mezzanine
                     // Synchronize with single threaded part.
                     std::lock_guard<std::mutex> Lock(ResultsMutex);
                     AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
-                    std::cout << TestGroupForThread.GetTestLog(); // Publish the Thread Specific TestLogs.
+                    std::cout << TestGroupForThread.GetTestLog(); // Publish the thread specific TestLogs.
                     TestTimings.emplace_back (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-T "));
                 };
 
@@ -286,7 +284,7 @@ namespace Mezzanine
             {
                 UnitTestGroup& TestGroupForThread = *(OneTestGroup);
 
-                // Skip the ones that cannot be run here because they can't stand parrellelism.
+                // Skip the ones that cannot be run here because they can't stand parallelism.
                 if(TestGroupForThread.CanBeParallel()) { continue; }
 
                 // Run all of the rest tests right here.
@@ -300,7 +298,7 @@ namespace Mezzanine
 
                 // Synchronize with single threaded part.
                 AllResults.insert(AllResults.end(), TestGroupForThread.begin(), TestGroupForThread.end());
-                std::cout << TestGroupForThread.GetTestLog(); // Publish the Test Specific Logs.
+                std::cout << TestGroupForThread.GetTestLog(); // Publish the test specific logs.
                 TestTimings.emplace_back (SingleThreadTimer.GetNameDuration(TestGroupForThread.Name() + "-S "));
 
             }
@@ -377,8 +375,8 @@ namespace Mezzanine
                 if(ExitCode::ExitSuccess != Options.ExitWithError)
                     { return Options.ExitWithError; }
 
-                // Reserve a fairly arbitrary amount of space for storing the timings of the work to be done, make sure it
-                // is a power of two for maximum legitimacy.
+                // Reserve a fairly arbitrary amount of space for storing the timings of the work to be done, make sure
+                // it is a power of two for maximum legitimacy.
                 std::vector<NamedDuration> VariousTimings;
                 VariousTimings.reserve(32);
                 VariousTimings.push_back(TotalTimer.GetNameDuration("Initial Setup"));
@@ -397,7 +395,7 @@ namespace Mezzanine
                     Worst = RenderTestResultSummary(AllResults, SummaryStream);
                     VariousTimings.push_back(SummaryTimer.GetNameDuration("Summary Reporting Time"));
 
-                    // Handle Formatting Times.
+                    // Handle formatting times.
                     TestTimer TimingsTimer;
                     std::stringstream TimingsStream;
                     RenderTimingsSummary(VariousTimings, TimingsStream);
@@ -413,7 +411,7 @@ namespace Mezzanine
                     Worst = GetWorstResults(AllResults);
                 }
 
-                // Return Strongly typed success or error code, and let the autogenerated main deal with it.
+                // Return strongly typed success or error code, and let the autogenerated main deal with it.
                 if(TestResult::Warning >= Worst)
                     { return ExitCode::ExitSuccess; }
                 return ExitCode::ExitFailure;

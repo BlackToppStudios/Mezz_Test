@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -84,9 +84,9 @@ void ConversionTests::operator ()()
     TEST_THROW("BadFStringTestResults", std::invalid_argument, []{ StringToTestResult("FThatIsYouGradeNow"); } );
     TEST_THROW("BadNStringTestResults", std::invalid_argument, []{ StringToTestResult("NeverApplicable"); } );
 
-    // These tests aresort of an odd. These tests that XML output which is read by Jenkins and other test
-    // result aggregation tools creates properly formatted XML when the test name might interfere. These won't
-    // be reported in tests directly but will break our BTS Continuous integration if they don't work.
+    // These tests are sort of odd. These tests have XML output which is read by Jenkins and other test result
+    // aggregation tools, creating properly formatted XML when the test name might interfere. These won't be reported
+    // in tests directly but will break our BTS continuous integration if they don't work.
     TEST("Test&Ampersands&InTestNamesBreaksNothing&", true);
     TEST("Test\"QupteInTestNamesBreaksNothing\"", true);
     TEST("Test'ApostropheInTestNamesBreaksNothing'", true);

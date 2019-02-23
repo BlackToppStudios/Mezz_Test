@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -68,22 +68,7 @@ namespace Mezzanine
         /// @TestGroups The testgroup to print the names of.
         Mezzanine::String MEZZ_LIB GetPrintableTestList(const Mezzanine::String::size_type TargetWidth,
                                                         const CoreTestGroup& TestGroups);
-/*
-        // Most remarked code ought to be removed swiftly, This feature will be re-added as soon as a scheme for
-        // testing it exists.
 
-        /// @brief Asked the user a question on the std output and get a TestResult as an answer.
-        /// @param Question The question to ask the user.
-        /// Status otherwise they will return Warnings.
-        /// @details The following strings provide the following results.
-        ///     -  "True", "Yes" as Success.
-        ///     -  "False", "No" as Failed or Warn.
-        ///     -  "Cancel" as "Cancelled".
-        ///     -  "Warn" as "Warning".
-        ///     -  "Unsure", "Inconclusive" as Inconclusive.
-        /// @return Depends on users input
-        TestResult MEZZ_LIB GetTestAnswerFromStdin(Mezzanine::String Question);
-*/
         /// @brief Convert one human readable character to a TestResults by inferring things like 'Y' is "yes" which is
         /// "success", 'F' is 'Fail' is a test "Failure" etc...
         /// @param Answer The answer that presumably a human provided.

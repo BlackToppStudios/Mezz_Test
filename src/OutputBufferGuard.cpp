@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of theSStealer/silencer/guard of output buffers.
+/// @brief The definition of the interceptor/silencer/guard of output buffers.
 
 #include "OutputBufferGuard.h"
 

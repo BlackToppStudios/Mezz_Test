@@ -1,4 +1,4 @@
-# © Copyright 2010 - 2018 BlackTopp Studios Inc.
+# © Copyright 2010 - 2019 BlackTopp Studios Inc.
 # This file is part of The Mezzanine Engine.
 #
 #    The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
 ############################################################################|###########################################
-# Download, Verify and Setup the Jagati
+# Download, Verify and Setup the Jagati.
 if(NOT JAGATI_File)
     set(JAGATI_File "${${PROJECT_NAME}_BINARY_DIR}/Jagati.cmake" CACHE FILEPATH
         "The file to load the Jagati from and potentially to download it to.")
@@ -62,13 +62,13 @@ endif(JAGATI_Download)
 include("${JAGATI_File}")
 
 ########################################################################################################################
-# The rest of the Jagati setup
+# The rest of the Jagati setup.
 
 StandardJagatiSetup()
 IncludeJagatiPackage("StaticFoundation")
 
 ########################################################################################################################
-# Add Sources
+# Add sources.
 message(STATUS "Determining Source Files.")
 
 AddHeaderFile("AutomaticTestGroup.h")
@@ -103,32 +103,32 @@ AddSourceFile("TimingTools.cpp")
 AddSourceFile("UnitTestGroup.cpp")
 ShowList("Source Files:" "\t" "${TestSourceFiles}")
 
-#AddSwigEntryPoint("NotYet.h")
+#AddSwigEntryPoint("NotYet.h").
 ShowList("Swig Input Files:" "\t" "${TestSwigFiles}")
 
 AddJagatiDoxInput("Dox.h")
 ShowList("Doxygen Input Files:" "\t" "${TestDoxFiles}")
 
 ########################################################################################################################
-# Build targets
+# Build targets.
 
 # Make a library with our sources.
 AddJagatiLibrary()
 CreateCoverageTarget(${TestLib} "${TestSourceFiles}")
 
-# This has only three tests and they could  be added as follows.
-# AddTestFile("Boilerplate.h") # Not a real test but we want our example to build
-# AddTestFile("Conversion.h")
-# AddTestFile("Test.h")
+# This has only three tests and they could be added as follows.
+# AddTestFile("Boilerplate.h") # Not a real test but we want our example to build.
+# AddTestFile("Conversion.h").
+# AddTestFile("Test.h").
 
 # Instead we can also add all the tests in the test directory with the following:
 AddTestDirectory(${${PROJECT_NAME}TestDir})
 
-# Spit out the C++ file
+# Spit out the C++ file.
 EmitTestCode()
 AddTestTarget()
 
-# Some extra creating of targets for other development related tasks
+# Some extra creating of targets for other development related tasks.
 AddIDEVisibility("Jenkinsfile")
 SetCodeCoverage()
 

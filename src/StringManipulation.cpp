@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The implementation of the string manipulation functions the unit tests use
+/// @brief The implementation of the string manipulation functions the unit tests use.
 
 #include "TestEnumerations.h"
 #include "StringManipulation.h"
@@ -55,7 +55,7 @@ namespace Mezzanine
             if (found != String::npos)
                 { HayStack.erase(found+1); }
             else
-                { HayStack.clear(); } // HayStack is all whitespace
+                { HayStack.clear(); } // HayStack is all whitespace.
             return HayStack;
         }
 

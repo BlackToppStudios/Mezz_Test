@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of the string manipulation functions the unit tests use
+/// @brief The definition of the string manipulation functions the unit tests use.
 
 #include "UnitTestGroup.h"
 #include "MezzTest.h"
@@ -54,8 +54,8 @@ namespace Mezzanine
 {
     namespace Testing
     {
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Policy class methods, Test policy classes will implement these. 90% of tests classes ignore these.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Policy class methods. Test policy classes will implement these, 90% of tests classes ignore these.
 
         Boole UnitTestGroup::EmitIntermediaryTestResults() const
             { return true; }
@@ -69,8 +69,8 @@ namespace Mezzanine
         Boole UnitTestGroup::ShouldRunAutomatically() const
             { return true; }
 
-        //////////////////////////////////////////////////////
-        // MetaPolicy methods, don't override these, they use the policy methods.
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        // MetaPolicy methods. Don't override these, they use the policy methods.
 
         Boole UnitTestGroup::MustBeSerialized() const
             { return !IsMultiThreadSafe() && !IsMultiProcessSafe(); }
@@ -78,8 +78,8 @@ namespace Mezzanine
         Boole UnitTestGroup::CanBeParallel() const
             { return IsMultiThreadSafe() || IsMultiProcessSafe(); }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Make all UnitTestGroups look like a container of TestDatas
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Make all UnitTestGroups look like a container of TestDatas.
         UnitTestGroup::iterator UnitTestGroup::begin()
             { return TestDataStorage.begin(); }
 
@@ -116,7 +116,7 @@ namespace Mezzanine
             AddTestResultWithoutName(std::move(CurrentTest));
         }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Other useful stuff.
 
         TestResult UnitTestGroup::GetWorstResults() const
@@ -125,8 +125,8 @@ namespace Mezzanine
         String UnitTestGroup::GetTestLog() const
             { return TestLog.str(); }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Test Macro Functions Backing
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Test macro functions backing.
         TestResult UnitTestGroup::Test(const String& TestName, bool TestCondition,
                                  TestResult IfFalse,
                                  TestResult IfTrue,

@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -41,29 +41,30 @@
 #define Mezz_Test_Boilerplate_h
 
 /// @file
-/// @brief A Test header suitable for copying as a starting point for tests.
-/// @details This class's name is the filename. All test groups must inherit from Mezzanine::Testing::UnitTestGroup
-/// but can do so by inheriting from one of the "policy implementing" unit test groupo.
+/// @brief A test header suitable for copying as a starting point for tests.
+/// @details This class's name is the filename. All test groups must inherit from Mezzanine::Testing::UnitTestGroup but
+/// can do so by inheriting from one of the "policy implementing" unit test group.
 /// @n
 /// Tests in the Mezzanine::Testing::AutomaticTestGroup will run in threads along with most of the other test threads
 /// and
+/// @todo Finish the previous comment.
 
-// Add other headers you need here
+// Add other headers you need here.
 #include "MezzTest.h"
 
-// Pick any of the following styles to create your tests
+// Pick any of the following styles to create your tests.
 
 /*
 /// @brief The test suite will find all classes identified as tests in CMake, but they need to look like this.
-class MEZZ_LIB BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
+//class MEZZ_LIB BoilerplateTests : public Mezzanine::Testing::UnitTestGroup
 //class MEZZ_LIB ConsoleLogicTests : public Mezzanine::Testing::AutomaticTestGroup
 //class MEZZ_LIB WarningTimedTestTests : public Mezzanine::Testing::BenchmarkTestGroup
 {
     public:
-        /// @brief Default Constructor
+        /// @brief Default constructor.
         virtual ~BoilerplateTests() = default;
 
-        /// @brief This is what will be run when executing the test
+        /// @brief This is what will be run when executing the test.
         virtual void operator ()() override;
 
         /// @brief This is used as the name of the test on the command prompt,

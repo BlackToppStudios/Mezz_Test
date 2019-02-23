@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2019 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@
 #define Mezz_Test_InteractiveTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that need human discretion and judgment.
+/// @brief The declaration of a group of tests that need human discretion and judgment.
 
 #include "UnitTestGroup.h"
 
@@ -53,19 +53,19 @@ namespace Mezzanine
         SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
 
         ///////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief A single group of tests that all run entirely Interactively.
-        /// @details This test is not run automatically, because it requires a human judgment. Tests groups inheriting
+        /// @brief A single group of tests that all run entirely interactively.
+        /// @details These tests are not run automatically, because they require human judgment. Test groups inheriting
         /// from this might seek to answer questions like: Does this texture look like wood grain? Does this image look
-        /// like a robot? Is the text emitted legible?. In principle these are all questions that could be answered some
+        /// like a robot? Is the text emitted legible? In principle these are all questions that could be answered some
         /// other way, but subtle behaviors might change the way processes generating these results work. A procedural
         /// general algorithm might have hard to predict output, a GPU might take shortcuts and not produce pixel
-        /// perfect rendering and system encoding might corrupt text in unexpected ways. Simply show them to a human and
-        /// asking the question is much easier and cost effective than automating every possible failure mode.
+        /// perfect rendering, and system encoding might corrupt text in unexpected ways. Simply showing it to a human
+        /// and asking the question is much easier and more cost effective than automating every possible failure mode.
         /// @n All This test group does is remove itself and its inheritors from the list of tests to run automatically.
         class MEZZ_LIB InteractiveTestGroup : public UnitTestGroup
         {
         public:
-            /// @brief Default virtual deconstructor to allow for polymorphism
+            /// @brief Default virtual deconstructor to allow for polymorphism.
             virtual ~InteractiveTestGroup() override = default;
 
             virtual Boole ShouldRunAutomatically() const override;
