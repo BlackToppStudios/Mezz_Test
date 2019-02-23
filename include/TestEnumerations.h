@@ -50,14 +50,6 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        /// @brief Possible ways to exit the UnitTestGroup Program.
-        enum class ExitCode
-        {
-            ExitSuccess             = 0,    ///< Normal exit all tests skipped or better.
-            ExitInvalidArguments    = 1,    ///< At least some invalid args were passed on the command line.
-            ExitFailure             = 2     ///< At least one test return worse than skipped.
-        };
-
         /// @brief Return values from tests.
         /// @details These are loosely ordered from best to worse, in terms of what we want to see from our tests. This
         /// takes the mindset that knowing about a failure is better than not knowing about it.
