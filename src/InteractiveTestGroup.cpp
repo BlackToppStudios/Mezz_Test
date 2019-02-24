@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of the group of tests that need heart and soul. Or at least a warm body and 80 IQ points.
+/// @brief The definition of a group of tests that need heart and soul. Or at least a warm body and 80 IQ points.
 
 #include "InteractiveTestGroup.h"
 

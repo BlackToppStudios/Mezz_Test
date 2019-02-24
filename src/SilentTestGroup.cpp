@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of the group of tests that need no human intervention.
+/// @brief The definition of a group of tests that need no human intervention.
 
 #include "SilentTestGroup.h"
 

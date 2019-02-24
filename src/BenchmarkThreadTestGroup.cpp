@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of the group that does performance sensitive things.
+/// @brief The definition of a group that does performance sensitive things.
 
 #include "BenchmarkThreadTestGroup.h"
 
