@@ -41,7 +41,7 @@
 #define Mezz_Test_BenchmarkThreadTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that is performance sensitive, but not so sensitive as to require a
+/// @brief The declaration of a group of tests that is performance sensitive, but not so sensitive as to require a
 /// whole process.
 
 #include "UnitTestGroup.h"

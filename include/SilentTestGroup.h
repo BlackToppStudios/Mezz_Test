@@ -41,7 +41,7 @@
 #define Mezz_Test_SilentTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that doesn't emit normal reports until the final summary.
+/// @brief The declaration of a group of tests that doesn't emit normal reports until the final summary.
 
 #include "UnitTestGroup.h"
 

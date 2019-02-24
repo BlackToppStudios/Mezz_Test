@@ -41,7 +41,7 @@
 #define Mezz_Test_AutomaticTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that need no human intervention.
+/// @brief The declaration of a group of tests that need no human intervention.
 
 #include "UnitTestGroup.h"
 

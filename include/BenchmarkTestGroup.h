@@ -41,7 +41,7 @@
 #define Mezz_Test_BenchmarkTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that is performance sensitive.
+/// @brief The declaration of a group of tests that is performance sensitive.
 
 #include "UnitTestGroup.h"
 
