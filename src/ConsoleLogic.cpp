@@ -47,7 +47,7 @@
 #include "UnitTestGroup.h"
 
 SAVE_WARNING_STATE
-SUPPRESS_VC_WARNING(4668) // A Preprocessor macro was used and never defined because the VS Headers are poorly written.
+SUPPRESS_VC_WARNING(4668) // A preprocessor macro was used and never defined because the VS Headers are poorly written.
 
 #include <vector>
 #include <sstream>

@@ -58,7 +58,7 @@ namespace
 {
     /// @internal
     /// @brief Turn part of a useless count of nanoseconds into a meaningful string of minutes, seconds and subseconds.
-    /// @tparam UnitType A std::chrono::duration to break out of the nanoseconds.
+    /// @tparam UnitType A std::chrono::duration to convert the nanoseconds.
     /// @param Duration The nanoseconds to break into larger units.
     /// @param Suffix A string to decribe the unit.
     /// @param Stream The place to send the newly created useful string.
