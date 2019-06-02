@@ -104,7 +104,7 @@ namespace Mezzanine
 
             // Replace with std::max_element once we get C++17
             Mezzanine::String::size_type LongestName = 0;
-            for(const std::pair<Mezzanine::String,UnitTestGroup*>& Entry: TestGroups)
+            for(const auto& Entry: TestGroups)
             {
                 if(Entry.first.size()>LongestName)
                     { LongestName=Entry.first.size(); }
@@ -113,7 +113,7 @@ namespace Mezzanine
             Mezzanine::String::size_type ColumnWidth = LongestName+1;
             Mezzanine::String::size_type Column = 0;
             Mezzanine::String::size_type CurrentWidth=0;
-            for(const std::pair<Mezzanine::String,UnitTestGroup*>& Entry: TestGroups)
+            for(const auto& Entry: TestGroups)
             {
                 if(0==Column)
                 {
