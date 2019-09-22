@@ -45,6 +45,7 @@
 #include "MezzTest.h"
 
 #include <iomanip>
+#include <numeric>
 
 using std::chrono::minutes;
 using std::chrono::seconds;
@@ -102,6 +103,56 @@ namespace Mezzanine
             Duration = TruncateUnit<nanoseconds>(Duration, "ns", PrettyTimeAssembler);
 
             return PrettyTimeAssembler.str();
+        }
+
+        MicroBenchmarkResults::MicroBenchmarkResults(
+            MicroBenchmarkResults::TimingLists Timings,
+            TimeType PrecalculatedTotal)
+            : OriginalTimings(Timings)
+        {
+            // No need to process nothing
+            if(OriginalTimings.size() == 0)
+                { return; }
+
+            // Sorting saves us a bunch of effort
+            std::sort(OriginalTimings.begin(), OriginalTimings.end());
+
+            if(TimeType{0} == PrecalculatedTotal)
+                { Total = std::accumulate(OriginalTimings.begin(), OriginalTimings.end(), TimeType{0}); }
+            else
+                { Total = PrecalculatedTotal; }
+
+            Iterations = OriginalTimings.size();
+            Average = Total / Iterations;
+
+            Fastest = OriginalTimings.front();
+            Percentile99th = GetIndexValueFromPercent(0.99);
+            Percentile90th = GetIndexValueFromPercent(0.90);
+            Median = GetIndexValueFromPercent(0.5);
+            Percentile10th = GetIndexValueFromPercent(0.10);
+            Percentile1st = GetIndexValueFromPercent(0.01);
+            Slowest = OriginalTimings.back();
+
+            //Median
+            //Percentile1
+            //Percentile10
+            //Percentile90
+            //Percentile99
+        }
+
+        MicroBenchmarkResults::TimeType MicroBenchmarkResults::GetIndexValueFromPercent(PreciseReal Percent) const
+        {
+            if(0.0 > Percent)
+                { Percent = 0; }
+            if(1.0 < Percent)
+                { Percent = 1.0; }
+
+            TimingLists::size_type Location
+                {static_cast<TimingLists::size_type>(OriginalTimings.size() * (1.0 - Percent))};
+
+            if(OriginalTimings.size() <= Location)
+                { Location = OriginalTimings.size()-1; }
+            return OriginalTimings[Location];
         }
 
     }// Testing

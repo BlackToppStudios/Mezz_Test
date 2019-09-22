@@ -98,6 +98,111 @@ namespace Mezzanine
         /// @param TimingToStream A single NameDuration.
         /// @return The modified stream.
         std::ostream& MEZZ_LIB operator<<(std::ostream& Stream, const NamedDuration& TimingToStream);
+
+        /// @brief A set of numbers all the Microbenchmarks return.
+        struct MEZZ_LIB MicroBenchmarkResults
+        {
+            /// @brief A integral type suitable for counting any reasonable execution counts.
+            using CountType = Mezzanine::UInt64;
+            /// @brief A time precise enough for very small benchmarks.
+            using TimeType = std::chrono::nanoseconds;
+            /// @brief A collection of timings not yet processed
+            using TimingLists = std::vector<TimeType>;
+
+            /// @brief From a collection of nanoseconds fill out this structure.
+            /// @param Timings A list of nanoseconds to measure and get the interesting numbers from.
+            /// @param PrecalculatedTotal Sometimes the total runtime is acquired while running tests. If this is
+            /// non-zero this will be used instead of calculated.
+            MicroBenchmarkResults(TimingLists Timings, TimeType PrecalculatedTotal = TimeType{0});
+            MicroBenchmarkResults(MicroBenchmarkResults&) = default;
+            ~MicroBenchmarkResults() = default;
+
+            /// @brief Get a value fromt the original timing s
+            /// @param Percent Where to reach into the timings with 0.0 being the slowesta and 1.0 being the fastest.
+            /// @return A value from the Original Timings vector.
+            TimeType GetIndexValueFromPercent(PreciseReal Percent) const;
+
+            /// @brief How many times was the timed item executed/
+            CountType Iterations = 0;
+            /// @brief How much was the total runtime with as much of the benchmark removed as possibble.
+            TimeType Total = TimeType{0};
+            /// @brief The mean execution time; the Total time divided by the number of iterations.
+            TimeType Average = TimeType{0};
+            /// @brief The fastest (fewest time units) execution time. Defaults to one hour
+            TimeType Fastest = TimeType{0};
+            /// @brief The timing that beats out 99 percent of the others at being the fastest.
+            /// @sa GetIndexValueFromPercent
+            TimeType Percentile99th = TimeType{0};
+            /// @brief The timing that beats out 90 percent of the others at being the fastest.
+            /// @sa GetIndexValueFromPercent
+            TimeType Percentile90th = TimeType{0};
+
+            /// @brief The meduan execution time; the execution time in the middle.
+            TimeType Median = TimeType{0};
+            /// @brief The timing that beats out 10 percent of the others at being the fastest.
+            /// @sa GetIndexValueFromPercent
+            TimeType Percentile10th = TimeType{0};
+            /// @brief The timing that beats out only 1 percent of the others at being the fastest.
+            /// @sa GetIndexValueFromPercent
+            TimeType Percentile1st = TimeType{0};
+            /// @brief The slowest (most time units) execution time.
+            TimeType Slowest = TimeType{0};
+            /// @brief The raw times gathered by a test.
+            TimingLists OriginalTimings;
+        };
+
+        /// @brief Time a single execution of some functor
+        /// @tparam Functor Any function-like callable item which accepts no parameters and returns none.
+        /// @param  ToTime A functor to time the execution of.
+        /// @return A performanc profile as an instance of MicroBenchmarkResults.
+        template<typename Functor>
+        MicroBenchmarkResults MicroBenchmark(Functor ToTime)
+        {
+            TestTimer Bench;
+            ToTime();
+            return MicroBenchmarkResults{ {Bench.GetLength()} };
+        }
+
+        /// @brief Run the passed functor a number of times and track run times of these.
+        /// @tparam Functor Any function-like callable item which accepts no parameters and returns none.
+        /// @param ToTime A functor to time the execution of.
+        /// @return A performanc profile as an instance of MicroBenchmarkResults.
+        template<typename Functor>
+        MicroBenchmarkResults MicroBenchmark(const Mezzanine::UInt64 Iterations, Functor&& ToTime)
+        {
+            MicroBenchmarkResults::TimingLists Results;
+            Results.reserve(Iterations);
+
+            for(Mezzanine::UInt64 Counter{0}; Counter<Iterations; Counter++)
+            {
+                TestTimer Bench;
+                ToTime();
+                Results.push_back(Bench.GetLength());
+            }
+            return MicroBenchmarkResults{Results};
+        }
+
+        /// @brief Run the passed functor repeatedly until the total execution time exceeds the minumum duration.
+        /// @tparam Functor Any function-like callable item which accepts no parameters and returns none.
+        /// @details This starts and stops a
+        /// @return A performance profile as an instance of MicroBenchmarkResults.
+        template<typename Functor>
+        MicroBenchmarkResults MicroBenchmark(const std::chrono::nanoseconds MinimumDuration, Functor&& ToTime)
+        {
+            MicroBenchmarkResults::TimingLists Results;
+            MicroBenchmarkResults::TimeType RunningTotal{0};
+
+            while(MinimumDuration >= RunningTotal)
+            {
+                TestTimer Bench;
+                ToTime();
+                const MicroBenchmarkResults::TimeType Length = Bench.GetLength();
+
+                RunningTotal += Length;
+                Results.push_back(Length);
+            }
+            return MicroBenchmarkResults{Results, RunningTotal};
+        }
     }// Testing
 }// Mezzanine
 

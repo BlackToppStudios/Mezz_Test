@@ -299,7 +299,33 @@ namespace Mezzanine
                         AddTestResult( Mezzanine::Testing::TestData( (Name), (ExistingResult),                         \
                         __func__, __FILE__, __LINE__)) ;
             #endif
+        #endif
 
+        #ifndef TEST_WITHIN_RANGE
+            /// @def TEST_EQUAL
+            /// @brief The simplest test for comparing two values in a currently running UnitTestGroup.
+            /// @details  This captures test location meta data and should be considered the default way to record
+            /// equality tests.
+            /// This uses the type's < operators and the type's << operator(ostream&) to emit an error
+            /// message displaying the received results and the actual results.
+            /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
+            /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
+            /// AutomaticTestGroup.
+            /// @param Name The name of the current test.
+            /// @param ExpectedLowerBound The Minimum of the target range exclusive.
+            /// @param ExpectedUpperBound The Maximum of the target range exclusive.
+            /// @param ActualResults Whatever gibberish your code actually emits.
+            #ifdef __FUNCTION__
+                #define TEST_WITHIN_RANGE(Name, ExpectedLowerBound, ExpectedUpperBound, ActualResults);                \
+                    TestWithinRange((Name), (ExpectedLowerBound), (ExpectedUpperBound), (ActualResults),               \
+                              Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,         \
+                              __FUNCTION__, __FILE__, __LINE__ );
+            #else
+                #define TEST_WITHIN_RANGE(Name, ExpectedLowerBound, ExpectedUpperBound, ActualResults);                \
+                    TestWithinRange((Name), (ExpectedLowerBound), (ExpectedUpperBound), (ActualResults),               \
+                              Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,         \
+                              __func__, __FILE__, __LINE__ );
+            #endif
         #endif
 
         #ifndef TEST_THROW

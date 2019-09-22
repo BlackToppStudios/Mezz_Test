@@ -79,6 +79,8 @@ void NegativeTestTests::operator ()()
     TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing-Float", 0.1f, 1.2f, 2);
     TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing-Double", 0.1, 1.2, 2);
     TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed);
+    TEST_WITHIN_RANGE("TestWithinRangeFailingLow", 1, 99, 0);
+    TEST_WITHIN_RANGE("TestWithinRangeFailingHigh", 1, 99, 500);
     TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
     TEST_THROW("TestThrowFailingNonException", std::invalid_argument, []{ throw std::string("pass"); });
     TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); });
@@ -127,6 +129,7 @@ void TestTests::operator ()()
     TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing-Float", 0.1f, 0.1f * 1.00f, 2);
     TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing-Double", 0.1, 0.1 * 1.00, 2);
     TEST_RESULT("TestResultPassing", Mezzanine::Testing::TestResult::Success);
+    TEST_WITHIN_RANGE("TestWithinRangePassing", 1, 99, 50);
     TEST_THROW("TestThrowPassing", std::invalid_argument, []{ throw std::invalid_argument("pass"); });
     TEST_NO_THROW("TestNoThrowPassing", []{});
     TEST_STRING_CONTAINS("TestStringContains", Mezzanine::String("Foo"), Mezzanine::String("Foobar"));
