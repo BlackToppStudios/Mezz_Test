@@ -132,13 +132,10 @@ namespace Mezzanine
             Percentile10th = GetIndexValueFromPercent(0.10);
             Percentile1st = GetIndexValueFromPercent(0.01);
             Slowest = OriginalTimings.back();
-
-            //Median
-            //Percentile1
-            //Percentile10
-            //Percentile90
-            //Percentile99
         }
+
+        SAVE_WARNING_STATE
+        SUPPRESS_GCC_WARNING("-Wconversion") // The conversion to int to double and back to int for the index
 
         MicroBenchmarkResults::TimeType MicroBenchmarkResults::GetIndexValueFromPercent(PreciseReal Percent) const
         {
@@ -155,5 +152,6 @@ namespace Mezzanine
             return OriginalTimings[Location];
         }
 
+        RESTORE_WARNING_STATE
     }// Testing
 }// Mezzanine

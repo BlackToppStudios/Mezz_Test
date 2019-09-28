@@ -136,7 +136,6 @@ namespace Mezzanine
             /// @brief The timing that beats out 90 percent of the others at being the fastest.
             /// @sa GetIndexValueFromPercent
             TimeType Percentile90th = TimeType{0};
-
             /// @brief The meduan execution time; the execution time in the middle.
             TimeType Median = TimeType{0};
             /// @brief The timing that beats out 10 percent of the others at being the fastest.
@@ -156,7 +155,7 @@ namespace Mezzanine
         /// @param  ToTime A functor to time the execution of.
         /// @return A performanc profile as an instance of MicroBenchmarkResults.
         template<typename Functor>
-        MicroBenchmarkResults MicroBenchmark(Functor ToTime)
+        MicroBenchmarkResults MicroBenchmark(Functor&& ToTime)
         {
             TestTimer Bench;
             ToTime();
@@ -168,7 +167,7 @@ namespace Mezzanine
         /// @param ToTime A functor to time the execution of.
         /// @return A performanc profile as an instance of MicroBenchmarkResults.
         template<typename Functor>
-        MicroBenchmarkResults MicroBenchmark(const Mezzanine::UInt64 Iterations, Functor&& ToTime)
+        MicroBenchmarkResults MicroBenchmark(const Mezzanine::UInt64& Iterations, Functor&& ToTime)
         {
             MicroBenchmarkResults::TimingLists Results;
             Results.reserve(Iterations);
@@ -187,7 +186,7 @@ namespace Mezzanine
         /// @details This starts and stops a
         /// @return A performance profile as an instance of MicroBenchmarkResults.
         template<typename Functor>
-        MicroBenchmarkResults MicroBenchmark(const std::chrono::nanoseconds MinimumDuration, Functor&& ToTime)
+        MicroBenchmarkResults MicroBenchmark(const std::chrono::nanoseconds& MinimumDuration, Functor&& ToTime)
         {
             MicroBenchmarkResults::TimingLists Results;
             MicroBenchmarkResults::TimeType RunningTotal{0};
