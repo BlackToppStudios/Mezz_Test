@@ -113,7 +113,7 @@ namespace Mezzanine
             /// @param Timings A list of nanoseconds to measure and get the interesting numbers from.
             /// @param PrecalculatedTotal Sometimes the total runtime is acquired while running tests. If this is
             /// non-zero this will be used instead of calculated.
-            MicroBenchmarkResults(TimingLists Timings, TimeType PrecalculatedTotal = TimeType{0});
+            MicroBenchmarkResults(const TimingLists& Timings, const TimeType& PrecalculatedTotal = TimeType{0});
             MicroBenchmarkResults(MicroBenchmarkResults&) = default;
             ~MicroBenchmarkResults() = default;
 
@@ -167,12 +167,12 @@ namespace Mezzanine
         /// @param ToTime A functor to time the execution of.
         /// @return A performanc profile as an instance of MicroBenchmarkResults.
         template<typename Functor>
-        MicroBenchmarkResults MicroBenchmark(const Mezzanine::UInt64& Iterations, Functor&& ToTime)
+        MicroBenchmarkResults MicroBenchmark(const Mezzanine::UInt32& Iterations, Functor&& ToTime)
         {
             MicroBenchmarkResults::TimingLists Results;
             Results.reserve(Iterations);
 
-            for(Mezzanine::UInt64 Counter{0}; Counter<Iterations; Counter++)
+            for(Mezzanine::UInt32 Counter{0}; Counter<Iterations; Counter++)
             {
                 TestTimer Bench;
                 ToTime();

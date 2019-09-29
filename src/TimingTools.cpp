@@ -105,9 +105,8 @@ namespace Mezzanine
             return PrettyTimeAssembler.str();
         }
 
-        MicroBenchmarkResults::MicroBenchmarkResults(
-            MicroBenchmarkResults::TimingLists Timings,
-            TimeType PrecalculatedTotal)
+        MicroBenchmarkResults::MicroBenchmarkResults(const TimingLists& Timings,
+            const TimeType& PrecalculatedTotal)
             : OriginalTimings(Timings)
         {
             // No need to process nothing
