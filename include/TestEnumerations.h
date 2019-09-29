@@ -58,10 +58,10 @@ namespace Mezzanine
         enum class TestResult
         {
             Success         = 0,        ///< Test was ran and appeared to work.
-            Warning         = 1,        ///< Technically the test passed but there is something that is not quite right.
-            Skipped         = 2,        ///< Test was simply not ran at the behest of the user.
-            Cancelled       = 3,        ///< Was canceled by user, so success is unknown, but user knows test was
-                                        /// canceled.
+            Skipped         = 1,        ///< Test was simply not ran and this was intentional and does not mean failure.
+            Cancelled       = 2,        ///< Was canceled by user, so success is unknown, but any user knows test was
+                                        /// cancelled and the test is not failed
+            Warning         = 3,        ///< Technically the test passed but there is something that is not quite right.
             Inconclusive    = 4,        ///< If a user answers that with "don't know" in a test that involved
                                         /// interaction, The user knows there is a potential issue.
             Failed          = 5,        ///< Known failure.
@@ -79,12 +79,12 @@ namespace Mezzanine
         SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
             /// @brief Corresponds to TestResult::Success
             const Mezzanine::String SuccessString("Success");
-            /// @brief Corresponds to TestResult::Warning
-            const Mezzanine::String WarningString("Warning");
             /// @brief Corresponds to TestResult::Skipped
             const Mezzanine::String SkippedString("Skipped");
             /// @brief Corresponds to TestResult::Cancelled
             const Mezzanine::String CancelledString("Cancelled");
+            /// @brief Corresponds to TestResult::Warning
+            const Mezzanine::String WarningString("Warning");
             /// @brief Corresponds to TestResult::Inconclusive
             const Mezzanine::String InconclusiveString("Inconclusive");
             /// @brief Corresponds to TestResult::Failed
