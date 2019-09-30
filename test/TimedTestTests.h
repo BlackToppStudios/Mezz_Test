@@ -168,10 +168,10 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       SingleBench.Slowest.count());
 
     // Setup for triple bench test
-    const MultilengthSleeper::Sleep FastestTime{std::chrono::milliseconds{100}};
-    const MultilengthSleeper::Sleep AverageTime{std::chrono::milliseconds{300}};
-    const MultilengthSleeper::Sleep SlowestTime{std::chrono::milliseconds{500}};
-    const MultilengthSleeper::Sleep TripleSleepEpsilon{std::chrono::milliseconds{100}};
+    const MultilengthSleeper::Sleep FastestTime{std::chrono::milliseconds{1000}};
+    const MultilengthSleeper::Sleep AverageTime{std::chrono::milliseconds{3000}};
+    const MultilengthSleeper::Sleep SlowestTime{std::chrono::milliseconds{5000}};
+    const MultilengthSleeper::Sleep TripleSleepEpsilon{std::chrono::milliseconds{200}};
 
 
     MultilengthSleeper TripleSleeps({FastestTime, AverageTime, SlowestTime});
@@ -234,17 +234,17 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       ThreeIterationBench.Slowest.count());
 
     // Duration based benchmarks
-    const MultilengthSleeper::Sleep Pentile1Time{10000};
-    const MultilengthSleeper::Sleep Pentile2Time{30000};
-    const MultilengthSleeper::Sleep Pentile3Time{50000};
-    const MultilengthSleeper::Sleep Pentile4Time{70000};
-    const MultilengthSleeper::Sleep Pentile5Time{90000};
+    const MultilengthSleeper::Sleep Pentile1Time{100000};
+    const MultilengthSleeper::Sleep Pentile2Time{300000};
+    const MultilengthSleeper::Sleep Pentile3Time{500000};
+    const MultilengthSleeper::Sleep Pentile4Time{700000};
+    const MultilengthSleeper::Sleep Pentile5Time{900000};
     // 250000 for 5
 
     MultilengthSleeper PentileSleeps({Pentile1Time, Pentile2Time, Pentile3Time, Pentile4Time, Pentile5Time});
 
 
-    const MultilengthSleeper::Sleep PentileDelta{std::chrono::microseconds{1000}};
+    const MultilengthSleeper::Sleep PentileDelta{std::chrono::microseconds{5000}};
     const MultilengthSleeper::Sleep Pentile1TimeUpper{Pentile1Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile1TimeLower{Pentile1Time - PentileDelta};
     /*const MultilengthSleeper::Sleep Pentile2TimeUpper{Pentile2Time + PentileDelta};
@@ -256,22 +256,28 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MultilengthSleeper::Sleep Pentile5TimeUpper{Pentile5Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile5TimeLower{Pentile5Time - PentileDelta};
 
-    const MultilengthSleeper::Sleep PentileTotalDelta{std::chrono::microseconds{2000}};
-    const MultilengthSleeper::Sleep PentileExpectedTotal{std::chrono::microseconds{2000}};
-    const MultilengthSleeper::Sleep PentileExpectedTotalUpper{PentileExpectedTotal + PentileTotalDelta};
-    const MultilengthSleeper::Sleep PentileExpectedTotalLower{PentileExpectedTotal - PentileTotalDelta};
+    //const MultilengthSleeper::Sleep Pentile5sleepTime
+    //    { Pentile1Time + Pentile2Time + Pentile3Time + Pentile4Time + Pentile5Time };
 
-    const MultilengthSleeper::Sleep PentileBenchmarkDuration{2500000};
+    const MultilengthSleeper::Sleep PentileBenchmarkDuration{25000000};
+
+    //Pentile5sleepTime
+
+    const MultilengthSleeper::Sleep PentileTotalDelta{PentileDelta * 5};
+
+    const MultilengthSleeper::Sleep PentileExpectedTotalUpper{PentileBenchmarkDuration + PentileTotalDelta};
+    const MultilengthSleeper::Sleep PentileExpectedTotalLower{PentileBenchmarkDuration - PentileTotalDelta};
+
+
 
     const MicroBenchmarkResults::CountType PentileSinglePassExpectedCount
         { MicroBenchmarkResults::CountType(Pentile1Time.count() +  Pentile2Time.count() + Pentile3Time.count() +
             Pentile4Time.count() + Pentile5Time.count()) };
 
-    // Actual expected amount is 2.5x
     const MicroBenchmarkResults::CountType PentileBenchmarkExpectedCountLower
-        { PentileBenchmarkDuration.count() / PentileSinglePassExpectedCount * 2};
+        { PentileBenchmarkDuration.count() / PentileSinglePassExpectedCount * 4};
     const MicroBenchmarkResults::CountType PentileBenchmarkExpectedCountUpper
-        { PentileBenchmarkDuration.count() / PentileSinglePassExpectedCount * 3};
+        { PentileBenchmarkDuration.count() / PentileSinglePassExpectedCount * 6};
 
     // The actual work
     const MicroBenchmarkResults DurationBench = MicroBenchmark(PentileBenchmarkDuration,
