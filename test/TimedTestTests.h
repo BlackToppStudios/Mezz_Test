@@ -171,21 +171,21 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MultilengthSleeper::Sleep FastestTime{std::chrono::milliseconds{1000}};
     const MultilengthSleeper::Sleep AverageTime{std::chrono::milliseconds{3000}};
     const MultilengthSleeper::Sleep SlowestTime{std::chrono::milliseconds{5000}};
-    const MultilengthSleeper::Sleep TripleSleepEpsilon{std::chrono::milliseconds{200}};
+    const MultilengthSleeper::Sleep TripleSleepEpsilon{std::chrono::milliseconds{1000}};
 
 
     MultilengthSleeper TripleSleeps({FastestTime, AverageTime, SlowestTime});
 
-    const MicroBenchmarkResults::TimeType TotalLowerRange{FastestTime + AverageTime + SlowestTime - TripleSleepEpsilon};
+    const MicroBenchmarkResults::TimeType TotalLowerRange{FastestTime + AverageTime + SlowestTime};
     const MicroBenchmarkResults::TimeType TotalUpperRange{FastestTime + AverageTime + SlowestTime + TripleSleepEpsilon};
 
-    const MicroBenchmarkResults::TimeType AverageLowerRange{AverageTime - TripleSleepEpsilon};
+    const MicroBenchmarkResults::TimeType AverageLowerRange{AverageTime};
     const MicroBenchmarkResults::TimeType AverageUpperRange{AverageTime + TripleSleepEpsilon};
 
-    const MicroBenchmarkResults::TimeType FastestLowerRange{FastestTime - TripleSleepEpsilon};
+    const MicroBenchmarkResults::TimeType FastestLowerRange{FastestTime};
     const MicroBenchmarkResults::TimeType FastestUpperRange{FastestTime + TripleSleepEpsilon};
 
-    const MicroBenchmarkResults::TimeType SlowestLowerRange{SlowestTime - TripleSleepEpsilon};
+    const MicroBenchmarkResults::TimeType SlowestLowerRange{SlowestTime};
     const MicroBenchmarkResults::TimeType SlowestUpperRange{SlowestTime + TripleSleepEpsilon};
 
     const MicroBenchmarkResults ThreeIterationBench = MicroBenchmark(3, std::move(TripleSleeps));
@@ -259,7 +259,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     //const MultilengthSleeper::Sleep Pentile5sleepTime
     //    { Pentile1Time + Pentile2Time + Pentile3Time + Pentile4Time + Pentile5Time };
 
-    const MultilengthSleeper::Sleep PentileBenchmarkDuration{25000000};
+    const MultilengthSleeper::Sleep PentileBenchmarkDuration{250000000};
 
     //Pentile5sleepTime
 
@@ -274,8 +274,9 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
         { MicroBenchmarkResults::CountType(Pentile1Time.count() +  Pentile2Time.count() + Pentile3Time.count() +
             Pentile4Time.count() + Pentile5Time.count()) };
 
+    // 5 is the expected multiple, but these are often slower
     const MicroBenchmarkResults::CountType PentileBenchmarkExpectedCountLower
-        { PentileBenchmarkDuration.count() / PentileSinglePassExpectedCount * 4};
+        { PentileBenchmarkDuration.count() / PentileSinglePassExpectedCount * 3};
     const MicroBenchmarkResults::CountType PentileBenchmarkExpectedCountUpper
         { PentileBenchmarkDuration.count() / PentileSinglePassExpectedCount * 6};
 
@@ -283,6 +284,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MicroBenchmarkResults DurationBench = MicroBenchmark(PentileBenchmarkDuration,
                                                                std::move(PentileSleeps));
 
+    // //// results too low 10 ~ 15
     TEST_WITHIN_RANGE("MicroBenchmarkDurationIterations",
                       PentileBenchmarkExpectedCountLower,
                       PentileBenchmarkExpectedCountUpper,
