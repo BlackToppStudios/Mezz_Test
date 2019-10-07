@@ -198,36 +198,48 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                MicroBenchmarkResults::CountType{3},
                ThreeIterationBench.OriginalTimings.size());
 
+    // 8873578600
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsTotal",
                       TotalLowerRange.count(),
                       TotalUpperRange.count(),
                       ThreeIterationBench.Total.count());
 
+    // 2957859533
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsAverage",
                       AverageLowerRange.count(),
                       AverageUpperRange.count(),
                       ThreeIterationBench.Average.count());
 
+    // ming32 970342400
+    // MicroBenchmarkIterationsFastestz
+    // 999663800
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsFastest",
                       FastestLowerRange.count(),
                       FastestUpperRange.count(),
                       ThreeIterationBench.Fastest.count());
 
+    // 970342400
+    // 999663800
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile99th",
                       FastestLowerRange.count(),
                       AverageUpperRange.count(),
                       ThreeIterationBench.Percentile99th.count());
 
+    // 970342400
+    // 999663800
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile90th",
                       FastestLowerRange.count(),
                       AverageUpperRange.count(),
                       ThreeIterationBench.Percentile90th.count());
 
+    // 2911027200
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsMedian",
                       AverageLowerRange.count(),
                       AverageUpperRange.count(),
                       ThreeIterationBench.Median.count());
 
+    // 4992209000
+    // 4999541500
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsSlowest",
                       SlowestLowerRange.count(),
                       SlowestUpperRange.count(),
@@ -284,7 +296,16 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MicroBenchmarkResults DurationBench = MicroBenchmark(PentileBenchmarkDuration,
                                                                std::move(PentileSleeps));
 
-    // //// results too low 10 ~ 15
+    // FedoraGcc
+    // Test - MicroBenchmarkDurationIterations failed: Expected within '300' - '600' but actually Received '121'.
+    // UbuntuClang      118
+    // UbuntuGcc        299
+    // windows7Mingw32  1868117 ?!
+    // windows7Mingw64  9200634
+    // windows7msvc
+    // Travis           112 110
+    // appv Msvc debug  131
+    // appv msvc rel    132
     TEST_WITHIN_RANGE("MicroBenchmarkDurationIterations",
                       PentileBenchmarkExpectedCountLower,
                       PentileBenchmarkExpectedCountUpper,

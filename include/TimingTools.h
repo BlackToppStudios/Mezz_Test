@@ -174,10 +174,19 @@ namespace Mezzanine
 
             for(Mezzanine::UInt32 Counter{0}; Counter<Iterations; Counter++)
             {
+                std::chrono::high_resolution_clock::time_point Begin{std::chrono::high_resolution_clock::now()};
+                ToTime();
+                std::chrono::high_resolution_clock::time_point End{std::chrono::high_resolution_clock::now()};
+
+                MicroBenchmarkResults::TimeType Length
+                    {std::chrono::duration_cast<MicroBenchmarkResults::TimeType>(End-Begin)};
+                Results.push_back(Length);
+            }
+            /*{
                 TestTimer Bench;
                 ToTime();
                 Results.push_back(Bench.GetLength());
-            }
+            }*/
             return MicroBenchmarkResults{Results};
         }
 
@@ -193,13 +202,23 @@ namespace Mezzanine
 
             while(MinimumDuration >= RunningTotal)
             {
+                std::chrono::high_resolution_clock::time_point Begin{std::chrono::high_resolution_clock::now()};
+                ToTime();
+                std::chrono::high_resolution_clock::time_point End{std::chrono::high_resolution_clock::now()};
+
+                MicroBenchmarkResults::TimeType Length
+                    {std::chrono::duration_cast<MicroBenchmarkResults::TimeType>(End-Begin)};
+                RunningTotal += Length;
+                Results.push_back(Length);
+            }
+            /*{
                 TestTimer Bench;
                 ToTime();
                 const MicroBenchmarkResults::TimeType Length = Bench.GetLength();
 
                 RunningTotal += Length;
                 Results.push_back(Length);
-            }
+            }*/
             return MicroBenchmarkResults{Results, RunningTotal};
         }
     }// Testing

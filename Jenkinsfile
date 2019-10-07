@@ -27,24 +27,6 @@ pipeline {
                         }
                     }
                 }
-                stage('MacOSAir') {
-                    agent { label "MacOSAir" }
-                    steps {
-                        checkout scm
-                        sh 'mkdir -p build-debug'
-                        dir('build-debug') { sh """
-                            export PATH='$PATH:/usr/local/bin/' &&
-                            cmake -G"Xcode" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
-                            cmake --build . &&
-                           ./Test_Tester xml
-                        """ }
-                    }
-                    post {
-                        always {
-                            junit "build-debug/**/Mezz*.xml"
-                        }
-                    }
-                }
                 stage('MacOSSierra') {
                     agent { label "MacOSSierra" }
                     steps {
