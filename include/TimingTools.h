@@ -99,56 +99,60 @@ namespace Mezzanine
         /// @return The modified stream.
         std::ostream& MEZZ_LIB operator<<(std::ostream& Stream, const NamedDuration& TimingToStream);
 
+        SAVE_WARNING_STATE
+        SUPPRESS_CLANG_WARNING("-Wpadded") // Emscripten complains about this and it not performance sensitive
+
         /// @brief A set of numbers all the Microbenchmarks return.
-        struct MEZZ_LIB MicroBenchmarkResults
-        {
-            /// @brief A integral type suitable for counting any reasonable execution counts.
-            using CountType = Mezzanine::UInt64;
-            /// @brief A time precise enough for very small benchmarks.
-            using TimeType = std::chrono::nanoseconds;
-            /// @brief A collection of timings not yet processed
-            using TimingLists = std::vector<TimeType>;
+            struct MEZZ_LIB MicroBenchmarkResults
+            {
+                /// @brief A integral type suitable for counting any reasonable execution counts.
+                using CountType = Mezzanine::UInt64;
+                /// @brief A time precise enough for very small benchmarks.
+                using TimeType = std::chrono::nanoseconds;
+                /// @brief A collection of timings not yet processed
+                using TimingLists = std::vector<TimeType>;
 
-            /// @brief From a collection of nanoseconds fill out this structure.
-            /// @param Timings A list of nanoseconds to measure and get the interesting numbers from.
-            /// @param PrecalculatedTotal Sometimes the total runtime is acquired while running tests. If this is
-            /// non-zero this will be used instead of calculated.
-            MicroBenchmarkResults(const TimingLists& Timings, const TimeType& PrecalculatedTotal = TimeType{0});
-            MicroBenchmarkResults(MicroBenchmarkResults&) = default;
-            ~MicroBenchmarkResults() = default;
+                /// @brief From a collection of nanoseconds fill out this structure.
+                /// @param Timings A list of nanoseconds to measure and get the interesting numbers from.
+                /// @param PrecalculatedTotal Sometimes the total runtime is acquired while running tests. If this is
+                /// non-zero this will be used instead of calculated.
+                MicroBenchmarkResults(const TimingLists& Timings, const TimeType& PrecalculatedTotal = TimeType{0});
+                MicroBenchmarkResults(MicroBenchmarkResults&) = default;
+                ~MicroBenchmarkResults() = default;
 
-            /// @brief Get a value fromt the original timing s
-            /// @param Percent Where to reach into the timings with 0.0 being the slowesta and 1.0 being the fastest.
-            /// @return A value from the Original Timings vector.
-            TimeType GetIndexValueFromPercent(PreciseReal Percent) const;
+                /// @brief Get a value fromt the original timing s
+                /// @param Percent Where to reach into the timings. With 0.0 the slowest and 1.0 the fastest.
+                /// @return A value from the Original Timings vector.
+                TimeType GetIndexValueFromPercent(PreciseReal Percent) const;
 
-            /// @brief How many times was the timed item executed/
-            CountType Iterations = 0;
-            /// @brief How much was the total runtime with as much of the benchmark removed as possibble.
-            TimeType Total = TimeType{0};
-            /// @brief The mean execution time; the Total time divided by the number of iterations.
-            TimeType Average = TimeType{0};
-            /// @brief The fastest (fewest time units) execution time. Defaults to one hour
-            TimeType Fastest = TimeType{0};
-            /// @brief The timing that beats out 99 percent of the others at being the fastest.
-            /// @sa GetIndexValueFromPercent
-            TimeType Percentile99th = TimeType{0};
-            /// @brief The timing that beats out 90 percent of the others at being the fastest.
-            /// @sa GetIndexValueFromPercent
-            TimeType Percentile90th = TimeType{0};
-            /// @brief The meduan execution time; the execution time in the middle.
-            TimeType Median = TimeType{0};
-            /// @brief The timing that beats out 10 percent of the others at being the fastest.
-            /// @sa GetIndexValueFromPercent
-            TimeType Percentile10th = TimeType{0};
-            /// @brief The timing that beats out only 1 percent of the others at being the fastest.
-            /// @sa GetIndexValueFromPercent
-            TimeType Percentile1st = TimeType{0};
-            /// @brief The slowest (most time units) execution time.
-            TimeType Slowest = TimeType{0};
-            /// @brief The raw times gathered by a test.
-            TimingLists OriginalTimings;
-        };
+                /// @brief How many times was the timed item executed/
+                CountType Iterations = 0;
+                /// @brief How much was the total runtime with as much of the benchmark removed as possibble.
+                TimeType Total = TimeType{0};
+                /// @brief The mean execution time; the Total time divided by the number of iterations.
+                TimeType Average = TimeType{0};
+                /// @brief The fastest (fewest time units) execution time. Defaults to one hour
+                TimeType Fastest = TimeType{0};
+                /// @brief The timing that beats out 99 percent of the others at being the fastest.
+                /// @sa GetIndexValueFromPercent
+                TimeType Percentile99th = TimeType{0};
+                /// @brief The timing that beats out 90 percent of the others at being the fastest.
+                /// @sa GetIndexValueFromPercent
+                TimeType Percentile90th = TimeType{0};
+                /// @brief The meduan execution time; the execution time in the middle.
+                TimeType Median = TimeType{0};
+                /// @brief The timing that beats out 10 percent of the others at being the fastest.
+                /// @sa GetIndexValueFromPercent
+                TimeType Percentile10th = TimeType{0};
+                /// @brief The timing that beats out only 1 percent of the others at being the fastest.
+                /// @sa GetIndexValueFromPercent
+                TimeType Percentile1st = TimeType{0};
+                /// @brief The slowest (most time units) execution time.
+                TimeType Slowest = TimeType{0};
+                /// @brief The raw times gathered by a test.
+                TimingLists OriginalTimings;
+            };
+        RESTORE_WARNING_STATE
 
         /// @brief Time a single execution of some functor
         /// @tparam Functor Any function-like callable item which accepts no parameters and returns none.
