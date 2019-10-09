@@ -122,7 +122,6 @@ pipeline {
                         checkout scm
                         bat 'if not exist "build-debug" mkdir build-debug'
                         dir('build-debug') {
-                            hostname &&
                             bat 'cmake -E env CXXFLAGS="-fno-var-tracking-assignments" cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF'
                             bat 'ninja'
                             bat 'Test_Tester xml'

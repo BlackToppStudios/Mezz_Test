@@ -186,11 +186,6 @@ namespace Mezzanine
                     {std::chrono::duration_cast<MicroBenchmarkResults::TimeType>(End-Begin)};
                 Results.push_back(Length);
             }
-            /*{
-                TestTimer Bench;
-                ToTime();
-                Results.push_back(Bench.GetLength());
-            }*/
             return MicroBenchmarkResults{Results};
         }
 
@@ -215,14 +210,6 @@ namespace Mezzanine
                 RunningTotal += Length;
                 Results.push_back(Length);
             }
-            /*{
-                TestTimer Bench;
-                ToTime();
-                const MicroBenchmarkResults::TimeType Length = Bench.GetLength();
-
-                RunningTotal += Length;
-                Results.push_back(Length);
-            }*/
             return MicroBenchmarkResults{Results, RunningTotal};
         }
     }// Testing
