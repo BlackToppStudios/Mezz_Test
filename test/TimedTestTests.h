@@ -171,22 +171,25 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MultilengthSleeper::Sleep FastestTime{std::chrono::milliseconds{1000}};
     const MultilengthSleeper::Sleep AverageTime{std::chrono::milliseconds{3000}};
     const MultilengthSleeper::Sleep SlowestTime{std::chrono::milliseconds{5000}};
-    const MultilengthSleeper::Sleep TripleSleepEpsilon{std::chrono::milliseconds{1000}};
+    const MultilengthSleeper::Sleep TripleSleepUpwardEpsilon{std::chrono::milliseconds{1000}};
+    const MultilengthSleeper::Sleep TripleSleepDownwardEpsilon{std::chrono::milliseconds{100}};
 
 
     MultilengthSleeper TripleSleeps({FastestTime, AverageTime, SlowestTime});
 
-    const MicroBenchmarkResults::TimeType TotalLowerRange{FastestTime + AverageTime + SlowestTime};
-    const MicroBenchmarkResults::TimeType TotalUpperRange{FastestTime + AverageTime + SlowestTime + TripleSleepEpsilon};
+    const MicroBenchmarkResults::TimeType TotalLowerRange{FastestTime + AverageTime + SlowestTime -
+        TripleSleepDownwardEpsilon};
+    const MicroBenchmarkResults::TimeType TotalUpperRange{FastestTime + AverageTime + SlowestTime +
+        TripleSleepUpwardEpsilon};
 
-    const MicroBenchmarkResults::TimeType AverageLowerRange{AverageTime};
-    const MicroBenchmarkResults::TimeType AverageUpperRange{AverageTime + TripleSleepEpsilon};
+    const MicroBenchmarkResults::TimeType AverageLowerRange{AverageTime - TripleSleepDownwardEpsilon};
+    const MicroBenchmarkResults::TimeType AverageUpperRange{AverageTime + TripleSleepUpwardEpsilon};
 
-    const MicroBenchmarkResults::TimeType FastestLowerRange{FastestTime};
-    const MicroBenchmarkResults::TimeType FastestUpperRange{FastestTime + TripleSleepEpsilon};
+    const MicroBenchmarkResults::TimeType FastestLowerRange{FastestTime - TripleSleepDownwardEpsilon};
+    const MicroBenchmarkResults::TimeType FastestUpperRange{FastestTime + TripleSleepUpwardEpsilon};
 
-    const MicroBenchmarkResults::TimeType SlowestLowerRange{SlowestTime};
-    const MicroBenchmarkResults::TimeType SlowestUpperRange{SlowestTime + TripleSleepEpsilon};
+    const MicroBenchmarkResults::TimeType SlowestLowerRange{SlowestTime - TripleSleepDownwardEpsilon};
+    const MicroBenchmarkResults::TimeType SlowestUpperRange{SlowestTime + TripleSleepUpwardEpsilon};
 
     const MicroBenchmarkResults ThreeIterationBench = MicroBenchmark(3, std::move(TripleSleeps));
 
@@ -198,48 +201,36 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                MicroBenchmarkResults::CountType{3},
                ThreeIterationBench.OriginalTimings.size());
 
-    // 8873578600
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsTotal",
                       TotalLowerRange.count(),
                       TotalUpperRange.count(),
                       ThreeIterationBench.Total.count());
 
-    // 2957859533
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsAverage",
                       AverageLowerRange.count(),
                       AverageUpperRange.count(),
                       ThreeIterationBench.Average.count());
 
-    // ming32 970342400
-    // MicroBenchmarkIterationsFastestz
-    // 999663800
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsFastest",
                       FastestLowerRange.count(),
                       FastestUpperRange.count(),
                       ThreeIterationBench.Fastest.count());
 
-    // 970342400
-    // 999663800
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile99th",
                       FastestLowerRange.count(),
                       AverageUpperRange.count(),
                       ThreeIterationBench.Percentile99th.count());
 
-    // 970342400
-    // 999663800
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile90th",
                       FastestLowerRange.count(),
                       AverageUpperRange.count(),
                       ThreeIterationBench.Percentile90th.count());
 
-    // 2911027200
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsMedian",
                       AverageLowerRange.count(),
                       AverageUpperRange.count(),
                       ThreeIterationBench.Median.count());
 
-    // 4992209000
-    // 4999541500
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsSlowest",
                       SlowestLowerRange.count(),
                       SlowestUpperRange.count(),
@@ -271,7 +262,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     //const MultilengthSleeper::Sleep Pentile5sleepTime
     //    { Pentile1Time + Pentile2Time + Pentile3Time + Pentile4Time + Pentile5Time };
 
-    const MultilengthSleeper::Sleep PentileBenchmarkDuration{25000000000ul};
+    const MultilengthSleeper::Sleep PentileBenchmarkDuration{25000000000};
 
     //Pentile5sleepTime
 
@@ -279,8 +270,6 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     const MultilengthSleeper::Sleep PentileExpectedTotalUpper{PentileBenchmarkDuration + PentileTotalDelta};
     const MultilengthSleeper::Sleep PentileExpectedTotalLower{PentileBenchmarkDuration - PentileTotalDelta};
-
-
 
     const MicroBenchmarkResults::CountType PentileSinglePassExpectedCount
         { MicroBenchmarkResults::CountType(Pentile1Time.count() +  Pentile2Time.count() + Pentile3Time.count() +
@@ -306,6 +295,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     // Travis           112 110
     // appv Msvc debug  131
     // appv msvc rel    132
+
+    // change to less than?
     TEST_WITHIN_RANGE("MicroBenchmarkDurationIterations",
                       PentileBenchmarkExpectedCountLower,
                       PentileBenchmarkExpectedCountUpper,
@@ -355,6 +346,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       Pentile5TimeUpper.count(),
                       DurationBench.Percentile90th.count());
 
+    // Change to greater
     TEST_WITHIN_RANGE("MicroBenchmarkDurationSlowest",
                       Pentile5TimeLower.count(),
                       Pentile5TimeUpper.count(),
