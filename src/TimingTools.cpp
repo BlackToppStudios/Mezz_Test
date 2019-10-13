@@ -107,30 +107,30 @@ namespace Mezzanine
 
         MicroBenchmarkResults::MicroBenchmarkResults(const TimingLists& Timings,
             const TimeType& PrecalculatedTotal)
-            : OriginalTimings(Timings)
+            : SortedTimings(Timings), UnsortOriginalTimings(Timings)
         {
             // No need to process nothing
-            if(OriginalTimings.size() == 0)
+            if(SortedTimings.size() == 0)
                 { return; }
 
             // Sorting saves us a bunch of effort
-            std::sort(OriginalTimings.begin(), OriginalTimings.end());
+            std::sort(SortedTimings.begin(), SortedTimings.end());
 
             if(TimeType{0} == PrecalculatedTotal)
-                { Total = std::accumulate(OriginalTimings.begin(), OriginalTimings.end(), TimeType{0}); }
+                { Total = std::accumulate(SortedTimings.begin(), SortedTimings.end(), TimeType{0}); }
             else
                 { Total = PrecalculatedTotal; }
 
-            Iterations = OriginalTimings.size();
+            Iterations = SortedTimings.size();
             Average = Total / Iterations;
 
-            Fastest = OriginalTimings.front();
+            Fastest = SortedTimings.front();
             FasterThan99Percent = GetIndexValueFromPercent(0.01);
             FasterThan90Percent = GetIndexValueFromPercent(0.10);
             Median = GetIndexValueFromPercent(0.5);
             FasterThan10Percent = GetIndexValueFromPercent(0.90);
             FasterThan1Percent = GetIndexValueFromPercent(0.99);
-            Slowest = OriginalTimings.back();
+            Slowest = SortedTimings.back();
         }
 
         SAVE_WARNING_STATE
@@ -144,10 +144,10 @@ namespace Mezzanine
             if(1.0 < Percent)
                 { Percent = 1.0; }
 
-            TimingLists::size_type Location{static_cast<TimingLists::size_type>(OriginalTimings.size() * (Percent))};
+            TimingLists::size_type Location{static_cast<TimingLists::size_type>(SortedTimings.size() * (Percent))};
 
-            if(OriginalTimings.size() <= Location)
-                { Location = OriginalTimings.size()-1; }
+            if(SortedTimings.size() <= Location)
+                { Location = SortedTimings.size()-1; }
             return Location;
         }
 
@@ -156,7 +156,7 @@ namespace Mezzanine
         MicroBenchmarkResults::TimeType MicroBenchmarkResults::GetIndexValueFromPercent(PreciseReal Percent) const
         {
             const TimingLists::size_type Location{GetIndexFromPercent(Percent)};
-            return OriginalTimings[Location];
+            return SortedTimings[Location];
         }
 
     }// Testing

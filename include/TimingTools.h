@@ -153,8 +153,11 @@ namespace Mezzanine
                 TimeType FasterThan1Percent = TimeType{0};
                 /// @brief The slowest (most time units) execution time.
                 TimeType Slowest = TimeType{0};
-                /// @brief The raw times gathered by a test.
-                TimingLists OriginalTimings;
+                /// @brief The raw times gathered by a test, sorted by performance
+                TimingLists SortedTimings;
+                /// @brief The unsorted timings to help study caching effects.
+                TimingLists UnsortOriginalTimings;
+
             };
         RESTORE_WARNING_STATE
 

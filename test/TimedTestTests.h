@@ -132,7 +132,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     TEST_EQUAL("MicroBenchmarkSingleTimingsSet",
                MicroBenchmarkResults::CountType{1},
-               SingleBench.OriginalTimings.size());
+               SingleBench.SortedTimings.size());
 
     TEST_WITHIN_RANGE("MicroBenchmarkSingleTotal",
                       SingleLowerRange.count(),
@@ -201,7 +201,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     TEST_EQUAL("MicroBenchmarkIterationsTimingsSet",
                MicroBenchmarkResults::CountType{3},
-               ThreeIterationBench.OriginalTimings.size());
+               ThreeIterationBench.SortedTimings.size());
 
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsTotal",
                       TotalLowerRange.count(),
@@ -302,7 +302,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     TEST_EQUAL("MicroBenchmarkDurationTimingsSet",
                DurationBench.Iterations,
-               DurationBench.OriginalTimings.size());
+               DurationBench.SortedTimings.size());
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationTotal",
                       PentileExpectedTotalLower.count(),
@@ -326,7 +326,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile10th",
                       Pentile1TimeLower.count(),
-                      Pentile1TimeUpper.count(),
+                      DurationBench.GetIndexValueFromPercent(0.2).count(),
                       DurationBench.FasterThan90Percent.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationMedian",
@@ -336,7 +336,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile90th",
                       Pentile5TimeLower.count(),
-                      Pentile5TimeUpper.count(),
+                      DurationBench.FasterThan1Percent.count(),
                       DurationBench.FasterThan10Percent.count());
 
     TEST("MicroBenchmarkDurationPercentile99th", Pentile5TimeLower.count()< DurationBench.FasterThan1Percent.count());
