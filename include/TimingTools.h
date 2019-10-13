@@ -121,7 +121,7 @@ namespace Mezzanine
                 ~MicroBenchmarkResults() = default;
 
                 /// @brief Get a value fromt the original timing s
-                /// @param Percent Where to reach into the timings. With 0.0 the slowest and 1.0 the fastest.
+                /// @param Percent Where to reach into the timings. With 1.0 the slowest and 0.0 the fastest.
                 /// @return A value from the Original Timings vector.
                 TimeType GetIndexValueFromPercent(PreciseReal Percent) const;
 
@@ -133,20 +133,20 @@ namespace Mezzanine
                 TimeType Average = TimeType{0};
                 /// @brief The fastest (fewest time units) execution time. Defaults to one hour
                 TimeType Fastest = TimeType{0};
-                /// @brief The timing that beats out 99 percent of the others at being the fastest.
-                /// @sa GetIndexValueFromPercent
-                TimeType Percentile99th = TimeType{0};
-                /// @brief The timing that beats out 90 percent of the others at being the fastest.
-                /// @sa GetIndexValueFromPercent
-                TimeType Percentile90th = TimeType{0};
-                /// @brief The meduan execution time; the execution time in the middle.
-                TimeType Median = TimeType{0};
-                /// @brief The timing that beats out 10 percent of the others at being the fastest.
-                /// @sa GetIndexValueFromPercent
-                TimeType Percentile10th = TimeType{0};
                 /// @brief The timing that beats out only 1 percent of the others at being the fastest.
                 /// @sa GetIndexValueFromPercent
                 TimeType Percentile1st = TimeType{0};
+                /// @brief The timing that beats out 10 percent of the others at being the fastest.
+                /// @sa GetIndexValueFromPercent
+                TimeType Percentile10th = TimeType{0};
+                /// @brief The meduan execution time; the execution time in the middle.
+                TimeType Median = TimeType{0};
+                /// @brief The timing that beats out 90 percent of the others at being the fastest.
+                /// @sa GetIndexValueFromPercent
+                TimeType Percentile90th = TimeType{0};
+                /// @brief The timing that beats out 99 percent of the others at being the fastest.
+                /// @sa GetIndexValueFromPercent
+                TimeType Percentile99th = TimeType{0};
                 /// @brief The slowest (most time units) execution time.
                 TimeType Slowest = TimeType{0};
                 /// @brief The raw times gathered by a test.

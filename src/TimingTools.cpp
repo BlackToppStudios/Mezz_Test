@@ -125,11 +125,11 @@ namespace Mezzanine
             Average = Total / Iterations;
 
             Fastest = OriginalTimings.front();
-            Percentile99th = GetIndexValueFromPercent(0.99);
-            Percentile90th = GetIndexValueFromPercent(0.90);
-            Median = GetIndexValueFromPercent(0.5);
-            Percentile10th = GetIndexValueFromPercent(0.10);
             Percentile1st = GetIndexValueFromPercent(0.01);
+            Percentile10th = GetIndexValueFromPercent(0.10);
+            Median = GetIndexValueFromPercent(0.5);
+            Percentile90th = GetIndexValueFromPercent(0.90);
+            Percentile99th = GetIndexValueFromPercent(0.99);
             Slowest = OriginalTimings.back();
         }
 
@@ -144,7 +144,7 @@ namespace Mezzanine
                 { Percent = 1.0; }
 
             TimingLists::size_type Location
-                {static_cast<TimingLists::size_type>(OriginalTimings.size() * (1.0 - Percent))};
+                {static_cast<TimingLists::size_type>(OriginalTimings.size() * (Percent))};
 
             if(OriginalTimings.size() <= Location)
                 { Location = OriginalTimings.size()-1; }

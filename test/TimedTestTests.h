@@ -216,20 +216,30 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       FastestUpperRange.count(),
                       ThreeIterationBench.Fastest.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile99th",
+    TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile1st",
                       FastestLowerRange.count(),
                       AverageUpperRange.count(),
-                      ThreeIterationBench.Percentile99th.count());
+                      ThreeIterationBench.Percentile1st.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile90th",
+    TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile10th",
                       FastestLowerRange.count(),
                       AverageUpperRange.count(),
-                      ThreeIterationBench.Percentile90th.count());
+                      ThreeIterationBench.Percentile10th.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsMedian",
                       AverageLowerRange.count(),
                       AverageUpperRange.count(),
                       ThreeIterationBench.Median.count());
+
+    TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile90th",
+                      AverageLowerRange.count(),
+                      SlowestUpperRange.count(),
+                      ThreeIterationBench.Percentile90th.count());
+
+    TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile99th",
+                      AverageLowerRange.count(),
+                      SlowestUpperRange.count(),
+                      ThreeIterationBench.Percentile99th.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsSlowest",
                       SlowestLowerRange.count(),
@@ -247,7 +257,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     MultilengthSleeper PentileSleeps({Pentile1Time, Pentile2Time, Pentile3Time, Pentile4Time, Pentile5Time});
 
 
-    const MultilengthSleeper::Sleep PentileDelta{std::chrono::microseconds{50000}};
+    const MultilengthSleeper::Sleep PentileDelta{MicroBenchmarkResults::TimeType {1000000}};
     const MultilengthSleeper::Sleep Pentile1TimeUpper{Pentile1Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile1TimeLower{Pentile1Time - PentileDelta};
     /*const MultilengthSleeper::Sleep Pentile2TimeUpper{Pentile2Time + PentileDelta};
@@ -255,7 +265,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MultilengthSleeper::Sleep Pentile3TimeUpper{Pentile3Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile3TimeLower{Pentile3Time - PentileDelta};
     /*const MultilengthSleeper::Sleep Pentile4TimeUpper{Pentile4Time + PentileDelta};*/
-    const MultilengthSleeper::Sleep Pentile4TimeLower{Pentile4Time - PentileDelta};
+    //const MultilengthSleeper::Sleep Pentile4TimeLower{Pentile4Time - PentileDelta};
     const MultilengthSleeper::Sleep Pentile5TimeUpper{Pentile5Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile5TimeLower{Pentile5Time - PentileDelta};
 
@@ -266,7 +276,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     //Pentile5sleepTime
 
-    const MultilengthSleeper::Sleep PentileTotalDelta{PentileDelta * 5};
+    const MultilengthSleeper::Sleep PentileTotalDelta{PentileDelta * 10};
 
     const MultilengthSleeper::Sleep PentileExpectedTotalUpper{PentileBenchmarkDuration + PentileTotalDelta};
     const MultilengthSleeper::Sleep PentileExpectedTotalLower{PentileBenchmarkDuration - PentileTotalDelta};
@@ -321,36 +331,49 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       Pentile1TimeUpper.count(),
                       DurationBench.Fastest.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile99th",
+    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile1st",
                       Pentile1TimeLower.count(),
                       Pentile1TimeUpper.count(),
-                      DurationBench.Percentile99th.count());
+                      DurationBench.Percentile1st.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile90th",
+    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile10th",
                       Pentile1TimeLower.count(),
                       Pentile1TimeUpper.count(),
-                      DurationBench.Percentile90th.count());
+                      DurationBench.Percentile10th.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationMedian",
                       Pentile3TimeLower.count(),
                       Pentile3TimeUpper.count(),
                       DurationBench.Median.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile10th",
-                      Pentile4TimeLower.count(),
-                      Pentile5TimeUpper.count(),
-                      DurationBench.Percentile99th.count());
-
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile1st",
+    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile90th",
                       Pentile5TimeLower.count(),
                       Pentile5TimeUpper.count(),
                       DurationBench.Percentile90th.count());
 
+    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile99th",
+                      Pentile5TimeLower.count(),
+                      Pentile5TimeUpper.count(),
+                      DurationBench.Percentile99th.count());
+
+    std::cout << "Lower: " << Pentile5TimeLower.count() << std::endl
+              << "Upper: " << Pentile5TimeUpper.count() << std::endl;
     // Change to greater
     TEST_WITHIN_RANGE("MicroBenchmarkDurationSlowest",
                       Pentile5TimeLower.count(),
                       Pentile5TimeUpper.count(),
                       DurationBench.Slowest.count());
+
+    std::cout << "Fastest  " << DurationBench.Fastest.count() << std::endl
+              << "1:       " << DurationBench.Percentile1st.count() << std::endl
+              << "10:      " << DurationBench.Percentile10th.count() << std::endl
+              << "Medean:  " << DurationBench.Median.count() << std::endl
+              << "Average: " << DurationBench.Average.count() << std::endl
+              << "90:      " << DurationBench.Percentile90th.count() << std::endl
+              << "99:      " << DurationBench.Percentile99th.count() << std::endl
+              << "Slowest: " << DurationBench.Slowest.count() << std::endl;
+
+
 
 }
 
