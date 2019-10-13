@@ -135,18 +135,18 @@ namespace Mezzanine
                 TimeType Fastest = TimeType{0};
                 /// @brief The timing that beats out only 1 percent of the others at being the fastest.
                 /// @sa GetIndexValueFromPercent
-                TimeType Percentile1st = TimeType{0};
+                TimeType FasterThan99Percent = TimeType{0};
                 /// @brief The timing that beats out 10 percent of the others at being the fastest.
                 /// @sa GetIndexValueFromPercent
-                TimeType Percentile10th = TimeType{0};
+                TimeType FasterThan90Percent = TimeType{0};
                 /// @brief The meduan execution time; the execution time in the middle.
                 TimeType Median = TimeType{0};
                 /// @brief The timing that beats out 90 percent of the others at being the fastest.
                 /// @sa GetIndexValueFromPercent
-                TimeType Percentile90th = TimeType{0};
+                TimeType FasterThan10Percent = TimeType{0};
                 /// @brief The timing that beats out 99 percent of the others at being the fastest.
                 /// @sa GetIndexValueFromPercent
-                TimeType Percentile99th = TimeType{0};
+                TimeType FasterThan1Percent = TimeType{0};
                 /// @brief The slowest (most time units) execution time.
                 TimeType Slowest = TimeType{0};
                 /// @brief The raw times gathered by a test.

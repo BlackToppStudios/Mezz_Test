@@ -125,11 +125,11 @@ namespace Mezzanine
             Average = Total / Iterations;
 
             Fastest = OriginalTimings.front();
-            Percentile1st = GetIndexValueFromPercent(0.01);
-            Percentile10th = GetIndexValueFromPercent(0.10);
+            FasterThan99Percent = GetIndexValueFromPercent(0.01);
+            FasterThan90Percent = GetIndexValueFromPercent(0.10);
             Median = GetIndexValueFromPercent(0.5);
-            Percentile90th = GetIndexValueFromPercent(0.90);
-            Percentile99th = GetIndexValueFromPercent(0.99);
+            FasterThan10Percent = GetIndexValueFromPercent(0.90);
+            FasterThan1Percent = GetIndexValueFromPercent(0.99);
             Slowest = OriginalTimings.back();
         }
 
