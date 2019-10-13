@@ -268,7 +268,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     //const MultilengthSleeper::Sleep Pentile3TimeLower{Pentile3Time - PentileDelta};
     //const MultilengthSleeper::Sleep Pentile4TimeUpper{Pentile4Time + PentileDelta};
     //const MultilengthSleeper::Sleep Pentile4TimeLower{Pentile4Time - PentileDelta};
-    const MultilengthSleeper::Sleep Pentile5TimeUpper{Pentile5Time + PentileDelta};
+    //const MultilengthSleeper::Sleep Pentile5TimeUpper{Pentile5Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile5TimeLower{Pentile5Time - PentileDelta};
 
     //const MultilengthSleeper::Sleep Pentile5sleepTime
@@ -297,7 +297,6 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MicroBenchmarkResults DurationBench = MicroBenchmark(PentileBenchmarkDuration,
                                                                std::move(PentileSleeps));
 
-    // change to less than?
     TEST("MicroBenchmarkDurationIterations", PentileBenchmarkExpectedCountUpper > DurationBench.Iterations);
 
     TEST_EQUAL("MicroBenchmarkDurationTimingsSet",
@@ -340,20 +339,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       DurationBench.FasterThan10Percent.count());
 
     TEST("MicroBenchmarkDurationPercentile99th", Pentile5TimeLower.count()< DurationBench.FasterThan1Percent.count());
-
-    std::cout << "Lower: " << Pentile5TimeLower.count() << std::endl
-              << "Upper: " << Pentile5TimeUpper.count() << std::endl;
-
     TEST("MicroBenchmarkDurationSlowest", Pentile5TimeLower.count() < DurationBench.Slowest.count());
-
-    std::cout << "Fastest  " << DurationBench.Fastest.count() << std::endl
-              << "1:       " << DurationBench.FasterThan99Percent.count() << std::endl
-              << "10:      " << DurationBench.FasterThan90Percent.count() << std::endl
-              << "Medean:  " << DurationBench.Median.count() << std::endl
-              << "Average: " << DurationBench.Average.count() << std::endl
-              << "90:      " << DurationBench.FasterThan10Percent.count() << std::endl
-              << "99:      " << DurationBench.FasterThan1Percent.count() << std::endl
-              << "Slowest: " << DurationBench.Slowest.count() << std::endl;
 
 
 
