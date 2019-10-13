@@ -136,21 +136,28 @@ namespace Mezzanine
         SAVE_WARNING_STATE
         SUPPRESS_GCC_WARNING("-Wconversion") // The conversion to int to double and back to int for the index
 
-        MicroBenchmarkResults::TimeType MicroBenchmarkResults::GetIndexValueFromPercent(PreciseReal Percent) const
+        MicroBenchmarkResults::TimingLists::size_type
+        MicroBenchmarkResults::GetIndexFromPercent(PreciseReal Percent) const
         {
             if(0.0 > Percent)
                 { Percent = 0; }
             if(1.0 < Percent)
                 { Percent = 1.0; }
 
-            TimingLists::size_type Location
-                {static_cast<TimingLists::size_type>(OriginalTimings.size() * (Percent))};
+            TimingLists::size_type Location{static_cast<TimingLists::size_type>(OriginalTimings.size() * (Percent))};
 
             if(OriginalTimings.size() <= Location)
                 { Location = OriginalTimings.size()-1; }
-            return OriginalTimings[Location];
+            return Location;
         }
 
         RESTORE_WARNING_STATE
+
+        MicroBenchmarkResults::TimeType MicroBenchmarkResults::GetIndexValueFromPercent(PreciseReal Percent) const
+        {
+            const TimingLists::size_type Location{GetIndexFromPercent(Percent)};
+            return OriginalTimings[Location];
+        }
+
     }// Testing
 }// Mezzanine

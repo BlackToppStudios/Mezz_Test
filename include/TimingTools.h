@@ -120,7 +120,11 @@ namespace Mezzanine
                 MicroBenchmarkResults(MicroBenchmarkResults&) = default;
                 ~MicroBenchmarkResults() = default;
 
-                /// @brief Get a value fromt the original timing s
+                /// @brief Get an Index that corresponds to the percentile of performance.
+                /// @param Percent Where to reach into the timings. With 1.0 the slowest and 0.0 the fastest.
+                /// @return A index for a value from the Original Timings vector.
+                TimingLists::size_type GetIndexFromPercent(PreciseReal Percent) const;
+                /// @brief Get a value from the original timings that corresponds to a percentage into to it.
                 /// @param Percent Where to reach into the timings. With 1.0 the slowest and 0.0 the fastest.
                 /// @return A value from the Original Timings vector.
                 TimeType GetIndexValueFromPercent(PreciseReal Percent) const;

@@ -262,11 +262,11 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MultilengthSleeper::Sleep PentileDelta{MicroBenchmarkResults::TimeType {2000000}};
     const MultilengthSleeper::Sleep Pentile1TimeUpper{Pentile1Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile1TimeLower{Pentile1Time - PentileDelta};
-    /*const MultilengthSleeper::Sleep Pentile2TimeUpper{Pentile2Time + PentileDelta};
-    const MultilengthSleeper::Sleep Pentile2TimeLower{Pentile2Time - PentileDelta};*/
-    const MultilengthSleeper::Sleep Pentile3TimeUpper{Pentile3Time + PentileDelta};
-    const MultilengthSleeper::Sleep Pentile3TimeLower{Pentile3Time - PentileDelta};
-    /*const MultilengthSleeper::Sleep Pentile4TimeUpper{Pentile4Time + PentileDelta};*/
+    //const MultilengthSleeper::Sleep Pentile2TimeUpper{Pentile2Time + PentileDelta};
+    //const MultilengthSleeper::Sleep Pentile2TimeLower{Pentile2Time - PentileDelta};
+    //const MultilengthSleeper::Sleep Pentile3TimeUpper{Pentile3Time + PentileDelta};
+    //const MultilengthSleeper::Sleep Pentile3TimeLower{Pentile3Time - PentileDelta};
+    //const MultilengthSleeper::Sleep Pentile4TimeUpper{Pentile4Time + PentileDelta};
     //const MultilengthSleeper::Sleep Pentile4TimeLower{Pentile4Time - PentileDelta};
     const MultilengthSleeper::Sleep Pentile5TimeUpper{Pentile5Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile5TimeLower{Pentile5Time - PentileDelta};
@@ -310,8 +310,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       DurationBench.Total.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationAverage",
-                      Pentile3TimeLower.count(),
-                      Pentile3TimeUpper.count(),
+                      DurationBench.GetIndexValueFromPercent(0.4).count(),
+                      DurationBench.GetIndexValueFromPercent(0.6).count(),
                       DurationBench.Average.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationFastest",
@@ -330,8 +330,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       DurationBench.FasterThan90Percent.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationMedian",
-                      Pentile3TimeLower.count(),
-                      Pentile3TimeUpper.count(),
+                      DurationBench.GetIndexValueFromPercent(0.4).count(),
+                      DurationBench.GetIndexValueFromPercent(0.6).count(),
                       DurationBench.Median.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile90th",
