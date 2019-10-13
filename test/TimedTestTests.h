@@ -257,7 +257,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     MultilengthSleeper PentileSleeps({Pentile1Time, Pentile2Time, Pentile3Time, Pentile4Time, Pentile5Time});
 
 
-    const MultilengthSleeper::Sleep PentileDelta{MicroBenchmarkResults::TimeType {1000000}};
+    const MultilengthSleeper::Sleep PentileDelta{MicroBenchmarkResults::TimeType {2000000}};
     const MultilengthSleeper::Sleep Pentile1TimeUpper{Pentile1Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile1TimeLower{Pentile1Time - PentileDelta};
     /*const MultilengthSleeper::Sleep Pentile2TimeUpper{Pentile2Time + PentileDelta};
@@ -359,10 +359,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     std::cout << "Lower: " << Pentile5TimeLower.count() << std::endl
               << "Upper: " << Pentile5TimeUpper.count() << std::endl;
     // Change to greater
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationSlowest",
-                      Pentile5TimeLower.count(),
-                      Pentile5TimeUpper.count(),
-                      DurationBench.Slowest.count());
+    TEST("MicroBenchmarkDurationSlowest", Pentile5TimeLower.count() < DurationBench.Slowest.count());
 
     std::cout << "Fastest  " << DurationBench.Fastest.count() << std::endl
               << "1:       " << DurationBench.Percentile1st.count() << std::endl
