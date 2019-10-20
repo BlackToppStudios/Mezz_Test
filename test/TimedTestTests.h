@@ -310,9 +310,17 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       PentileExpectedTotalUpper.count(),
                       DurationBench.Total.count());
 
+    MicroBenchmarkResults::TimeType ExpectedAverage
+        { std::accumulate(DurationBench.UnsortOriginalTimings.cbegin(),
+                          DurationBench.UnsortOriginalTimings.cend(),
+                           MicroBenchmarkResults::TimeType{0})
+          / DurationBench.UnsortOriginalTimings.size() };
+
+
+
     TEST_WITHIN_RANGE("MicroBenchmarkDurationAverage",
-                      DurationBench.GetIndexValueFromPercent(0.35).count(),
-                      DurationBench.GetIndexValueFromPercent(0.65).count(),
+                      ExpectedAverage.count() - 1,
+                      ExpectedAverage.count() + 1,
                       DurationBench.Average.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationFastest",
