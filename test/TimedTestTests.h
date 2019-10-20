@@ -50,6 +50,7 @@
 #include <thread>
 #include <random>
 #include <vector>
+#include <numeric>
 
 /// @brief A class for
 class MultilengthSleeper
@@ -350,8 +351,6 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     TEST("MicroBenchmarkDurationPercentile99th", Pentile5TimeLower.count()< DurationBench.FasterThan1Percent.count());
     TEST("MicroBenchmarkDurationSlowest", Pentile5TimeLower.count() < DurationBench.Slowest.count());
-
-
 
 }
 
