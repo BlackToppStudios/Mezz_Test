@@ -249,11 +249,13 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       ThreeIterationBench.Slowest.count());
 
     // Duration based benchmarks
-    const MultilengthSleeper::Sleep Pentile1Time{1000000};
-    const MultilengthSleeper::Sleep Pentile2Time{3000000};
-    const MultilengthSleeper::Sleep Pentile3Time{5000000};
-    const MultilengthSleeper::Sleep Pentile4Time{7000000};
-    const MultilengthSleeper::Sleep Pentile5Time{9000000};
+    const MultilengthSleeper::Sleep DurationTestMultiplier{2000000};
+
+    const MultilengthSleeper::Sleep Pentile1Time{1 * DurationTestMultiplier};
+    const MultilengthSleeper::Sleep Pentile2Time{3 * DurationTestMultiplier};
+    const MultilengthSleeper::Sleep Pentile3Time{5 * DurationTestMultiplier};
+    const MultilengthSleeper::Sleep Pentile4Time{7 * DurationTestMultiplier};
+    const MultilengthSleeper::Sleep Pentile5Time{9 * DurationTestMultiplier};
     // 250000 for 5
 
     MultilengthSleeper PentileSleeps({Pentile1Time, Pentile2Time, Pentile3Time, Pentile4Time, Pentile5Time});
@@ -274,7 +276,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     //const MultilengthSleeper::Sleep Pentile5sleepTime
     //    { Pentile1Time + Pentile2Time + Pentile3Time + Pentile4Time + Pentile5Time };
 
-    const MultilengthSleeper::Sleep PentileBenchmarkDuration{25000000000};
+    const MultilengthSleeper::Sleep PentileBenchmarkDuration{25000 * DurationTestMultiplier};
 
     //Pentile5sleepTime
 
