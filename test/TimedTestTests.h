@@ -261,7 +261,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     MultilengthSleeper PentileSleeps({Pentile1Time, Pentile2Time, Pentile3Time, Pentile4Time, Pentile5Time});
 
 
-    const MultilengthSleeper::Sleep PentileDelta{MicroBenchmarkResults::TimeType {2000000}};
+    const MultilengthSleeper::Sleep PentileDelta{MicroBenchmarkResults::TimeType {2 * DurationTestMultiplier}};
     const MultilengthSleeper::Sleep Pentile1TimeUpper{Pentile1Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile1TimeLower{Pentile1Time - PentileDelta};
     //const MultilengthSleeper::Sleep Pentile2TimeUpper{Pentile2Time + PentileDelta};
@@ -311,8 +311,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       DurationBench.Total.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationAverage",
-                      DurationBench.GetIndexValueFromPercent(0.4).count(),
-                      DurationBench.GetIndexValueFromPercent(0.6).count(),
+                      DurationBench.GetIndexValueFromPercent(0.35).count(),
+                      DurationBench.GetIndexValueFromPercent(0.65).count(),
                       DurationBench.Average.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkDurationFastest",
