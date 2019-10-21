@@ -101,13 +101,13 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     // of the tests
     std::mt19937 MersennTwisterRandomSource;
     MersennTwisterRandomSource.seed(std::random_device()());
-    std::uniform_int_distribution<std::mt19937::result_type> DistLength(1000,1500);
+    std::uniform_int_distribution<std::mt19937::result_type> DistLength(10000,15000);
     std::uniform_int_distribution<std::mt19937::result_type>::result_type SleepTicks =
             DistLength(MersennTwisterRandomSource);
 
     const std::chrono::milliseconds SleepTime(SleepTicks);
     auto Sleeper = [SleepTime]{ std::this_thread::sleep_for(SleepTime); };
-    const std::chrono::milliseconds MilliSecondEpsilon{250};
+    const std::chrono::milliseconds MilliSecondEpsilon{2000};
 
     // Positive tests This should serve as examples for how to use this and get tests that passed.
     // These amounts of time very short to be measuring this way. longer running tests can be more precise.
