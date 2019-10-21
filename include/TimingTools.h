@@ -102,7 +102,7 @@ namespace Mezzanine
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wpadded") // Emscripten complains about this and it not performance sensitive
 
-        /// @brief A set of numbers all the Microbenchmarks return.
+            /// @brief A set of numbers all the Microbenchmarks return.
             struct MEZZ_LIB MicroBenchmarkResults
             {
                 /// @brief A integral type suitable for counting any reasonable execution counts.
@@ -153,7 +153,7 @@ namespace Mezzanine
                 TimeType FasterThan1Percent = TimeType{0};
                 /// @brief The slowest (most time units) execution time.
                 TimeType Slowest = TimeType{0};
-                /// @brief The raw times gathered by a test, sorted by performance
+                /// @brief The raw times gathered by a test, sorted by performance.
                 TimingLists SortedTimings;
                 /// @brief The unsorted timings to help study caching effects.
                 TimingLists UnsortOriginalTimings;
