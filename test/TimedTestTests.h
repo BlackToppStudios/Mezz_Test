@@ -107,7 +107,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     const std::chrono::milliseconds SleepTime(SleepTicks);
     auto Sleeper = [SleepTime]{ std::this_thread::sleep_for(SleepTime); };
-    const std::chrono::milliseconds MilliSecondEpsilon{200};
+    const std::chrono::milliseconds MilliSecondEpsilon{250};
 
     // Positive tests This should serve as examples for how to use this and get tests that passed.
     // These amounts of time very short to be measuring this way. longer running tests can be more precise.
