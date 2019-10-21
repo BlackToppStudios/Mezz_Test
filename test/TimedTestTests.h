@@ -177,7 +177,6 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MultilengthSleeper::Sleep TripleSleepUpwardEpsilon{std::chrono::milliseconds{1000}};
     const MultilengthSleeper::Sleep TripleSleepDownwardEpsilon{std::chrono::milliseconds{100}};
 
-
     MultilengthSleeper TripleSleeps({FastestTime, AverageTime, SlowestTime});
 
     const MicroBenchmarkResults::TimeType TotalLowerRange{FastestTime + AverageTime + SlowestTime -
@@ -257,10 +256,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MultilengthSleeper::Sleep Pentile3Time{5 * DurationTestMultiplier};
     const MultilengthSleeper::Sleep Pentile4Time{7 * DurationTestMultiplier};
     const MultilengthSleeper::Sleep Pentile5Time{9 * DurationTestMultiplier};
-    // 250000 for 5
 
     MultilengthSleeper PentileSleeps({Pentile1Time, Pentile2Time, Pentile3Time, Pentile4Time, Pentile5Time});
-
 
     const MultilengthSleeper::Sleep PentileDelta{MicroBenchmarkResults::TimeType {3 * DurationTestMultiplier}};
     const MultilengthSleeper::Sleep Pentile1TimeUpper{Pentile1Time + PentileDelta};
@@ -273,9 +270,6 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     //const MultilengthSleeper::Sleep Pentile4TimeLower{Pentile4Time - PentileDelta};
     //const MultilengthSleeper::Sleep Pentile5TimeUpper{Pentile5Time + PentileDelta};
     const MultilengthSleeper::Sleep Pentile5TimeLower{Pentile5Time - PentileDelta};
-
-    //const MultilengthSleeper::Sleep Pentile5sleepTime
-    //    { Pentile1Time + Pentile2Time + Pentile3Time + Pentile4Time + Pentile5Time };
 
     const MultilengthSleeper::Sleep PentileBenchmarkDuration{25000 * DurationTestMultiplier};
 
@@ -316,9 +310,6 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                           DurationBench.UnsortOriginalTimings.cend(),
                            MicroBenchmarkResults::TimeType{0})
           / DurationBench.UnsortOriginalTimings.size() };
-
-
-
     TEST_WITHIN_RANGE("MicroBenchmarkDurationAverage",
                       ExpectedAverage.count() - 1,
                       ExpectedAverage.count() + 1,
