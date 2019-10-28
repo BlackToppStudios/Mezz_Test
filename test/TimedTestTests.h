@@ -177,7 +177,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MultilengthSleeper::Sleep AverageTime{std::chrono::milliseconds{3000}};
     const MultilengthSleeper::Sleep SlowestTime{std::chrono::milliseconds{5000}};
     const MultilengthSleeper::Sleep TripleSleepUpwardEpsilon{std::chrono::milliseconds{1000}};
-    const MultilengthSleeper::Sleep TripleSleepDownwardEpsilon{std::chrono::milliseconds{100}};
+    const MultilengthSleeper::Sleep TripleSleepDownwardEpsilon{std::chrono::milliseconds{200}};
 
     MultilengthSleeper TripleSleeps({FastestTime, AverageTime, SlowestTime});
 
@@ -353,13 +353,14 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     // These represent two different algorithms to check. Actually having both in tests lets us check them as platform,
     // cache situations, type implementations, compilers and any other conditions.
-    auto FastThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{12}); };
-    auto SlowThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{17}); };
+    auto FastThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{10}); };
+    auto SlowThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{20}); };
 
-    // Do 1000 iterations of each
+    // Do 1000 iterations of each so the values are statistically significant
     const MicroBenchmarkResults FastMeasurements = MicroBenchmark(1000, std::move(FastThingToCheck));
     const MicroBenchmarkResults SlowMeasurements = MicroBenchmark(1000, std::move(SlowThingToCheck));
 
+    // Are all but the worst of the faster one faster than all but the best of best of the slower algorithm
     TEST("ExampleAlgorithmComparis", FastMeasurements.FasterThan10Percent < SlowMeasurements.FasterThan90Percent);
 
 }

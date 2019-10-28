@@ -109,7 +109,14 @@ namespace Mezzanine
             /// performance should be asserted. One useful test might be that the 90th percentile of the faster item
             /// should be faster than the 10th percentile of the slower item. This removes much of the impact of
             /// occasional performance interuptions and does some work producing medians, means and percentiles that
-            /// could be useful in measuring algorithms
+            /// could be useful in measuring algorithms.
+            /// @n @n
+            /// The closer the performance the less extreme the numbers will diverge. Only in the most extraordinary
+            /// situations will the slowest fast run be faster than the fastest slow run, so compare relative
+            /// percentiles. If 90% of one algorithm is faster than the 10th percentile of another there is a good
+            /// chance it is a keeper. But this can often be a comparison of an algorith with of an algorithm with
+            /// log(N) operations and Linear memory use vs another with Linear CPU use and log(N) memory, and trying to
+            /// infer actual performance on real hardware.
             struct MEZZ_LIB MicroBenchmarkResults
             {
                 /// @brief A integral type suitable for counting any reasonable execution counts.
