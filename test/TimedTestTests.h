@@ -96,9 +96,9 @@ SILENT_TEST_GROUP(WarningTimedTestTests, WarningTimedTest)
 /// @brief This is the actual Test class. This tests our Test Macros that are time sensitive.
 BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 {
-    // lets make a random time for these tests so if this is run on a bunch of VMs on the same hardware there will be
+    // Lets make a random time for these tests so if this is run on a bunch of VMs on the same hardware there will be
     // subtle variations in the timing and it won't cause all the VMs to wake at the same time and possibly delay some
-    // of the tests
+    // of the tests.
     std::mt19937 MersennTwisterRandomSource;
     MersennTwisterRandomSource.seed(std::random_device()());
     std::uniform_int_distribution<std::mt19937::result_type> DistLength(10000,15000);
@@ -121,7 +121,9 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
         { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
 
-    // Tests of Benchmark tools need a little setup
+    // Tests of Benchmark tools need a little and serve as poor examples of how to use this. These are testing
+    // the framework tools and not actually using the gaurantees that statistical results provice. See below for a
+    // better example
     using Mezzanine::Testing::MicroBenchmarkResults;
     using Mezzanine::Testing::MicroBenchmark;
 
@@ -344,6 +346,21 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     TEST("MicroBenchmarkDurationPercentile99th", Pentile5TimeLower.count()< DurationBench.FasterThan1Percent.count());
     TEST("MicroBenchmarkDurationSlowest", Pentile5TimeLower.count() < DurationBench.Slowest.count());
+
+    // This is a halfway reasonable example to compare two potentially close performing tasks. In your tests you should
+    // never use a hardcoded number because any number of factors could change it. Rather generate two measurements and
+    // and somehow compare those.
+
+    // These represent two different algorithms to check. Actually having both in tests lets us check them as platform,
+    // cache situations, type implementations, compilers and any other conditions.
+    auto FastThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{12}); };
+    auto SlowThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{17}); };
+
+    // Do 1000 iterations of each
+    const MicroBenchmarkResults FastMeasurements = MicroBenchmark(1000, std::move(FastThingToCheck));
+    const MicroBenchmarkResults SlowMeasurements = MicroBenchmark(1000, std::move(SlowThingToCheck));
+
+    TEST("ExampleAlgorithmComparis", FastMeasurements.FasterThan10Percent < SlowMeasurements.FasterThan90Percent);
 
 }
 

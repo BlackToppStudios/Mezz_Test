@@ -103,6 +103,13 @@ namespace Mezzanine
         SUPPRESS_CLANG_WARNING("-Wpadded") // Emscripten complains about this and it not performance sensitive
 
             /// @brief A set of numbers all the Microbenchmarks return.
+            /// @details This is a collection of numbers intended to provide an ability to get close to deterministic
+            /// results from statistical processes. It is a bad idea to use this to get numbers directly against
+            /// hard-coded values. Rather two things should be benchmarked and something about their relative
+            /// performance should be asserted. One useful test might be that the 90th percentile of the faster item
+            /// should be faster than the 10th percentile of the slower item. This removes much of the impact of
+            /// occasional performance interuptions and does some work producing medians, means and percentiles that
+            /// could be useful in measuring algorithms
             struct MEZZ_LIB MicroBenchmarkResults
             {
                 /// @brief A integral type suitable for counting any reasonable execution counts.
@@ -131,7 +138,7 @@ namespace Mezzanine
 
                 /// @brief How many times was the timed item executed/
                 CountType Iterations = 0;
-                /// @brief How much was the total runtime with as much of the benchmark removed as possibble.
+                /// @brief How much was the total runtime with as much of the benchmark removed as possible.
                 TimeType Total = TimeType{0};
                 /// @brief The mean execution time; the Total time divided by the number of iterations.
                 TimeType Average = TimeType{0};
