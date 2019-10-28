@@ -357,8 +357,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     auto SlowThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{20}); };
 
     // Do 1000 iterations of each so the values are statistically significant
-    const MicroBenchmarkResults FastMeasurements = MicroBenchmark(1000, std::move(FastThingToCheck));
-    const MicroBenchmarkResults SlowMeasurements = MicroBenchmark(1000, std::move(SlowThingToCheck));
+    const MicroBenchmarkResults FastMeasurements = MicroBenchmark(10000, std::move(FastThingToCheck));
+    const MicroBenchmarkResults SlowMeasurements = MicroBenchmark(10000, std::move(SlowThingToCheck));
 
     // Are all but the worst of the faster one faster than all but the best of best of the slower algorithm
     TEST("ExampleAlgorithmComparis", FastMeasurements.FasterThan10Percent < SlowMeasurements.FasterThan90Percent);
