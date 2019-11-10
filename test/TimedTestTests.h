@@ -251,7 +251,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       ThreeIterationBench.Slowest.count());
 
     // Duration based benchmarks
-    const MultilengthSleeper::Sleep DurationTestMultiplier{2500000};
+    const MultilengthSleeper::Sleep DurationTestMultiplier{2200000};
 
     const MultilengthSleeper::Sleep Pentile1Time{1 * DurationTestMultiplier};
     const MultilengthSleeper::Sleep Pentile2Time{3 * DurationTestMultiplier};
@@ -357,8 +357,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     auto SlowThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{20}); };
 
     // Do 1000 iterations of each so the values are statistically significant
-    const MicroBenchmarkResults FastMeasurements = MicroBenchmark(7000, std::move(FastThingToCheck));
-    const MicroBenchmarkResults SlowMeasurements = MicroBenchmark(7000, std::move(SlowThingToCheck));
+    const MicroBenchmarkResults FastMeasurements = MicroBenchmark(5000, std::move(FastThingToCheck));
+    const MicroBenchmarkResults SlowMeasurements = MicroBenchmark(5000, std::move(SlowThingToCheck));
 
     // Are all but the worst of the faster one faster than all but the best of best of the slower algorithm
     TEST("ExampleAlgorithmComparis", FastMeasurements.FasterThan10Percent < SlowMeasurements.FasterThan90Percent);
