@@ -58,10 +58,10 @@ namespace Mezzanine
         enum class TestResult
         {
             Success         = 0,        ///< Test was ran and appeared to work.
-            Warning         = 1,        ///< Technically the test passed but there is something that is not quite right.
-            Skipped         = 2,        ///< Test was simply not ran at the behest of the user.
-            Cancelled       = 3,        ///< Was canceled by user, so success is unknown, but user knows test was
-                                        /// canceled.
+            Skipped         = 1,        ///< Test was simply not ran and this was intentional and does not mean failure.
+            Cancelled       = 2,        ///< Was canceled by user, so success is unknown, but any user knows test was
+                                        /// cancelled and the test is not failed
+            Warning         = 3,        ///< Technically the test passed but there is something that is not quite right.
             Inconclusive    = 4,        ///< If a user answers that with "don't know" in a test that involved
                                         /// interaction, The user knows there is a potential issue.
             Failed          = 5,        ///< Known failure.
@@ -77,33 +77,51 @@ namespace Mezzanine
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
         SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
-            /// @brief Corresponds to TestResult::Success
-            const Mezzanine::String SuccessString("Success");
-            /// @brief Corresponds to TestResult::Warning
-            const Mezzanine::String WarningString("Warning");
-            /// @brief Corresponds to TestResult::Skipped
-            const Mezzanine::String SkippedString("Skipped");
-            /// @brief Corresponds to TestResult::Cancelled
-            const Mezzanine::String CancelledString("Cancelled");
-            /// @brief Corresponds to TestResult::Inconclusive
-            const Mezzanine::String InconclusiveString("Inconclusive");
-            /// @brief Corresponds to TestResult::Failed
-            const Mezzanine::String FailedString("Failed");
-            /// @brief Corresponds to TestResult::Unknown
-            const Mezzanine::String UnknownString("Unknown");
-            /// @brief Corresponds to TestResult::NotApplicable
-            const Mezzanine::String NotApplicableString("NotApplicable");
+        /// @brief Corresponds to TestResult::Success.
+        const Mezzanine::StringView SuccessString           ("Success");
+        /// @brief Corresponds to TestResult::Skipped.
+        const Mezzanine::StringView SkippedString           ("Skipped");
+        /// @brief Corresponds to TestResult::Cancelled.
+        const Mezzanine::StringView CancelledString         ("Cancelled");
+        /// @brief Corresponds to TestResult::Warning.
+        const Mezzanine::StringView WarningString           ("Warning");
+        /// @brief Corresponds to TestResult::Inconclusive.
+        const Mezzanine::StringView InconclusiveString      ("Inconclusive");
+        /// @brief Corresponds to TestResult::Failed.
+        const Mezzanine::StringView FailedString            ("Failed");
+        /// @brief Corresponds to TestResult::Unknown.
+        const Mezzanine::StringView UnknownString           ("Unknown");
+        /// @brief Corresponds to TestResult::NotApplicable.
+        const Mezzanine::StringView NotApplicableString     ("NotApplicable");
+
+        /// @brief Corresponds to TestResult::Success, but in a box. Must contain the non-box version.
+        const Mezzanine::StringView SuccessStringBox        ("[    Success    ]");
+        /// @brief Corresponds to TestResult::Skipped, but in a box. Must contain the non-box version.
+        const Mezzanine::StringView SkippedStringBox        ("[    Skipped    ]");
+        /// @brief Corresponds to TestResult::Cancelled, but in a box. Must contain the non-box version.
+        const Mezzanine::StringView CancelledStringBox      ("[   Cancelled   ]");
+        /// @brief Corresponds to TestResult::Warning, but in a box. Must contain the non-box version.
+        const Mezzanine::StringView WarningStringBox        ("[    Warning    ]");
+        /// @brief Corresponds to TestResult::Inconclusive, but in a box. Must contain the non-box version.
+        const Mezzanine::StringView InconclusiveStringBox   ("[ Inconclusive  ]");
+        /// @brief Corresponds to TestResult::Failed, but in a box. Must contain the non-box version.
+        const Mezzanine::StringView FailedStringBox         ("[    Failed     ]");
+        /// @brief Corresponds to TestResult::Unknown, but in a box. Must contain the non-box version.
+        const Mezzanine::StringView UnknownStringBox        ("[    Unknown    ]");
+        /// @brief Corresponds to TestResult::NotApplicable, but in a box. Must contain the non-box version.
+        const Mezzanine::StringView NotApplicableStringBox  ("[ NotApplicable ]");
+
         RESTORE_WARNING_STATE
 
         /// @brief This converts A test result enum value into a String matching the identifier name.
         /// @param Convertable A TestResult inclusively between Success and NotApplicable.
         /// @return  A string like "Success" or "Inconclusive" or similar.
-        Mezzanine::String MEZZ_LIB TestResultToString(TestResult Convertable);
+        Mezzanine::StringView TestResultToString(TestResult Convertable);
 
         /// @brief This converts A test result into a String matching the in a fixed width box.
         /// @param Convertable A TestResult inclusively between Success and NotApplicable.
         /// @return  A string like "[    Success    ]" or "[    Warning    ]" or similar.
-        Mezzanine::String MEZZ_LIB TestResultToFixedBoxString(TestResult Convertable);
+        Mezzanine::StringView MEZZ_LIB TestResultToFixedBoxString(TestResult Convertable);
 
         /// @brief Convert a TestResult to a number for other processing.
         /// @param Convertable The valid TestResults to be converted.

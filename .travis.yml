@@ -1,17 +1,22 @@
 sudo: required
-dist: trusty
+dist: bionic
 language: cpp
+
+# The `-fno-var-tracking` flag removes some debug information about templates from the build
+# that we want most of the time, but can exhaust memory in CI.
 
 matrix:
   include:
     - os: osx
+      osx_image: xcode10.3
       compiler: clang
       env: BUILD_TYPE=Debug
-      env: CXX_FLAGS=-O0
+      env: CXXFLAGS=-fno-var-tracking
     - os: osx
+      osx_image: xcode10.3
       compiler: clang
       env: BUILD_TYPE=Release
-      env: CXX_FLAGS=
+      env: CXXFLAGS=-fno-var-tracking
 
 before_script:
   - mkdir build

@@ -289,6 +289,39 @@ namespace Mezzanine
             }
 
             /// @copydoc Test
+            /// @brief Test if an expected range of values contains the given value.
+            /// @param ExpectedLowerBound The Minimum of the target range exclusive.
+            /// @param ExpectedUpperBound The Maximum of the target range exclusive.
+            /// @param ActualResults The actual results produced by the testing process.
+            /// @tparam ExpectedResultsType A type that supports comparison with the ActualResultsType on the left
+            /// of the == operator and output to ostreams.
+            /// @tparam ActualResultsType A type that supports comparison with the ExpectedResultsType on the right
+            /// of the == operator and output to ostreams.
+            template <typename ExpectedResultsType, typename ActualResultsType>
+            void TestWithinRange(const String& TestName,
+                                 ExpectedResultsType ExpectedLowerBound,
+                                 ExpectedResultsType ExpectedUpperBound,
+                                 ActualResultsType ActualResults,
+
+                                 TestResult IfFalse = Testing::TestResult::Failed,
+                                 TestResult IfTrue = Testing::TestResult::Success,
+                                 const String& FuncName = "",
+                                 const String& File = "",
+                                 Mezzanine::Whole Line = 0)
+            {
+                TestResult Result = Test( TestName,
+                    (ExpectedLowerBound <= ActualResults) && (ActualResults <= ExpectedUpperBound),
+                    IfFalse, IfTrue, FuncName, File, Line);
+                if(EmitIntermediaryTestResults() && Mezzanine::Testing::TestResult::Success != Result)
+                {
+                    TestLog << "Test - " << TestName << " failed: "
+                            << "Expected within '" << ExpectedLowerBound << "' - '" << ExpectedUpperBound << "' "
+                            << "but actually Received '" << ActualResults << "'."
+                            << std::endl;
+                }
+             }
+
+            /// @copydoc Test
             /// @brief Test that a given piece of code throws the expected kind of exception.
             /// @param TestCallable A lambda or functor to call that ought to throw an exception.
             /// @tparam ExceptionType The type of the exception to catch for a passing test.

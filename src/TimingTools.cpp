@@ -45,6 +45,7 @@
 #include "MezzTest.h"
 
 #include <iomanip>
+#include <numeric>
 
 using std::chrono::minutes;
 using std::chrono::seconds;
@@ -102,6 +103,60 @@ namespace Mezzanine
             Duration = TruncateUnit<nanoseconds>(Duration, "ns", PrettyTimeAssembler);
 
             return PrettyTimeAssembler.str();
+        }
+
+        MicroBenchmarkResults::MicroBenchmarkResults(const TimingLists& Timings,
+            const TimeType& PrecalculatedTotal)
+            : SortedTimings(Timings), UnsortOriginalTimings(Timings)
+        {
+            // No need to process nothing
+            if(SortedTimings.size() == 0)
+                { return; }
+
+            // Sorting saves us a bunch of effort
+            std::sort(SortedTimings.begin(), SortedTimings.end());
+
+            if(TimeType{0} == PrecalculatedTotal)
+                { Total = std::accumulate(SortedTimings.begin(), SortedTimings.end(), TimeType{0}); }
+            else
+                { Total = PrecalculatedTotal; }
+
+            Iterations = SortedTimings.size();
+            Average = Total / Iterations;
+
+            Fastest = SortedTimings.front();
+            FasterThan99Percent = GetIndexValueFromPercent(0.01);
+            FasterThan90Percent = GetIndexValueFromPercent(0.10);
+            Median = GetIndexValueFromPercent(0.5);
+            FasterThan10Percent = GetIndexValueFromPercent(0.90);
+            FasterThan1Percent = GetIndexValueFromPercent(0.99);
+            Slowest = SortedTimings.back();
+        }
+
+        SAVE_WARNING_STATE
+        SUPPRESS_GCC_WARNING("-Wconversion") // The conversion to int to double and back to int for the index
+
+        MicroBenchmarkResults::TimingLists::size_type
+        MicroBenchmarkResults::GetIndexFromPercent(PreciseReal Percent) const
+        {
+            if(0.0 > Percent)
+                { Percent = 0; }
+            if(1.0 < Percent)
+                { Percent = 1.0; }
+
+            TimingLists::size_type Location{static_cast<TimingLists::size_type>(SortedTimings.size() * (Percent))};
+
+            if(SortedTimings.size() <= Location)
+                { Location = SortedTimings.size()-1; }
+            return Location;
+        }
+
+        RESTORE_WARNING_STATE
+
+        MicroBenchmarkResults::TimeType MicroBenchmarkResults::GetIndexValueFromPercent(PreciseReal Percent) const
+        {
+            const TimingLists::size_type Location{GetIndexFromPercent(Percent)};
+            return SortedTimings[Location];
         }
 
     }// Testing
