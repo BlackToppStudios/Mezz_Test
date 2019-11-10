@@ -52,7 +52,7 @@
 #include <vector>
 #include <numeric>
 
-/// @brief A class for
+/// @brief A class for simulating work taking arbitrary amounts of time,
 class MultilengthSleeper
 {
 public:
@@ -250,7 +250,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       SlowestUpperRange.count(),
                       ThreeIterationBench.Slowest.count());
 
-    // Duration based benchmarks
+    // Duration based benchmarks This is a bunch of values used to generated a series of sanity checks.
     const MultilengthSleeper::Sleep DurationTestMultiplier{3000000};
 
     const MultilengthSleeper::Sleep Pentile1Time{1 * DurationTestMultiplier};
@@ -268,13 +268,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MultilengthSleeper::Sleep Pentile1TimeLower{Pentile1Time > PentileDelta ?
                                                       Pentile1Time - PentileDelta :
                                                       MultilengthSleeper::Sleep{0}};
-    //const MultilengthSleeper::Sleep Pentile2TimeUpper{Pentile2Time + PentileDelta};
-    //const MultilengthSleeper::Sleep Pentile2TimeLower{Pentile2Time - PentileDelta};
-    //const MultilengthSleeper::Sleep Pentile3TimeUpper{Pentile3Time + PentileDelta};
-    //const MultilengthSleeper::Sleep Pentile3TimeLower{Pentile3Time - PentileDelta};
-    //const MultilengthSleeper::Sleep Pentile4TimeUpper{Pentile4Time + PentileDelta};
-    //const MultilengthSleeper::Sleep Pentile4TimeLower{Pentile4Time - PentileDelta};
-    //const MultilengthSleeper::Sleep Pentile5TimeUpper{Pentile5Time + PentileDelta};
+
     const MultilengthSleeper::Sleep Pentile5TimeLower{Pentile5Time - PentileDelta};
 
     const MultilengthSleeper::Sleep PentileBenchmarkDuration{25000 * DurationTestMultiplier};
@@ -289,12 +283,10 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
             Pentile4Time.count() + Pentile5Time.count()) };
 
     // 5 is the expected multiple, but these are often slower
-    //const MicroBenchmarkResults::CountType PentileBenchmarkExpectedCountLower
-    //    { PentileBenchmarkDuration.count() / PentileSinglePassExpectedCount * 3};
     const MicroBenchmarkResults::CountType PentileBenchmarkExpectedCountUpper
         { PentileBenchmarkDuration.count() / PentileSinglePassExpectedCount * 6};
 
-    // The actual work
+    // The actual "work", it is a bunch of sleeps but takes real time to be measured.
     const MicroBenchmarkResults DurationBench = MicroBenchmark(PentileBenchmarkDuration,
                                                                std::move(PentileSleeps));
 
@@ -347,21 +339,22 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     TEST("MicroBenchmarkDurationPercentile99th", Pentile5TimeLower.count()< DurationBench.FasterThan1Percent.count());
     TEST("MicroBenchmarkDurationSlowest", Pentile5TimeLower.count() < DurationBench.Slowest.count());
 
-    // This is a halfway reasonable example to compare two potentially close performing tasks. In your tests you should
-    // never use a hardcoded number because any number of factors could change it. Rather generate two measurements and
-    // and somehow compare those.
+    // This is purely for show. In your tests you should never use a hardcoded number because any number of factors
+    // could change it. Rather generate two measurements and and somehow compare those. Below we show how to do that.
 
     // These represent two different algorithms to check. Actually having both in tests lets us check them as platform,
     // cache situations, type implementations, compilers and any other conditions.
     auto FastThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{1}); };
     auto SlowThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{50}); };
 
-    // Do 1000 iterations of each so the values are statistically significant
+    // Do 1000 iterations of each so the values are statistically significant, do more iterations to improve the
+    // statistical quality of the numbers. This passes with 14ms and 16ms sleeps with 10,000 iterations, but then it
+    // takes a really long time to execute.
     const MicroBenchmarkResults FastMeasurements = MicroBenchmark(500, std::move(FastThingToCheck));
     const MicroBenchmarkResults SlowMeasurements = MicroBenchmark(500, std::move(SlowThingToCheck));
 
-    // Are all but the worst of the faster one faster than all but the best of best of the slower algorithm
-    TEST("ExampleAlgorithmComparis", FastMeasurements.FasterThan10Percent < SlowMeasurements.FasterThan90Percent);
+    // Are all but the worst of the faster 'algorithm' faster than all but the best of best of the slower 'algorithm'.
+    TEST("ExampleAlgorithmComparison", FastMeasurements.FasterThan10Percent < SlowMeasurements.FasterThan90Percent);
 
 }
 

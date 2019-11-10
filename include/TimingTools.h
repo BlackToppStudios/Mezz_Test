@@ -100,7 +100,7 @@ namespace Mezzanine
         std::ostream& MEZZ_LIB operator<<(std::ostream& Stream, const NamedDuration& TimingToStream);
 
         SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wpadded") // Emscripten complains about this and it not performance sensitive
+        SUPPRESS_CLANG_WARNING("-Wpadded") // Emscripten complains about this and is not performance sensitive.
 
             /// @brief A set of numbers all the Microbenchmarks return.
             /// @details This is a collection of numbers intended to provide an ability to get close to deterministic
@@ -114,7 +114,7 @@ namespace Mezzanine
             /// The closer the performance the less extreme the numbers will diverge. Only in the most extraordinary
             /// situations will the slowest fast run be faster than the fastest slow run, so compare relative
             /// percentiles. If 90% of one algorithm is faster than the 10th percentile of another there is a good
-            /// chance it is a keeper. But this can often be a comparison of an algorith with of an algorithm with
+            /// chance it is a keeper. But this can often be a comparison of an algorithm with of an algorithm with
             /// log(N) operations and Linear memory use vs another with Linear CPU use and log(N) memory, and trying to
             /// infer actual performance on real hardware.
             struct MEZZ_LIB MicroBenchmarkResults
@@ -131,7 +131,9 @@ namespace Mezzanine
                 /// @param PrecalculatedTotal Sometimes the total runtime is acquired while running tests. If this is
                 /// non-zero this will be used instead of calculated.
                 MicroBenchmarkResults(const TimingLists& Timings, const TimeType& PrecalculatedTotal = TimeType{0});
-                MicroBenchmarkResults(MicroBenchmarkResults&) = default;
+
+                MicroBenchmarkResults(const MicroBenchmarkResults&) = default;
+                MicroBenchmarkResults(MicroBenchmarkResults&&) = default;
                 ~MicroBenchmarkResults() = default;
 
                 /// @brief Get an Index that corresponds to the percentile of performance.
@@ -171,14 +173,13 @@ namespace Mezzanine
                 TimingLists SortedTimings;
                 /// @brief The unsorted timings to help study caching effects.
                 TimingLists UnsortOriginalTimings;
-
             };
         RESTORE_WARNING_STATE
 
-        /// @brief Time a single execution of some functor
-        /// @tparam Functor Any function-like callable item which accepts no parameters and returns none.
+        /// @brief Time a single execution of some functor.
+        /// @tparam Functor Any function-like callable type which accepts no parameters and returns none.
         /// @param  ToTime A functor to time the execution of.
-        /// @return A performanc profile as an instance of MicroBenchmarkResults.
+        /// @return A performance profile as an instance of MicroBenchmarkResults.
         template<typename Functor>
         MicroBenchmarkResults MicroBenchmark(Functor&& ToTime)
         {
@@ -188,11 +189,11 @@ namespace Mezzanine
         }
 
         /// @brief Run the passed functor a number of times and track run times of these.
-        /// @tparam Functor Any function-like callable item which accepts no parameters and returns none.
+        /// @tparam Functor Any function-like callable type which accepts no parameters and returns none.
         /// @param ToTime A functor to time the execution of.
-        /// @return A performanc profile as an instance of MicroBenchmarkResults.
+        /// @return A performance profile as an instance of MicroBenchmarkResults.
         template<typename Functor>
-        MicroBenchmarkResults MicroBenchmark(const Mezzanine::UInt32& Iterations, Functor&& ToTime)
+        MicroBenchmarkResults MicroBenchmark(Mezzanine::UInt32 Iterations, Functor&& ToTime)
         {
             MicroBenchmarkResults::TimingLists Results;
             Results.reserve(Iterations);
@@ -211,8 +212,9 @@ namespace Mezzanine
         }
 
         /// @brief Run the passed functor repeatedly until the total execution time exceeds the minumum duration.
-        /// @tparam Functor Any function-like callable item which accepts no parameters and returns none.
-        /// @details This starts and stops a
+        /// @tparam Functor Any function-like callable type which accepts no parameters and returns none.
+        /// @param ToTime A functor to time the execution of.
+        /// @details This only counts the time executing the functor by starting a new timer each execution.
         /// @return A performance profile as an instance of MicroBenchmarkResults.
         template<typename Functor>
         MicroBenchmarkResults MicroBenchmark(const std::chrono::nanoseconds& MinimumDuration, Functor&& ToTime)

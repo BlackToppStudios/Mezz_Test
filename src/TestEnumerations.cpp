@@ -56,52 +56,36 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        Mezzanine::String TestResultToString(TestResult Convertable)
+        Mezzanine::StringView TestResultToString(TestResult Convertable)
         {
             switch(Convertable)
             {
-                case TestResult::Success:
-                    return SuccessString;
-                case TestResult::Warning:
-                    return WarningString;
-                case TestResult::Skipped:
-                    return SkippedString;
-                case TestResult::Cancelled:
-                    return CancelledString;
-                case TestResult::Inconclusive:
-                    return InconclusiveString;
-                case TestResult::Failed:
-                    return FailedString;
-                case TestResult::Unknown:
-                    return UnknownString;
-                case TestResult::NotApplicable:
-                    return NotApplicableString;
+                case TestResult::Success:           return SuccessString;
+                case TestResult::Warning:           return WarningString;
+                case TestResult::Skipped:           return SkippedString;
+                case TestResult::Cancelled:         return CancelledString;
+                case TestResult::Inconclusive:      return InconclusiveString;
+                case TestResult::Failed:            return FailedString;
+                case TestResult::Unknown:           return UnknownString;
+                case TestResult::NotApplicable:     return NotApplicableString;
             }
             return NotApplicableString;
         }
 
-        String TestResultToFixedBoxString(TestResult Convertable)
+        Mezzanine::StringView TestResultToFixedBoxString(TestResult Convertable)
         {
             switch(Convertable)
             {
-                case TestResult::Success:
-                    return "[    " + SuccessString + "    ]";
-                case TestResult::Warning:
-                    return "[    " + WarningString + "    ]";
-                case TestResult::Skipped:
-                    return "[    " + SkippedString + "    ]";
-                case TestResult::Cancelled:
-                    return "[   " + CancelledString + "   ]";
-                case TestResult::Inconclusive:
-                    return "[ " + InconclusiveString + "  ]";
-                case TestResult::Failed:
-                    return "[    " + FailedString + "     ]";
-                case TestResult::Unknown:
-                    return "[    " + UnknownString + "    ]";
-                case TestResult::NotApplicable:
-                    return "[ " + NotApplicableString + " ]";
+                case TestResult::Success:           return SuccessStringBox;
+                case TestResult::Warning:           return WarningStringBox;
+                case TestResult::Skipped:           return SkippedStringBox;
+                case TestResult::Cancelled:         return CancelledStringBox;
+                case TestResult::Inconclusive:      return InconclusiveStringBox;
+                case TestResult::Failed:            return FailedStringBox;
+                case TestResult::Unknown:           return UnknownStringBox;
+                case TestResult::NotApplicable:     return NotApplicableStringBox;
             }
-            return NotApplicableString;
+            return NotApplicableStringBox;
         }
 
         Mezzanine::Int32 TestResultToInt(TestResult Convertable)
