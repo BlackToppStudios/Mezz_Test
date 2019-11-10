@@ -251,7 +251,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       ThreeIterationBench.Slowest.count());
 
     // Duration based benchmarks
-    const MultilengthSleeper::Sleep DurationTestMultiplier{2200000};
+    const MultilengthSleeper::Sleep DurationTestMultiplier{3000000};
 
     const MultilengthSleeper::Sleep Pentile1Time{1 * DurationTestMultiplier};
     const MultilengthSleeper::Sleep Pentile2Time{3 * DurationTestMultiplier};
@@ -354,11 +354,11 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     // These represent two different algorithms to check. Actually having both in tests lets us check them as platform,
     // cache situations, type implementations, compilers and any other conditions.
     auto FastThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{1}); };
-    auto SlowThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{10}); };
+    auto SlowThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{50}); };
 
     // Do 1000 iterations of each so the values are statistically significant
-    const MicroBenchmarkResults FastMeasurements = MicroBenchmark(5000, std::move(FastThingToCheck));
-    const MicroBenchmarkResults SlowMeasurements = MicroBenchmark(5000, std::move(SlowThingToCheck));
+    const MicroBenchmarkResults FastMeasurements = MicroBenchmark(500, std::move(FastThingToCheck));
+    const MicroBenchmarkResults SlowMeasurements = MicroBenchmark(500, std::move(SlowThingToCheck));
 
     // Are all but the worst of the faster one faster than all but the best of best of the slower algorithm
     TEST("ExampleAlgorithmComparis", FastMeasurements.FasterThan10Percent < SlowMeasurements.FasterThan90Percent);
