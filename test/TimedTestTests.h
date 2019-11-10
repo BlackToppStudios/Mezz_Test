@@ -353,8 +353,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     // These represent two different algorithms to check. Actually having both in tests lets us check them as platform,
     // cache situations, type implementations, compilers and any other conditions.
-    auto FastThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{10}); };
-    auto SlowThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{20}); };
+    auto FastThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{1}); };
+    auto SlowThingToCheck = []{ std::this_thread::sleep_for(std::chrono::milliseconds{10}); };
 
     // Do 1000 iterations of each so the values are statistically significant
     const MicroBenchmarkResults FastMeasurements = MicroBenchmark(5000, std::move(FastThingToCheck));
