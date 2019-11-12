@@ -142,6 +142,10 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       SingleUpperRange.count(),
                       SingleBench.Total.count());
 
+    TEST_EQUAL("MicroBenchmarkSingleWallTotal",
+                SingleBench.WallTotal.count(),
+                SingleBench.Total.count());
+
     TEST_WITHIN_RANGE("MicroBenchmarkSingleAverage",
                       SingleLowerRange.count(),
                       SingleUpperRange.count(),
@@ -209,6 +213,9 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       TotalLowerRange.count(),
                       TotalUpperRange.count(),
                       ThreeIterationBench.Total.count());
+
+    TEST("MicroBenchmarkIterationsWallTotal",
+         ThreeIterationBench.WallTotal.count() >= ThreeIterationBench.Total.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsAverage",
                       AverageLowerRange.count(),
@@ -300,6 +307,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       PentileExpectedTotalLower.count(),
                       PentileExpectedTotalUpper.count(),
                       DurationBench.Total.count());
+
+    TEST("MicroBenchmarkDurationWallTotal", DurationBench.WallTotal.count() >= DurationBench.Total.count());
 
     MicroBenchmarkResults::TimeType ExpectedAverage
         { std::accumulate(DurationBench.UnsortOriginalTimings.cbegin(),

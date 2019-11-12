@@ -116,10 +116,8 @@ namespace Mezzanine
             // Sorting saves us a bunch of effort
             std::sort(SortedTimings.begin(), SortedTimings.end());
 
-            if(TimeType{0} == PrecalculatedTotal)
-                { Total = std::accumulate(SortedTimings.begin(), SortedTimings.end(), TimeType{0}); }
-            else
-                { Total = PrecalculatedTotal; }
+            Total = std::accumulate(SortedTimings.begin(), SortedTimings.end(), TimeType{0});
+            WallTotal = PrecalculatedTotal;
 
             Iterations = SortedTimings.size();
             Average = Total / Iterations;

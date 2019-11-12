@@ -130,7 +130,7 @@ namespace Mezzanine
                 /// @param Timings A list of nanoseconds to measure and get the interesting numbers from.
                 /// @param PrecalculatedTotal Sometimes the total runtime is acquired while running tests. If this is
                 /// non-zero this will be used instead of calculated.
-                MicroBenchmarkResults(const TimingLists& Timings, const TimeType& PrecalculatedTotal = TimeType{0});
+                MicroBenchmarkResults(const TimingLists& Timings, const TimeType& PrecalculatedTotal );
 
                 MicroBenchmarkResults(const MicroBenchmarkResults&) = default;
                 MicroBenchmarkResults(MicroBenchmarkResults&&) = default;
@@ -149,6 +149,9 @@ namespace Mezzanine
                 CountType Iterations = 0;
                 /// @brief How much was the total runtime with as much of the benchmark removed as possible.
                 TimeType Total = TimeType{0};
+                /// @brief What was the actual time this took to execute, as measured by external clock.
+                TimeType WallTotal = TimeType{0};
+
                 /// @brief The mean execution time; the Total time divided by the number of iterations.
                 TimeType Average = TimeType{0};
                 /// @brief The fastest (fewest time units) execution time. Defaults to one hour
@@ -183,9 +186,13 @@ namespace Mezzanine
         template<typename Functor>
         MicroBenchmarkResults MicroBenchmark(Functor&& ToTime)
         {
+            MicroBenchmarkResults::TimingLists Results;
+            Results.reserve(1);
+
             TestTimer Bench;
             ToTime();
-            return MicroBenchmarkResults{ {Bench.GetLength()} };
+            Results.push_back(Bench.GetLength());
+            return MicroBenchmarkResults{ Results, Results[0] };
         }
 
         /// @brief Run the passed functor a number of times and track run times of these.
@@ -198,42 +205,50 @@ namespace Mezzanine
             MicroBenchmarkResults::TimingLists Results;
             Results.reserve(Iterations);
 
+            std::chrono::high_resolution_clock::time_point Current;
+            std::chrono::high_resolution_clock::time_point StartTime{ std::chrono::high_resolution_clock::now() };
+
             for(Mezzanine::UInt32 Counter{0}; Counter<Iterations; Counter++)
             {
                 std::chrono::high_resolution_clock::time_point Begin{std::chrono::high_resolution_clock::now()};
                 ToTime();
-                std::chrono::high_resolution_clock::time_point End{std::chrono::high_resolution_clock::now()};
+                Current = std::chrono::high_resolution_clock::now();
 
                 MicroBenchmarkResults::TimeType Length
-                    {std::chrono::duration_cast<MicroBenchmarkResults::TimeType>(End-Begin)};
+                    {std::chrono::duration_cast<MicroBenchmarkResults::TimeType>(Current-Begin)};
                 Results.push_back(Length);
             }
-            return MicroBenchmarkResults{Results};
+            return MicroBenchmarkResults{Results, Current-StartTime};
         }
 
         /// @brief Run the passed functor repeatedly until the total execution time exceeds the minumum duration.
         /// @tparam Functor Any function-like callable type which accepts no parameters and returns none.
         /// @param ToTime A functor to time the execution of.
-        /// @details This only counts the time executing the functor by starting a new timer each execution.
+        /// @param PreallocateCount How many results should we store space for, defaults to 1,000,000.
         /// @return A performance profile as an instance of MicroBenchmarkResults.
         template<typename Functor>
-        MicroBenchmarkResults MicroBenchmark(const std::chrono::nanoseconds& MinimumDuration, Functor&& ToTime)
+        MicroBenchmarkResults MicroBenchmark(const std::chrono::nanoseconds& MinimumDuration,
+                                             Functor&& ToTime,
+                                             const SizeType PreallocateCount = 1000000)
         {
             MicroBenchmarkResults::TimingLists Results;
-            MicroBenchmarkResults::TimeType RunningTotal{0};
+            Results.reserve(PreallocateCount);
 
-            while(MinimumDuration >= RunningTotal)
+            std::chrono::high_resolution_clock::time_point StartTime{ std::chrono::high_resolution_clock::now() };
+            std::chrono::high_resolution_clock::time_point TargetTime{ StartTime + MinimumDuration };
+            std::chrono::high_resolution_clock::time_point CurrentTime{std::chrono::high_resolution_clock::now()};
+
+            while(TargetTime >= CurrentTime)
             {
-                std::chrono::high_resolution_clock::time_point Begin{std::chrono::high_resolution_clock::now()};
+                std::chrono::high_resolution_clock::time_point TrialBegin{std::chrono::high_resolution_clock::now()};
                 ToTime();
-                std::chrono::high_resolution_clock::time_point End{std::chrono::high_resolution_clock::now()};
+                CurrentTime = std::chrono::high_resolution_clock::now();
 
                 MicroBenchmarkResults::TimeType Length
-                    {std::chrono::duration_cast<MicroBenchmarkResults::TimeType>(End-Begin)};
-                RunningTotal += Length;
+                    {std::chrono::duration_cast<MicroBenchmarkResults::TimeType>(CurrentTime-TrialBegin)};
                 Results.push_back(Length);
             }
-            return MicroBenchmarkResults{Results, RunningTotal};
+            return MicroBenchmarkResults{Results, CurrentTime - StartTime};
         }
     }// Testing
 }// Mezzanine
