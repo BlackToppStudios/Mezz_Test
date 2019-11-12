@@ -136,6 +136,10 @@ namespace Mezzanine
                 MicroBenchmarkResults(MicroBenchmarkResults&&) = default;
                 ~MicroBenchmarkResults() = default;
 
+                /// @brief Create a copy of this with none of the zero entries.
+                /// @return Another MircoBenchmarkResults without a slew of pesky zeros from shorter test iterations.
+                MicroBenchmarkResults CopyWithoutZeroes() const;
+
                 /// @brief Get an Index that corresponds to the percentile of performance.
                 /// @param Percent Where to reach into the timings. With 1.0 the slowest and 0.0 the fastest.
                 /// @return A index for a value from the Original Timings vector.
