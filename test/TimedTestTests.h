@@ -142,6 +142,10 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       SingleUpperRange.count(),
                       SingleBench.Total.count());
 
+    TEST_EQUAL("MicroBenchmarkSingleWallTotal",
+                SingleBench.WallTotal.count(),
+                SingleBench.Total.count());
+
     TEST_WITHIN_RANGE("MicroBenchmarkSingleAverage",
                       SingleLowerRange.count(),
                       SingleUpperRange.count(),
@@ -209,6 +213,9 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       TotalLowerRange.count(),
                       TotalUpperRange.count(),
                       ThreeIterationBench.Total.count());
+
+    TEST("MicroBenchmarkIterationsWallTotal",
+         ThreeIterationBench.WallTotal.count() >= ThreeIterationBench.Total.count());
 
     TEST_WITHIN_RANGE("MicroBenchmarkIterationsAverage",
                       AverageLowerRange.count(),
@@ -301,6 +308,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       PentileExpectedTotalUpper.count(),
                       DurationBench.Total.count());
 
+    TEST("MicroBenchmarkDurationWallTotal", DurationBench.WallTotal.count() >= DurationBench.Total.count());
+
     MicroBenchmarkResults::TimeType ExpectedAverage
         { std::accumulate(DurationBench.UnsortOriginalTimings.cbegin(),
                           DurationBench.UnsortOriginalTimings.cend(),
@@ -338,6 +347,22 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     TEST("MicroBenchmarkDurationPercentile99th", Pentile5TimeLower.count()< DurationBench.FasterThan1Percent.count());
     TEST("MicroBenchmarkDurationSlowest", Pentile5TimeLower.count() < DurationBench.Slowest.count());
+
+    // test the zero-free copy
+
+    MicroBenchmarkResults BenchmarkWithZeroes(
+        { std::chrono::milliseconds{0}, std::chrono::milliseconds{1}, std::chrono::milliseconds{0},
+          std::chrono::milliseconds{3}, std::chrono::milliseconds{2}, std::chrono::milliseconds{0} },
+        std::chrono::milliseconds{4}
+    );
+
+    MicroBenchmarkResults BenchmarkWithoutZeroes{BenchmarkWithZeroes.CopyWithoutZeroes()};
+
+    TEST_EQUAL("SansZeroCopyCount", 3u, BenchmarkWithoutZeroes.SortedTimings.size());
+    TEST_EQUAL("SansZeroEntry1", 1000000, BenchmarkWithoutZeroes.SortedTimings[0].count());
+    TEST_EQUAL("SansZeroEntry2", 2000000, BenchmarkWithoutZeroes.SortedTimings[1].count());
+    TEST_EQUAL("SansZeroEntry3", 3000000, BenchmarkWithoutZeroes.SortedTimings[2].count());
+
 
     // This is purely for show. In your tests you should never use a hardcoded number because any number of factors
     // could change it. Rather generate two measurements and and somehow compare those. Below we show how to do that.

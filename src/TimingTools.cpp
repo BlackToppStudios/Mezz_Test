@@ -106,8 +106,9 @@ namespace Mezzanine
         }
 
         MicroBenchmarkResults::MicroBenchmarkResults(const TimingLists& Timings,
-            const TimeType& PrecalculatedTotal)
-            : SortedTimings(Timings), UnsortOriginalTimings(Timings)
+                                                     const TimeType& PrecalculatedTotal)
+            : SortedTimings(Timings),
+              UnsortOriginalTimings(Timings)
         {
             // No need to process nothing
             if(SortedTimings.size() == 0)
@@ -116,10 +117,8 @@ namespace Mezzanine
             // Sorting saves us a bunch of effort
             std::sort(SortedTimings.begin(), SortedTimings.end());
 
-            if(TimeType{0} == PrecalculatedTotal)
-                { Total = std::accumulate(SortedTimings.begin(), SortedTimings.end(), TimeType{0}); }
-            else
-                { Total = PrecalculatedTotal; }
+            Total = std::accumulate(SortedTimings.begin(), SortedTimings.end(), TimeType{0});
+            WallTotal = PrecalculatedTotal;
 
             Iterations = SortedTimings.size();
             Average = Total / Iterations;
@@ -131,6 +130,25 @@ namespace Mezzanine
             FasterThan10Percent = GetIndexValueFromPercent(0.90);
             FasterThan1Percent = GetIndexValueFromPercent(0.99);
             Slowest = SortedTimings.back();
+        }
+
+        MicroBenchmarkResults MicroBenchmarkResults::CopyWithoutZeroes() const
+        {
+            auto NotZero = [](const TimeType& time){ return time.count() != 0; };
+
+            SizeType NonZeroCount{static_cast<SizeType>(
+                std::distance(  std::find_if(SortedTimings.begin(), SortedTimings.end(), NotZero),
+                                SortedTimings.end())
+            )};
+
+            TimingLists ZeroFreeUnsortedRecord(NonZeroCount);
+
+            std::copy_if(UnsortOriginalTimings.begin(),
+                         UnsortOriginalTimings.end(),
+                         ZeroFreeUnsortedRecord.begin(),
+                         NotZero);
+
+            return MicroBenchmarkResults(ZeroFreeUnsortedRecord, WallTotal);
         }
 
         SAVE_WARNING_STATE
