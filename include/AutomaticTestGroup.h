@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2020 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -50,8 +50,6 @@ namespace Mezzanine
     namespace Testing
     {
         SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wweak-vtables") // Not a real issue, all translation unit having this is like 1 cache
-                                                 // miss per test case.
         SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
 
         ///////////////////////////////////////////////////////////////////////////////////////////
