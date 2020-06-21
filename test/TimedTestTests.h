@@ -45,6 +45,7 @@
 
 #include "MezzTest.h"
 #include "TimingTools.h"
+#include "RuntimeStatics.h"
 
 #include <stdexcept>
 #include <thread>
@@ -177,27 +178,28 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       SingleBench.Slowest.count());
 
     // Setup for triple bench test
+    const int ExtraDebugEpsilonTime = Mezzanine::RuntimeStatic::Debug() * 1000; // Debug is slow
     const MultilengthSleeper::Sleep FastestTime{std::chrono::milliseconds{1000}};
     const MultilengthSleeper::Sleep AverageTime{std::chrono::milliseconds{3000}};
     const MultilengthSleeper::Sleep SlowestTime{std::chrono::milliseconds{5000}};
-    const MultilengthSleeper::Sleep TripleSleepUpwardEpsilon{std::chrono::milliseconds{1000}};
-    const MultilengthSleeper::Sleep TripleSleepDownwardEpsilon{std::chrono::milliseconds{200}};
+    const MultilengthSleeper::Sleep SleepUpwardEpsilon{std::chrono::milliseconds{1000 + ExtraDebugEpsilonTime}};
+    const MultilengthSleeper::Sleep SleepDownwardEpsilon{std::chrono::milliseconds{200}};
 
     MultilengthSleeper TripleSleeps({FastestTime, AverageTime, SlowestTime});
 
     const MicroBenchmarkResults::TimeType TotalLowerRange{FastestTime + AverageTime + SlowestTime -
-        TripleSleepDownwardEpsilon};
+        SleepDownwardEpsilon};
     const MicroBenchmarkResults::TimeType TotalUpperRange{FastestTime + AverageTime + SlowestTime +
-        TripleSleepUpwardEpsilon};
+        SleepUpwardEpsilon};
 
-    const MicroBenchmarkResults::TimeType AverageLowerRange{AverageTime - TripleSleepDownwardEpsilon};
-    const MicroBenchmarkResults::TimeType AverageUpperRange{AverageTime + TripleSleepUpwardEpsilon};
+    const MicroBenchmarkResults::TimeType AverageLowerRange{AverageTime - SleepDownwardEpsilon};
+    const MicroBenchmarkResults::TimeType AverageUpperRange{AverageTime + SleepUpwardEpsilon};
 
-    const MicroBenchmarkResults::TimeType FastestLowerRange{FastestTime - TripleSleepDownwardEpsilon};
-    const MicroBenchmarkResults::TimeType FastestUpperRange{FastestTime + TripleSleepUpwardEpsilon};
+    const MicroBenchmarkResults::TimeType FastestLowerRange{FastestTime - SleepDownwardEpsilon};
+    const MicroBenchmarkResults::TimeType FastestUpperRange{FastestTime + SleepUpwardEpsilon};
 
-    const MicroBenchmarkResults::TimeType SlowestLowerRange{SlowestTime - TripleSleepDownwardEpsilon};
-    const MicroBenchmarkResults::TimeType SlowestUpperRange{SlowestTime + TripleSleepUpwardEpsilon};
+    const MicroBenchmarkResults::TimeType SlowestLowerRange{SlowestTime - SleepDownwardEpsilon};
+    const MicroBenchmarkResults::TimeType SlowestUpperRange{SlowestTime + SleepUpwardEpsilon};
 
     const MicroBenchmarkResults ThreeIterationBench = MicroBenchmark(3, std::move(TripleSleeps));
 
