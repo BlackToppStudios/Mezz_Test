@@ -196,13 +196,8 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                 (FastestTime + AverageTime + SlowestTime + SleepUpwardEpsilon)};
 
     const MicroBenchmarkResults::TimeType AverageLowerRange{AverageTime - SleepDownwardEpsilon};
-    const MicroBenchmarkResults::TimeType AverageUpperRange{AverageTime + SleepUpwardEpsilon};
-
     const MicroBenchmarkResults::TimeType FastestLowerRange{FastestTime - SleepDownwardEpsilon};
-    const MicroBenchmarkResults::TimeType FastestUpperRange{FastestTime + SleepUpwardEpsilon};
-
     const MicroBenchmarkResults::TimeType SlowestLowerRange{SlowestTime - SleepDownwardEpsilon};
-    const MicroBenchmarkResults::TimeType SlowestUpperRange{SlowestTime + SleepUpwardEpsilon};
 
     TEST_EQUAL("MicroBenchmarkIterationsIterations",
                MicroBenchmarkResults::CountType{BenchCountIterations},
@@ -220,45 +215,37 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     TEST("MicroBenchmarkIterationsWallTotal",
          ThreeIterationBench.WallTotal.count() >= ThreeIterationBench.Total.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsAverage",
-                      AverageLowerRange.count(),
-                      AverageUpperRange.count(),
-                      ThreeIterationBench.Average.count());
+    TEST("MicroBenchmarkIterationsFastestLowerBound",
+         FastestLowerRange.count() <= ThreeIterationBench.Fastest.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsFastest",
-                      FastestLowerRange.count(),
-                      FastestUpperRange.count(),
-                      ThreeIterationBench.Fastest.count());
+    TEST("MicroBenchmarkIterationsFastesLowerThanAverage",
+         ThreeIterationBench.Fastest.count() <= ThreeIterationBench.Fastest.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile1st",
-                      FastestLowerRange.count(),
-                      AverageUpperRange.count(),
-                      ThreeIterationBench.FasterThan99Percent.count());
+    TEST("MicroBenchmarkIterationsAverageLowerBound",
+         AverageLowerRange.count() <= ThreeIterationBench.Average.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile10th",
-                      FastestLowerRange.count(),
-                      AverageUpperRange.count(),
-                      ThreeIterationBench.FasterThan90Percent.count());
+    TEST("MicroBenchmarkIterationsAverageLowerThanSlowest",
+         ThreeIterationBench.Fastest.count() <= ThreeIterationBench.Fastest.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsMedian",
-                      AverageLowerRange.count(),
-                      AverageUpperRange.count(),
-                      ThreeIterationBench.Median.count());
+    TEST("MicroBenchmarkIterationsSlowestLowerBound",
+         SlowestLowerRange.count() <= ThreeIterationBench.Slowest.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile90th",
-                      AverageLowerRange.count(),
-                      SlowestUpperRange.count(),
-                      ThreeIterationBench.FasterThan10Percent.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsPercentile99th",
-                      AverageLowerRange.count(),
-                      SlowestUpperRange.count(),
-                      ThreeIterationBench.FasterThan1Percent.count());
+    TEST("MicroBenchmarkIterationsPercentile1st",
+         ThreeIterationBench.FasterThan99Percent.count() <= ThreeIterationBench.FasterThan90Percent.count());
 
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsSlowest",
-                      SlowestLowerRange.count(),
-                      SlowestUpperRange.count(),
-                      ThreeIterationBench.Slowest.count());
+    TEST("MicroBenchmarkIterationsPercentile10th",
+         ThreeIterationBench.FasterThan90Percent.count() <= ThreeIterationBench.Median.count());
+
+    TEST("MicroBenchmarkIterationsMedian",
+         ThreeIterationBench.Median.count() <= ThreeIterationBench.FasterThan10Percent.count());
+
+    TEST("MicroBenchmarkIterationsPercentile90th",
+         ThreeIterationBench.FasterThan10Percent.count() <= ThreeIterationBench.FasterThan1Percent.count());
+
+    TEST("MicroBenchmarkIterationsPercentile99th",
+         ThreeIterationBench.FasterThan1Percent.count() <= ThreeIterationBench.Slowest.count());
+
 
     // Duration based benchmarks This is a bunch of values used to generated a series of sanity checks.
     const MultilengthSleeper::Sleep DurationTestMultiplier{3000000};
