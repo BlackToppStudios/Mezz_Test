@@ -174,6 +174,44 @@ AUTOMATIC_TEST_GROUP(TestDataTests, TestData)
     TEST_EQUAL("StringToTestData-Failed-LineNumber",    Mezzanine::Whole{147},      FailedLine.LineNumber);
     TEST_EQUAL("StringToTestData-Failed-FileName",      String("MysteryMachine.h"), FailedLine.FileName);
 
+    TEST_STRING_CONTAINS("TestResultToString-Warning",
+                         String("Warning"),
+                         TestResultToString(TestResult::Warning));
+    TEST_STRING_CONTAINS("TestResultToString-Cancel",
+                         String("Cancel"),
+                         TestResultToString(TestResult::Cancelled));
+    TEST_STRING_CONTAINS("TestResultToString-Inconclusive",
+                         String("Inconclusive"),
+                         TestResultToString(TestResult::Inconclusive));
+    TEST_STRING_CONTAINS("TestResultToString-Failed",
+                         String("Failed"),
+                         TestResultToString(TestResult::Failed));
+    TEST_STRING_CONTAINS("TestResultToString-Unknown",
+                         String("Unknown"),
+                         TestResultToString(TestResult::Unknown));
+    TEST_STRING_CONTAINS("TestResultToString-NotApplicable",
+                         String("NotApplicable"),
+                         TestResultToString(TestResult::NotApplicable));
+
+    TEST_STRING_CONTAINS("TestResultToFixedBoxString-Warning",
+                         String("Warning"),
+                         TestResultToFixedBoxString(TestResult::Warning));
+    TEST_STRING_CONTAINS("TestResultToFixedBoxString-Cancel",
+                         String("Cancel"),
+                         TestResultToFixedBoxString(TestResult::Cancelled));
+    TEST_STRING_CONTAINS("TestResultToFixedBoxString-Inconclusive",
+                         String("Inconclusive"),
+                         TestResultToFixedBoxString(TestResult::Inconclusive));
+    TEST_STRING_CONTAINS("TestResultToFixedBoxString-Failed",
+                         String("Failed"),
+                         TestResultToFixedBoxString(TestResult::Failed));
+    TEST_STRING_CONTAINS("TestResultToFixedBoxString-Unknown",
+                         String("Unknown"),
+                         TestResultToFixedBoxString(TestResult::Unknown));
+    TEST_STRING_CONTAINS("TestResultToFixedBoxString-NotApplicable",
+                         String("NotApplicable"),
+                         TestResultToFixedBoxString(TestResult::NotApplicable));
+
     TestData BogusLine{ StringToTestData(" Shaggy is probably a stoner, but there was never any on screen.") };
     TEST_EQUAL("StringToTestData-CompletelyBogus", TestData{}, BogusLine);
 
