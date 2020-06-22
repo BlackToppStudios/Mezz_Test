@@ -240,11 +240,11 @@ namespace Mezzanine
 
             std::chrono::high_resolution_clock::time_point StartTime{ std::chrono::high_resolution_clock::now() };
             std::chrono::high_resolution_clock::time_point TargetTime{ StartTime + MinimumDuration };
-            std::chrono::high_resolution_clock::time_point CurrentTime{std::chrono::high_resolution_clock::now()};
+            std::chrono::high_resolution_clock::time_point CurrentTime{ std::chrono::high_resolution_clock::now() };
 
             while(TargetTime >= CurrentTime)
             {
-                std::chrono::high_resolution_clock::time_point TrialBegin{std::chrono::high_resolution_clock::now()};
+                std::chrono::high_resolution_clock::time_point TrialBegin{ std::chrono::high_resolution_clock::now() };
                 ToTime();
                 CurrentTime = std::chrono::high_resolution_clock::now();
 
