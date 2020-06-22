@@ -190,10 +190,10 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const int BenchCountIterations{BenchCount * 3};
     const MicroBenchmarkResults ThreeIterationBench = MicroBenchmark(BenchCountIterations, std::move(TripleSleeps));
 
-    const MicroBenchmarkResults::TimeType TotalLowerRange{BenchCount * (FastestTime + AverageTime + SlowestTime) -
-        SleepDownwardEpsilon};
-    const MicroBenchmarkResults::TimeType TotalUpperRange{BenchCount * (FastestTime + AverageTime + SlowestTime) +
-        SleepUpwardEpsilon};
+    const MicroBenchmarkResults::TimeType TotalLowerRange{BenchCount *
+                (FastestTime + AverageTime + SlowestTime - SleepDownwardEpsilon)};
+    const MicroBenchmarkResults::TimeType TotalUpperRange{BenchCount *
+                (FastestTime + AverageTime + SlowestTime + SleepUpwardEpsilon)};
 
     const MicroBenchmarkResults::TimeType AverageLowerRange{AverageTime - SleepDownwardEpsilon};
     const MicroBenchmarkResults::TimeType AverageUpperRange{AverageTime + SleepUpwardEpsilon};
@@ -203,8 +203,6 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     const MicroBenchmarkResults::TimeType SlowestLowerRange{SlowestTime - SleepDownwardEpsilon};
     const MicroBenchmarkResults::TimeType SlowestUpperRange{SlowestTime + SleepUpwardEpsilon};
-
-
 
     TEST_EQUAL("MicroBenchmarkIterationsIterations",
                MicroBenchmarkResults::CountType{BenchCountIterations},
