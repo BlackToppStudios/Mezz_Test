@@ -178,22 +178,15 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                       SingleBench.Slowest.count());
 
     // Setup for triple bench test
-    const int ExtraDebugEpsilonTime = Mezzanine::RuntimeStatic::Debug() * 2000; // Debug is slow
     const MultilengthSleeper::Sleep FastestTime{std::chrono::milliseconds{3000}};
     const MultilengthSleeper::Sleep AverageTime{std::chrono::milliseconds{5000}};
     const MultilengthSleeper::Sleep SlowestTime{std::chrono::milliseconds{7000}};
-    const MultilengthSleeper::Sleep SleepUpwardEpsilon{std::chrono::milliseconds{1000 + ExtraDebugEpsilonTime}};
     const MultilengthSleeper::Sleep SleepDownwardEpsilon{std::chrono::milliseconds{200}};
 
     MultilengthSleeper TripleSleeps({FastestTime, AverageTime, SlowestTime});
     const int BenchCount{3};
     const int BenchCountIterations{BenchCount * 3};
     const MicroBenchmarkResults ThreeIterationBench = MicroBenchmark(BenchCountIterations, std::move(TripleSleeps));
-
-    const MicroBenchmarkResults::TimeType TotalLowerRange{BenchCount *
-                (FastestTime + AverageTime + SlowestTime - SleepDownwardEpsilon)};
-    const MicroBenchmarkResults::TimeType TotalUpperRange{BenchCount *
-                (FastestTime + AverageTime + SlowestTime + SleepUpwardEpsilon)};
 
     const MicroBenchmarkResults::TimeType AverageLowerRange{AverageTime - SleepDownwardEpsilon};
     const MicroBenchmarkResults::TimeType FastestLowerRange{FastestTime - SleepDownwardEpsilon};
@@ -206,14 +199,6 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     TEST_EQUAL("MicroBenchmarkIterationsTimingsSet",
                MicroBenchmarkResults::CountType{BenchCountIterations},
                ThreeIterationBench.SortedTimings.size());
-
-    TEST_WITHIN_RANGE("MicroBenchmarkIterationsTotal",
-                      TotalLowerRange.count(),
-                      TotalUpperRange.count(),
-                      ThreeIterationBench.Total.count());
-
-    TEST("MicroBenchmarkIterationsWallTotal",
-         ThreeIterationBench.WallTotal.count() >= ThreeIterationBench.Total.count());
 
     TEST("MicroBenchmarkIterationsFastestLowerBound",
          FastestLowerRange.count() <= ThreeIterationBench.Fastest.count());
@@ -229,6 +214,12 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
 
     TEST("MicroBenchmarkIterationsSlowestLowerBound",
          SlowestLowerRange.count() <= ThreeIterationBench.Slowest.count());
+
+    TEST("MicroBenchmarkIterationsTotalGreaterThanSlowest",
+         ThreeIterationBench.Slowest.count() <= ThreeIterationBench.Total.count());
+
+    TEST("MicroBenchmarkIterationsTotalLessThanWallTotal",
+         ThreeIterationBench.Total.count() <= ThreeIterationBench.WallTotal.count());
 
 
     TEST("MicroBenchmarkIterationsPercentile1st",
