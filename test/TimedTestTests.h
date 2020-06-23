@@ -260,10 +260,10 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     const MultilengthSleeper::Sleep Pentile5TimeLower{Pentile5Time - PentileDelta};
 
     const MultilengthSleeper::Sleep PentileBenchmarkDuration{25000 * DurationTestMultiplier};
-    const MultilengthSleeper::Sleep PentileTotalDelta{PentileDelta * 10};
+    const MultilengthSleeper::Sleep PentileTotalDelta{PentileDelta * 100};
 
     // Some test systems are just slow and take extra time so we accept double the delta upward
-    const MultilengthSleeper::Sleep PentileExpectedTotalUpper{PentileBenchmarkDuration + (2 * PentileTotalDelta)};
+    const MultilengthSleeper::Sleep PentileExpectedTotalUpper{PentileBenchmarkDuration + (PentileTotalDelta)};
     const MultilengthSleeper::Sleep PentileExpectedTotalLower{PentileBenchmarkDuration - PentileTotalDelta};
 
     const MicroBenchmarkResults::CountType PentileSinglePassExpectedCount
