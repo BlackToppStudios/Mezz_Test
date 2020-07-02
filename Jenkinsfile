@@ -304,7 +304,7 @@ pipeline {
                     }
                 }
 
-                stage('Windows10MSV-DebugC') {
+                stage('Windows10MSVC-Debug') {
                     agent { label "Windows10MSVC" }
                     steps {
                         checkout scm
@@ -336,8 +336,6 @@ pipeline {
                         }
                     }
                 }
-
-
 
             }
         } // Build and Test
