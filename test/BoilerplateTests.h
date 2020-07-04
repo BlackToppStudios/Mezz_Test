@@ -84,7 +84,7 @@ void BoilerplateTests ::operator ()()
 DEFAULT_TEST_GROUP(BoilerplateTests, Boilerplate)
 {
     // Tests should use the macros from TestMacros.h to automatically function, filename and line number.
-    TEST("ExamplePassingTest", true);
+    TEST("ExamplePassingTest", true)
 }
 
 

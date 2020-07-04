@@ -10,6 +10,7 @@ pipeline {
 
         stage('BuildTest') {
             parallel {
+
                 stage('FedoraGcc-Debug') {
                     agent { label "FedoraGcc" }
                     steps {
@@ -95,7 +96,6 @@ pipeline {
                         sh 'mkdir -p build-debug'
                         dir('build-debug') { sh """#!/bin/bash
                             hostname &&
-                            export MEZZ_PACKAGE_DIR=/home/pi/Code/ &&
                             cmake -E env CXXFLAGS="-fno-var-tracking-assignments" cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON &&
                             ninja &&
                             ./Test_Tester xml &&
@@ -115,7 +115,6 @@ pipeline {
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """#!/bin/bash
                             hostname &&
-                            export MEZZ_PACKAGE_DIR=/home/pi/Code/ &&
                             cmake -E env CXXFLAGS="-fno-var-tracking-assignments" cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
                             ./Test_Tester xml
@@ -135,7 +134,7 @@ pipeline {
                         sh 'mkdir -p build-debug'
                         dir('build-debug') { sh """#!/bin/bash
                             hostname &&
-                            cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON &&
+                            cmake -G"Ninja" .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON &&
                             ninja  &&
                             ./Test_Tester xml &&
                             bash <(curl -s https://codecov.io/bash) -t ${env.CODECOV_TOKEN}
@@ -154,7 +153,7 @@ pipeline {
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """#!/bin/bash
                             hostname &&
-                            cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
+                            cmake -G"Ninja" .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja  &&
                             ./Test_Tester xml
                          """ }
@@ -173,10 +172,10 @@ pipeline {
                         sh 'mkdir -p build-debug'
                         dir('build-debug') { sh """#!/bin/bash
                             hostname &&
-                            cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON &&
+                            source ~/emsdk/emsdk_env.sh &&
+                            cmake -G"Ninja" .. -DCMAKE_TOOLCHAIN_FILE=~/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_C_COMPILER=emcc -DCMAKE_CXX_COMPILER=em++ -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
-                            node Test_Tester.js all skip-process NoThreads &&
-                            bash <(curl -s https://codecov.io/bash) -t ${env.CODECOV_TOKEN}
+                            node Test_Tester.js all skip-process NoThreads
                         """ }
                     }
                     // Don't capture Emscripten logs, because it cannot make files
@@ -188,7 +187,8 @@ pipeline {
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """#!/bin/bash
                             hostname &&
-                            cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
+                            source ~/emsdk/emsdk_env.sh &&
+                            cmake -G"Ninja" .. -DCMAKE_TOOLCHAIN_FILE=~/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_C_COMPILER=emcc -DCMAKE_CXX_COMPILER=em++ -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
                             node Test_Tester.js all skip-process NoThreads
                         """ }
@@ -203,7 +203,7 @@ pipeline {
                         sh 'mkdir -p build-debug'
                         dir('build-debug') { sh """#!/bin/bash
                             hostname &&
-                            cmake -E env CXXFLAGS="-fno-var-tracking-assignments" cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON &&
+                            cmake -G"Ninja" .. -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=DEBUG -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=ON &&
                             ninja &&
                             ./Test_Tester xml &&
                             bash <(curl -s https://codecov.io/bash) -t ${env.CODECOV_TOKEN}
@@ -222,7 +222,7 @@ pipeline {
                         sh 'mkdir -p build-release'
                         dir('build-release') { sh """#!/bin/bash
                             hostname &&
-                            cmake -E env CXXFLAGS="-fno-var-tracking-assignments" cmake -G"Ninja" .. -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
+                            cmake -G"Ninja" .. -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=RELEASE -DMEZZ_BuildDoxygen=OFF -DMEZZ_CodeCoverage=OFF &&
                             ninja &&
                             ./Test_Tester xml
                         """ }
