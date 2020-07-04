@@ -54,9 +54,9 @@
 AUTOMATIC_TEST_GROUP(WarningLoudTestTests, LoudWarnTests)
 {
     // Here are some examples of test that should warn and do so with loud output
-    TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{});
+    TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{})
     TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
-               []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); });
+               []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); })
 }
 
 /// @brief TestTests to verify that Failure works correctly and emit.
@@ -64,16 +64,16 @@ AUTOMATIC_TEST_GROUP(WarningLoudTestTests, LoudWarnTests)
 AUTOMATIC_TEST_GROUP(NegativeLoudTestTests, LoudFailTests)
 {
     // This group should serve as examples of failing tests and do so with loud output.
-    TEST("DefaultTestFailing", false);
-    TEST_EQUAL("EqualityTestFailing", 1, 2);
-    TEST_EQUAL_EPSILON("EqualEpsilonFailing", 0.1, 0.2);
-    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing", 0.1, 1.2, 2);
-    TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed);
-    TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
-    TEST_THROW("TestThrowFailingNonException", std::invalid_argument, []{ throw std::string("pass"); });
-    TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); });
-    TEST_NO_THROW("TestNoThrowFailingNonException", []{ throw std::string("Fail"); });
-    TEST_STRING_CONTAINS("TestStringContainsFailing", Mezzanine::String("Foo"), Mezzanine::String("Fubar"));
+    TEST("DefaultTestFailing", false)
+    TEST_EQUAL("EqualityTestFailing", 1, 2)
+    TEST_EQUAL_EPSILON("EqualEpsilonFailing", 0.1, 0.2)
+    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing", 0.1, 1.2, 2)
+    TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed)
+    TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); })
+    TEST_THROW("TestThrowFailingNonException", std::invalid_argument, []{ throw std::string("pass"); })
+    TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); })
+    TEST_NO_THROW("TestNoThrowFailingNonException", []{ throw std::string("Fail"); })
+    TEST_STRING_CONTAINS("TestStringContainsFailing", Mezzanine::String("Foo"), Mezzanine::String("Fubar"))
 }
 
 /// @brief This is the actual Test class. This tests our Test Macros that are time sensitive.
@@ -86,18 +86,18 @@ BENCHMARK_THREAD_TEST_GROUP(LoudTestTests, LoudTests)
     Warnifier();
     Mezzanine::String WarnifierOutput(Warnifier.GetTestLog());
     TestLog << WarnifierOutput << '\n';
-    TEST("WarningsWereLoud", WarnifierOutput.empty() == false);
+    TEST("WarningsWereLoud", WarnifierOutput.empty() == false)
     for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
-        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
+        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results) }
 
     // Failing Tests
     class NegativeLoudTestTests Negation;
     Negation();
     Mezzanine::String NegationOutput(Negation.GetTestLog());
     TestLog << NegationOutput << '\n';
-    TEST("FailuresWereLoud", NegationOutput.empty() == false);
+    TEST("FailuresWereLoud", NegationOutput.empty() == false)
     for(const Mezzanine::Testing::TestData& SingleResult : Negation)
-        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Failed, SingleResult.Results); }
+        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Failed, SingleResult.Results) }
 
     TestLog << "\nEnd of tests that print failure in Success.\n--=================-- --=================--\n";
 }

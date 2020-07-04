@@ -53,12 +53,12 @@ AUTOMATIC_TEST_GROUP(OutputBufferGuardTests, OutputBufferGuard)
     {
         Mezzanine::Testing::OutputBufferGuard Silencer(Guarded);
         Guarded << "Silenced";
-        TEST_EQUAL("StringStreamWasSilenced", "", Guarded.str());
-        TEST_EQUAL("BufferGuardHasWhatWasSaid", "Silenced", Silencer.GetSunkOutput());
+        TEST_EQUAL("StringStreamWasSilenced", "", Guarded.str())
+        TEST_EQUAL("BufferGuardHasWhatWasSaid", "Silenced", Silencer.GetSunkOutput())
     }
 
     Guarded << "Loudly";
-    TEST_EQUAL("StringStreamCanSpeakWhenGaurdLeaves", "Loudly", Guarded.str());
+    TEST_EQUAL("StringStreamCanSpeakWhenGaurdLeaves", "Loudly", Guarded.str())
 }
 
 #endif

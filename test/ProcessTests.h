@@ -64,16 +64,16 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
     TestFile << TestToken;
     TestFile.close();
 
-    TEST_EQUAL("GetFileContents", TestToken, GetFileContents(TestFilename));
+    TEST_EQUAL("GetFileContents", TestToken, GetFileContents(TestFilename))
 
 
     // Try launching a process and reading its stdout
     TEST_STRING_CONTAINS("RunCommand-stdout",
                          Mezzanine::String("foo"),
-                         RunCommand("cmake -E echo \"foo\"", "RunCommandScratch.txt"));
+                         RunCommand("cmake -E echo \"foo\"", "RunCommandScratch.txt"))
     TEST_THROW("RunCommand-BadCommand",
                std::runtime_error,
-               []{ RunCommand("echo foo > somefile.txt", "ShouldExistRunCommandScratch.txt"); });
+               []{ RunCommand("echo foo > somefile.txt", "ShouldExistRunCommandScratch.txt"); })
 
 }
 

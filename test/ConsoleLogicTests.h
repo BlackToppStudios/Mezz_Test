@@ -53,32 +53,32 @@ using Mezzanine::Testing::GetUsageString;
 
 AUTOMATIC_TEST_GROUP(ConsoleLogicTests, ConsoleLogic)
 {
-    TEST_EQUAL("Char8ToTestResults::TIsSuccess", TestResult::Success, Char8ToTestResults('T'));
-    TEST_EQUAL("Char8ToTestResults::tIsSuccess", TestResult::Success, Char8ToTestResults('t'));
-    TEST_EQUAL("Char8ToTestResults::YIsSuccess", TestResult::Success, Char8ToTestResults('Y'));
-    TEST_EQUAL("Char8ToTestResults::yIsSuccess", TestResult::Success, Char8ToTestResults('y'));
+    TEST_EQUAL("Char8ToTestResults::TIsSuccess", TestResult::Success, Char8ToTestResults('T'))
+    TEST_EQUAL("Char8ToTestResults::tIsSuccess", TestResult::Success, Char8ToTestResults('t'))
+    TEST_EQUAL("Char8ToTestResults::YIsSuccess", TestResult::Success, Char8ToTestResults('Y'))
+    TEST_EQUAL("Char8ToTestResults::yIsSuccess", TestResult::Success, Char8ToTestResults('y'))
 
-    TEST_EQUAL("Char8ToTestResults::FIsFailure", TestResult::Failed, Char8ToTestResults('F'));
-    TEST_EQUAL("Char8ToTestResults::fIsFailure", TestResult::Failed, Char8ToTestResults('f'));
-    TEST_EQUAL("Char8ToTestResults::NIsFailure", TestResult::Failed, Char8ToTestResults('N'));
-    TEST_EQUAL("Char8ToTestResults::nIsFailure", TestResult::Failed, Char8ToTestResults('n'));
+    TEST_EQUAL("Char8ToTestResults::FIsFailure", TestResult::Failed, Char8ToTestResults('F'))
+    TEST_EQUAL("Char8ToTestResults::fIsFailure", TestResult::Failed, Char8ToTestResults('f'))
+    TEST_EQUAL("Char8ToTestResults::NIsFailure", TestResult::Failed, Char8ToTestResults('N'))
+    TEST_EQUAL("Char8ToTestResults::nIsFailure", TestResult::Failed, Char8ToTestResults('n'))
 
-    TEST_EQUAL("Char8ToTestResults::CIsCancelled", TestResult::Cancelled, Char8ToTestResults('C'));
-    TEST_EQUAL("Char8ToTestResults::cIsCancelled", TestResult::Cancelled, Char8ToTestResults('c'));
+    TEST_EQUAL("Char8ToTestResults::CIsCancelled", TestResult::Cancelled, Char8ToTestResults('C'))
+    TEST_EQUAL("Char8ToTestResults::cIsCancelled", TestResult::Cancelled, Char8ToTestResults('c'))
 
-    TEST_EQUAL("Char8ToTestResults::WIsWarning", TestResult::Warning, Char8ToTestResults('W'));
-    TEST_EQUAL("Char8ToTestResults::wIsWarning", TestResult::Warning, Char8ToTestResults('w'));
+    TEST_EQUAL("Char8ToTestResults::WIsWarning", TestResult::Warning, Char8ToTestResults('W'))
+    TEST_EQUAL("Char8ToTestResults::wIsWarning", TestResult::Warning, Char8ToTestResults('w'))
 
-    TEST_EQUAL("Char8ToTestResults::UIsInconclusive", TestResult::Inconclusive, Char8ToTestResults('U'));
-    TEST_EQUAL("Char8ToTestResults::uIsInconclusive", TestResult::Inconclusive, Char8ToTestResults('u'));
-    TEST_EQUAL("Char8ToTestResults::IIsInconclusive", TestResult::Inconclusive, Char8ToTestResults('I'));
-    TEST_EQUAL("Char8ToTestResults::iIsInconclusive", TestResult::Inconclusive, Char8ToTestResults('i'));
+    TEST_EQUAL("Char8ToTestResults::UIsInconclusive", TestResult::Inconclusive, Char8ToTestResults('U'))
+    TEST_EQUAL("Char8ToTestResults::uIsInconclusive", TestResult::Inconclusive, Char8ToTestResults('u'))
+    TEST_EQUAL("Char8ToTestResults::IIsInconclusive", TestResult::Inconclusive, Char8ToTestResults('I'))
+    TEST_EQUAL("Char8ToTestResults::iIsInconclusive", TestResult::Inconclusive, Char8ToTestResults('i'))
 
-    TEST_EQUAL("Char8ToTestResults::QIsUnknown",                TestResult::Unknown, Char8ToTestResults('Q'));
-    TEST_EQUAL("Char8ToTestResults::+IsUnknown",                TestResult::Unknown, Char8ToTestResults('+'));
-    TEST_EQUAL("Char8ToTestResults::~IsUnknown",                TestResult::Unknown, Char8ToTestResults('~'));
-    TEST_EQUAL("Char8ToTestResults::TabIsUnknown",              TestResult::Unknown, Char8ToTestResults('\t'));
-    TEST_EQUAL("Char8ToTestResults::NullTerminatorIsUnknown",   TestResult::Unknown, Char8ToTestResults('\0'));
+    TEST_EQUAL("Char8ToTestResults::QIsUnknown",                TestResult::Unknown, Char8ToTestResults('Q'))
+    TEST_EQUAL("Char8ToTestResults::+IsUnknown",                TestResult::Unknown, Char8ToTestResults('+'))
+    TEST_EQUAL("Char8ToTestResults::~IsUnknown",                TestResult::Unknown, Char8ToTestResults('~'))
+    TEST_EQUAL("Char8ToTestResults::TabIsUnknown",              TestResult::Unknown, Char8ToTestResults('\t'))
+    TEST_EQUAL("Char8ToTestResults::NullTerminatorIsUnknown",   TestResult::Unknown, Char8ToTestResults('\0'))
 
     // This fails to build on Ubuntu because it is a multi-byte char. Does it fail on windows too?
     //TEST_EQUAL("Char8ToTestResults::ñIsUnknown",
@@ -100,15 +100,15 @@ AUTOMATIC_TEST_GROUP(ConsoleLogicTests, ConsoleLogic)
     ConsoleLogicTests ConsoleLogicInstance;
     FakeTestGroup[ConsoleLogicInstance.Name()] = &ConsoleLogicInstance;
 
-    TEST_STRING_CONTAINS("Usage::Usage",         String("Usage"),        GetUsageString("Tester", FakeTestGroup));
-    TEST_STRING_CONTAINS("Usage::HasTestNaem",   ConsoleLogicInstance.Name(), GetUsageString("Tester", FakeTestGroup));
-    TEST_STRING_CONTAINS("GetPrintableTestList", ConsoleLogicInstance.Name(), GetPrintableTestList(80, FakeTestGroup));
+    TEST_STRING_CONTAINS("Usage::Usage",         String("Usage"),        GetUsageString("Tester", FakeTestGroup))
+    TEST_STRING_CONTAINS("Usage::HasTestNaem",   ConsoleLogicInstance.Name(), GetUsageString("Tester", FakeTestGroup))
+    TEST_STRING_CONTAINS("GetPrintableTestList", ConsoleLogicInstance.Name(), GetPrintableTestList(80, FakeTestGroup))
 
     // Lets test usage, because we can
     {
         Mezzanine::Testing::OutputBufferGuard CerrGuard(std::cerr);
         Mezzanine::Testing::Usage("Foo", FakeTestGroup)
-        TEST_STRING_CONTAINS("Usage::EmitsNameToCerr", String("Foo"), CerrGuard.GetSunkOutput());
+        TEST_STRING_CONTAINS("Usage::EmitsNameToCerr", String("Foo"), CerrGuard.GetSunkOutput())
     }
 }
 

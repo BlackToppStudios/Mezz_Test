@@ -54,30 +54,30 @@ using Mezzanine::Testing::SanitizeProcessCommand;
 
 AUTOMATIC_TEST_GROUP(StringManipulationTests, StringManipulation)
 {
-    TEST_EQUAL("rtrim-none",        String("lorem"),    rtrim("lorem"));
-    TEST_EQUAL("rtrim-simple",      String("ipsum"),    rtrim("ipsum  "));
-    TEST_EQUAL("rtrim-tabs",        String("sit"),      rtrim("sit \t "));
-    TEST_EQUAL("rtrim-newlines",    String("dolor"),    rtrim("dolor \n\r "));
+    TEST_EQUAL("rtrim-none",        String("lorem"),    rtrim("lorem"))
+    TEST_EQUAL("rtrim-simple",      String("ipsum"),    rtrim("ipsum  "))
+    TEST_EQUAL("rtrim-tabs",        String("sit"),      rtrim("sit \t "))
+    TEST_EQUAL("rtrim-newlines",    String("dolor"),    rtrim("dolor \n\r "))
 
-    TEST_EQUAL("RightTrim-none",        String("lorem"),    RightTrim("lorem"));
-    TEST_EQUAL("RightTrim-simple",      String("ipsum"),    RightTrim("ipsum  "));
-    TEST_EQUAL("RightTrim-tabs",        String("sit"),      RightTrim("sit \t "));
-    TEST_EQUAL("RightTrim-newlines",    String("dolor"),    RightTrim("dolor \n\r "));
+    TEST_EQUAL("RightTrim-none",        String("lorem"),    RightTrim("lorem"))
+    TEST_EQUAL("RightTrim-simple",      String("ipsum"),    RightTrim("ipsum  "))
+    TEST_EQUAL("RightTrim-tabs",        String("sit"),      RightTrim("sit \t "))
+    TEST_EQUAL("RightTrim-newlines",    String("dolor"),    RightTrim("dolor \n\r "))
 
-    TEST_EQUAL("AllLower-none",     String("lorem"),    AllLower("lorem"));
-    TEST_EQUAL("AllLower-simple",   String("ipsum"),    AllLower("Ipsum"));
-    TEST_EQUAL("AllLower-all",      String("sit"),      AllLower("SIT"));
-    TEST_EQUAL("AllLower-back",     String("dolor"),    AllLower("dolOR"));
-    TEST_EQUAL("AllLower-extra",    String("amet  "),   AllLower("ameT  "));
+    TEST_EQUAL("AllLower-none",     String("lorem"),    AllLower("lorem"))
+    TEST_EQUAL("AllLower-simple",   String("ipsum"),    AllLower("Ipsum"))
+    TEST_EQUAL("AllLower-all",      String("sit"),      AllLower("SIT"))
+    TEST_EQUAL("AllLower-back",     String("dolor"),    AllLower("dolOR"))
+    TEST_EQUAL("AllLower-extra",    String("amet  "),   AllLower("ameT  "))
 
-    TEST_EQUAL("SanitizeFileName-none",     String("logfile.txt"),          SanitizeFileName("logfile.txt"));
-    TEST_EQUAL("SanitizeFileName-folders",  String("logs/A\\logfile.txt"),  SanitizeFileName("logs/A\\logfile.txt"));
-    TEST_EQUAL("SanitizeFileName-pipe",     String("echo foo _ wc _ bar"),  SanitizeFileName("echo foo | wc > bar"));
-    TEST_EQUAL("SanitizeFileName-allbad",   String("________________"),     SanitizeFileName("|><?:%\"=+,!@[]*;"));
+    TEST_EQUAL("SanitizeFileName-none",     String("logfile.txt"),          SanitizeFileName("logfile.txt"))
+    TEST_EQUAL("SanitizeFileName-folders",  String("logs/A\\logfile.txt"),  SanitizeFileName("logs/A\\logfile.txt"))
+    TEST_EQUAL("SanitizeFileName-pipe",     String("echo foo _ wc _ bar"),  SanitizeFileName("echo foo | wc > bar"))
+    TEST_EQUAL("SanitizeFileName-allbad",   String("________________"),     SanitizeFileName("|><?:%\"=+,!@[]*;"))
 
-    TEST_EQUAL("SanitizeProcessCommand-none",     String("echo 'foo'"),     SanitizeProcessCommand("echo 'foo'"));
-    TEST_EQUAL("SanitizeProcessCommand-pipe",     String("ls _ wc"),        SanitizeProcessCommand("ls | wc"));
-    TEST_EQUAL("SanitizeProcessCommand-allbad",   String("___"),            SanitizeProcessCommand("|><"));
+    TEST_EQUAL("SanitizeProcessCommand-none",     String("echo 'foo'"),     SanitizeProcessCommand("echo 'foo'"))
+    TEST_EQUAL("SanitizeProcessCommand-pipe",     String("ls _ wc"),        SanitizeProcessCommand("ls | wc"))
+    TEST_EQUAL("SanitizeProcessCommand-allbad",   String("___"),            SanitizeProcessCommand("|><"))
 }
 
 #endif
