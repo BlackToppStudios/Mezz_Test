@@ -48,7 +48,7 @@
 #include <fstream>
 
 using Mezzanine::String;
-using Mezzanine::Testing::RunCommand;
+using Mezzanine::Testing::GetCommandOutput;
 using Mezzanine::Testing::GetFileContents;
 
 /// @brief Tests for the class to store test data results.
@@ -68,12 +68,12 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
 
 
     // Try launching a process and reading its stdout
-    TEST_STRING_CONTAINS("RunCommand-stdout",
+    TEST_STRING_CONTAINS("GetCommandOutput-stdout",
                          Mezzanine::String("foo"),
-                         RunCommand("cmake -E echo \"foo\"", "RunCommandScratch.txt"));
-    TEST_THROW("RunCommand-BadCommand",
+                         GetCommandOutput("cmake -E echo \"foo\""));
+    TEST_THROW("GetCommandOutput-BadCommand",
                std::runtime_error,
-               []{ RunCommand("echo foo > somefile.txt", "ShouldExistRunCommandScratch.txt"); });
+               []{ (void)GetCommandOutput("echo foo > somefile.txt"); });
 
 }
 

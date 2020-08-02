@@ -47,9 +47,15 @@
 #include "SuppressWarnings.h"
 
 SAVE_WARNING_STATE
-SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's implementation 
+SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's implementation
                           // of malloc.h where they use a comma in an assert.
+#ifdef MEZZ_Windows
+    #include "windows.h"
+#else // MEZZ_Windows
+    #include "unistd.h"
+#endif // MEZZ_Windows
 
+RESTORE_WARNING_STATE
 #include <exception>
 #include <cstdlib>
 
@@ -57,44 +63,253 @@ SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's impl
 #include <fstream>
 #include <limits>
 
-RESTORE_WARNING_STATE
-
-namespace Mezzanine
-{
-    namespace Testing
+namespace {
+    using namespace Mezzanine;
+#ifdef MEZZ_Windows
+    struct MEZZ_LIB ProcessInfo
     {
-        Mezzanine::String RunCommand(const Mezzanine::String& Command, const Mezzanine::String& TempFileName)
+        HANDLE ChildPipe;
+        HANDLE ChildProcess;
+    };//ProcessInfo
+
+    ProcessInfo CreateCommandProcess(String ExecutablePath, String Arguments)
+    {
+        HANDLE Child_STDOUT_Read = NULL;
+        HANDLE Child_STDOUT_Write = NULL;
+
+        // SECURITY_ATTRIBUTES setup
+        SECURITY_ATTRIBUTES SecurityAttrib;
+        SecurityAttrib.nLength = sizeof(SECURITY_ATTRIBUTES);
+        SecurityAttrib.bInheritHandle = TRUE;
+        SecurityAttrib.lpSecurityDescriptor = NULL;
+
+        // Create our Pipe
+        if( !::CreatePipe(&Child_STDOUT_Read,&Child_STDOUT_Write,&SecurityAttrib,0) ) {
+            return { NULL, NULL };
+        }
+        std::cout << "Pipe created.\n";
+        // Ensure handle isn't (?) inherited.
+        if( !::SetHandleInformation(Child_STDOUT_Read,HANDLE_FLAG_INHERIT,0) ) {
+            return { NULL, NULL };
+        }
+        std::cout << "Handle Info set.\n";
+
+        // PROCESS_INFORMATION setup
+        PROCESS_INFORMATION ProcessInfo;
+        ZeroMemory(&ProcessInfo,sizeof(ProcessInfo));
+
+        // STARTUPINFO setup
+        STARTUPINFO ProcessStartUp;
+        ZeroMemory(&ProcessStartUp,sizeof(ProcessStartUp));
+        ProcessStartUp.cb = sizeof(ProcessStartUp);
+        ProcessStartUp.hStdError = Child_STDOUT_Write;
+        ProcessStartUp.hStdOutput = Child_STDOUT_Write;
+        ProcessStartUp.dwFlags |= STARTF_USESTDHANDLES;
+
+        std::cout << "Launching child process.\n";
+
+        BOOL ChildLaunch = ::CreateProcess(
+            ExecutablePath.empty() ? nullptr : ExecutablePath.data(),
+            Arguments.empty() ? nullptr : Arguments.data(),
+            nullptr,
+            nullptr,
+            TRUE,
+            CREATE_NEW_CONSOLE,
+            nullptr,
+            nullptr,
+            &ProcessStartUp,
+            &ProcessInfo
+        );
+
+        if( !ChildLaunch ) {
+            ::CloseHandle(Child_STDOUT_Read);
+            ::CloseHandle(Child_STDOUT_Write);
+
+            DWORD ErrCode = GetLastError();
+            StringStream Crash;
+            Crash << "\nFailed to create process: " << ErrCode << "\n";
+            throw std::runtime_error(Crash.str());
+
+            return { NULL, NULL };
+        }
+        std::cout << "Child process launched.\n";
+        return { Child_STDOUT_Read, ProcessInfo.hProcess };
+    }
+#else // Mezz_Windows
+    struct MEZZ_LIB ProcessInfo
+    {
+        int ChildPipe;
+        int ChildPID;
+    };//ProcessInfo
+
+    char** ConvertArguments(const StringView Arguments)
+    {
+        static const String Splitters(" \t");
+        std::vector<String> ArgVector;
+        size_t StrPos = 0;
+        for( size_t NewPos = Args.find_first_of(StrPos,Whitespace) ;
+             NewPos != String::npos ;
+             NewPos = Args.find_first_of(StrPos,Splitters) )
         {
-            const Mezzanine::String SafeCommand(SanitizeProcessCommand(Command));
-            const Mezzanine::String SafeTempFileName(SanitizeProcessCommand(TempFileName));
-            if(SafeCommand != Command)
-                { throw std::runtime_error("Command name included unsafe characters, it would not run correctly."); }
-            const Mezzanine::String CommandToRun(SafeCommand + " 2>&1 > " + SafeTempFileName);
-
-            // erase the file and only write out
-            std::ofstream IgnoredResultCode(SafeTempFileName + ".return.txt", std::ios::trunc | std::ios::out);
-            // The result from std::system is useless here but suppresssing this is non-trivial.
-            IgnoredResultCode << std::system(CommandToRun.c_str());
-
-            return GetFileContents(SafeTempFileName);
+            String Token = Args.substr(StrPos,NewPos);
+            if( !Token.empty() ) {
+                ArgVector.push_back(std::move(Token));
+            }
+            StrPos = NewPos;
         }
 
-        SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wsign-conversion") // std::streamoff are signed with the string constructor takes
-        // size_type which is unsigned. So this is only good for files with fewer than 2^31 bytes.
-        SUPPRESS_GCC_WARNING("-Wconversion") // The same issue but an extra warning GCC raises.
-        SUPPRESS_VC_WARNING(4244) // Same conversion issue, why is there not a better way in std to handle this.
-        SUPPRESS_VC_WARNING(4365) // Why does the same code throw multiple warnings
-        Mezzanine::String GetFileContents(const Mezzanine::String& Filename)
-        {
-            std::ifstream ResultReader(Filename, std::ios::binary | std::ios::ate);
-            std::streamoff FileSize{ResultReader.tellg()};
-            ResultReader.seekg(std::ios::beg);
-            String FileContents(FileSize,0);
-            ResultReader.read(&FileContents[0], FileSize);
-            return FileContents;
-        }
-        RESTORE_WARNING_STATE
+        char** Ret = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
+        for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
+            { Ret[Idx] = strdup( ArgVector[Idx].c_str() ); }
+        Ret[ArgVector.size() + 1] = nullptr;
+        return Ret;
+    }
 
-    }// Testing
+    ProcessInfo CreateCommandProcess(StringView Executable, const StringView Arguments)
+    {
+        int Pipes[2];
+        ::pipe(Pipes);
+
+        pid_t ProcessID = ::fork();
+        if( ProcessID == 0 ) { // Child
+            ::close( Pipes[0] ); // Close Read end of pipe.
+            ::dup2( Pipes[1], 1 ); // Direct cout file descriptor to our pipe.
+            ::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
+            ::close( Pipes[1] ); // Done mangling pipes.
+
+            char** ArgV = ConvertArguments(Arguments);
+            execvp(ExecutablePath.data(),ArgV);
+            // At this point we disappear into a puff of logic
+        }else if( ProcessID > 0 ) { // Parent
+            ::close( Pipes[1] ); // Close Write end of pipe
+            return { Pipes[0], ProcessID };
+        }else{
+            throw std::runtime_error("Unable to create forked process.");
+        }
+    }
+#endif // MEZZ_Windows
+
+    Testing::CommandResult RunCommandImpl(const StringView ExecutablePath, const StringView Command)
+    {
+        Testing::CommandResult Result;
+        std::cout << '\n' << "ExePath(Impl): " << ExecutablePath << " | Size: " << ExecutablePath.size();
+        std::cout << '\n' << "Command(Impl): " << Command << " | Size: " << Command.size();
+        std::cout << '\n';
+#ifdef MEZZ_Windows
+        ProcessInfo ChildInfo = CreateCommandProcess( String(ExecutablePath), String(Command) );
+        if( ChildInfo.ChildProcess == NULL || ChildInfo.ChildPipe == NULL ) {
+            return Result;
+        }
+
+        std::cout << "Reading from child process stdout.\n";
+        DWORD BytesRead = 0;
+        CHAR PipeBuf[1024];
+        while( ::ReadFile(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf),&BytesRead,NULL) )
+        {
+            if( BytesRead == 0 ) {
+                break;
+            }
+            std::cout << "Read " << BytesRead << " bytes from child stdout.\n";
+            std::cout.write(PipeBuf,BytesRead);
+            Result.ConsoleOutput.append(PipeBuf,BytesRead);
+        }
+
+        std::cout << "End of child stdout reached.\n";
+
+        ::CloseHandle(ChildInfo.ChildPipe);
+
+        //::WaitForSingleObject(ChildInfo.ChildProcess,INFINITE);
+
+        DWORD ExitStatus;
+        ::GetExitCodeProcess(ChildInfo.ChildProcess,&ExitStatus);
+        Result.ExitCode = ExitStatus;
+        std::cout << "Exiting with status " << Result.ExitCode << ".\n";
+#else // Mezz_Windows
+        ProcessInfo ChildInfo = CreateCommandProcess( String(ExecutablePath), Command );
+
+        ssize_t BytesRead = -1;
+        char PipeBuf[1024];
+        // Start reading and keep on reading until we hit an error or EoF.
+        while( ( BytesRead = ::read(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf)) ) > 0 )
+        {
+            Result.ConsoleOutput.append(PipeBuf,BytesRead);
+        }
+        ::close(ChildInfo.ChildPipe);
+
+        int Status = -1;
+        ::waitpid(ChildInfo.ChildPID,&Status,0);
+        if( WIFEXITED(Status) ) {
+            Result.ExitCode = WEXITSTATUS(Status)
+        }else if( WIFSIGNALED(Status) ) {
+            Result.ExitCode = WTERMSIG(Status);
+        }else{
+            // No idea what else could have happened
+            Result.ExitCode = Status;
+        }
+#endif // MEZZ_Windows
+        return Result;
+    }
+}
+
+namespace Mezzanine {
+namespace Testing {
+    ///////////////////////////////////////////////////////////////////////////////
+    // Output to String
+
+    CommandResult RunCommand(const StringView ExecutablePath, const StringView Command)
+    {
+        const Mezzanine::String SafePath( SanitizeProcessCommand(ExecutablePath) );
+        const Mezzanine::String SafeCommand( SanitizeProcessCommand(Command) );
+        if( SafeCommand != Command )
+            { throw std::runtime_error("Command name included unsafe characters, it would not run correctly."); }
+        return RunCommandImpl(SafePath,SafeCommand);
+    }
+
+    String GetCommandOutput(const StringView ExecutablePath, const StringView Command)
+    {
+        const Mezzanine::String SafePath( SanitizeProcessCommand(ExecutablePath) );
+        const Mezzanine::String SafeCommand( SanitizeProcessCommand(Command) );
+        if( SafeCommand != Command )
+            { throw std::runtime_error("Command name included unsafe characters, it would not run correctly."); }
+        return RunCommandImpl(SafePath,SafeCommand).ConsoleOutput;
+    }
+
+    String GetCommandOutput(const StringView Command)
+    {
+        StringView Empty;
+        return GetCommandOutput(Empty,Command);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    // Output to File
+
+    Integer OutputCommandToFile(const StringView ExecutablePath,
+                                const StringView Command,
+                                const StringView OutputFileName)
+    {
+        const Mezzanine::String SafePath( SanitizeProcessCommand(ExecutablePath) );
+        const Mezzanine::String SafeCommand( SanitizeProcessCommand(Command) );
+        const Mezzanine::String SafeOutputFileName( SanitizeProcessCommand(OutputFileName) );
+        if( SafeCommand != Command )
+            { throw std::runtime_error("Command name included unsafe characters, it would not run correctly."); }
+        std::ofstream OutputFile(SafeOutputFileName);
+        CommandResult Result = RunCommandImpl(SafePath,SafeCommand);
+        OutputFile << Result.ConsoleOutput;
+        return Result.ExitCode;
+    }
+
+    Integer OutputCommandToFile(const StringView Command,
+                                const StringView OutputFileName)
+    {
+        StringView Empty;
+        return OutputCommandToFile(Empty,Command,OutputFileName);
+    }
+
+    String GetFileContents(const StringView FileName)
+    {
+        const String PickyName(FileName); // Picky because std::iostreams are not StringView aware yet.
+        std::ifstream ResultFile( PickyName );
+        return String( std::istreambuf_iterator<char>(ResultFile), {} );
+    }
+}// Testing
 }// Mezzanine

@@ -53,26 +53,26 @@ namespace Mezzanine
         /// @param Text The Text to clean up.
         /// @return If " asdf " is passed " asdf" is returned. Also removes carriage returns, newlines and tabs. Does
         /// not use the locale.
-        Mezzanine::String MEZZ_LIB RightTrim(const Mezzanine::String& Text);
+        Mezzanine::String MEZZ_LIB RightTrim(const Mezzanine::StringView Text);
 
         /// @copydoc RightTrim
         /// @details This is delegates its work to RightTrim, the name just exists to simplify.
-        Mezzanine::String MEZZ_LIB rtrim(const Mezzanine::String& Text);
+        Mezzanine::String MEZZ_LIB rtrim(const Mezzanine::StringView Text);
 
         /// @brief Makes a c style strong all lowercase with respect to the current locale.
         /// @param StringToConvert This string is actually changed.
         /// @return for convenience purposes the string is also returned.
-        Mezzanine::String MEZZ_LIB AllLower(const Mezzanine::String& StringToConvert);
+        Mezzanine::String MEZZ_LIB AllLower(const Mezzanine::StringView StringToConvert);
 
         /// @brief Get a copy of the passed filename with every unsafe character removed.
         /// @param OriginalFilename A string something like the filename you want.
         /// @return A string you can actually use as a file name.
-        Mezzanine::String MEZZ_LIB SanitizeFileName(const Mezzanine::String& OriginalFilename);
+        Mezzanine::String MEZZ_LIB SanitizeFileName(const Mezzanine::StringView OriginalFilename);
 
         /// @brief Get a copy of the passed possible process command with every unsafe character removed.
         /// @param OriginalProcess A string something like the process you want to launch.
         /// @return A string you can actually use as a file name.
-        Mezzanine::String MEZZ_LIB SanitizeProcessCommand(const Mezzanine::String& OriginalProcess);
+        Mezzanine::String MEZZ_LIB SanitizeProcessCommand(const Mezzanine::StringView OriginalProcess);
     }// Testing
 }// Mezzanine
 

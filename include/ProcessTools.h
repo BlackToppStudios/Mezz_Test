@@ -45,25 +45,74 @@
 
 #include "DataTypes.h"
 
-namespace Mezzanine
-{
-    namespace Testing
+namespace Mezzanine {
+namespace Testing {
+    /// @brief A simple struct for storing (some) output from a called process.
+    struct MEZZ_LIB CommandResult
     {
-        /// @brief Run a process and capture its console output.
-        /// @param Command The command to attempt to run and capture its output.
-        /// @param TempFileName The file to put all the console output of the command to be transferred back here.
-        /// @return Everything the subprocess emits to the console (stdout or stderr) as a single concatenated string.
-        /// @details This launches a process, redirects its output to a file and reads that file to return that output.
-        /// This is a simple wrapper around std::system, concatenating output redirection to the command. Because of
-        /// this "|", "<" and ">" are not allowed in commands passed to this.
-        Mezzanine::String MEZZ_LIB RunCommand(const Mezzanine::String& Command,
-                                              const Mezzanine::String& TempFileName);
+        /// @brief The code returned when the called process exited.
+        Integer ExitCode = EXIT_FAILURE;
+        /// @brief The output to cout and cerr from the called process.
+        String ConsoleOutput;
+    };//CommandResult
 
-        /// @brief Get all the text in a file.
-        /// @param Filename The file to read.
-        /// @return A string with the contents.
-        Mezzanine::String MEZZ_LIB GetFileContents(const Mezzanine::String& Filename);
-    }// Testing
+    ///////////////////////////////////////////////////////////////////////////////
+    // Output to String
+
+    /// @brief Launches a different process on the system.
+    /// @param ExecutablePath The path to the executable to be invoked.
+    /// @param Command The command to attempt to run and direct its output.
+    /// @return Returns the ExitCode and Cout/Cerr output of the command that was run.
+    CommandResult RunCommand(const StringView ExecutablePath, const StringView Command);
+
+    /// @brief Launches a different process on the system and return only it's console output as a String.
+    /// @remarks This function ignores the exit code of the command. If you want/need the exit code, use
+    /// @ref RunCommand instead.
+    /// @param ExecutablePath The path to the executable to be invoked.
+    /// @param Command The command to attempt to run and direct its output.
+    /// @return Returns a String containing the output of the specified command.
+    [[nodiscard]]
+    String MEZZ_LIB GetCommandOutput(const StringView ExecutablePath, const StringView Command);
+    /// @brief Launches a different process on the system and return only it's console output as a String.
+    /// @remarks This function ignores the exit code of the command. If you want/need the exit code, use
+    /// @ref RunCommand instead.
+    /// @param Command The command to attempt to run and direct its output.
+    /// @return Returns a String containing the output of the specified command.
+    [[nodiscard]]
+    String MEZZ_LIB GetCommandOutput(const StringView Command);
+
+    ///////////////////////////////////////////////////////////////////////////////
+    // Output to File
+
+    /// @brief Run a process and direct its console output to a file.
+    /// @remarks This function is meant to be used in conjunction with GetFileContents to view the output.
+    /// @details This launches a process, redirects its output to a file and returns the command's exit code.
+    /// This is a simple wrapper around std::system, concatenating output redirection to the command. Because of
+    /// this "|", "<" and ">" are not allowed in commands passed to this.
+    /// @param ExecutablePath The path to the executable to be invoked.
+    /// @param Command The command to attempt to run and direct its output.
+    /// @param OutputFileName The file to put all the console output of the command.
+    /// @return Returns the exit code of the command.
+    Integer MEZZ_LIB OutputCommandToFile(const StringView ExecutablePath,
+                                         const StringView Command,
+                                         const StringView OutputFileName);
+    /// @brief Run a process and direct its console output to a file.
+    /// @remarks This function is meant to be used in conjunction with GetFileContents to view the output.
+    /// @details This launches a process, redirects its output to a file and returns the command's exit code.
+    /// This is a simple wrapper around std::system, concatenating output redirection to the command. Because of
+    /// this "|", "<" and ">" are not allowed in commands passed to this.
+    /// @param Command The command to attempt to run and direct its output.
+    /// @param OutputFileName The file to put all the console output of the command.
+    /// @return Returns the exit code of the command.
+    Integer MEZZ_LIB OutputCommandToFile(const StringView Command,
+                                         const StringView OutputFileName);
+
+    /// @brief Get all the text in a file.
+    /// @param FileName The file to read.
+    /// @return A string with the contents.
+    [[nodiscard]]
+    String MEZZ_LIB GetFileContents(const StringView FileName);
+}// Testing
 }// Mezzanine
 
 #endif
