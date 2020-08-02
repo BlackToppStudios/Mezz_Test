@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2020 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -64,7 +64,7 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
     TestFile << TestToken;
     TestFile.close();
 
-    TEST_EQUAL("GetFileContents", TestToken, GetFileContents(TestFilename));
+    TEST_EQUAL("GetFileContents", TestToken, GetFileContents(TestFilename))
 
 
     // Try launching a process and reading its stdout

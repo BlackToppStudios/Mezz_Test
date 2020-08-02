@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2020 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -72,20 +72,20 @@ class MEZZ_LIB NegativeTestTests : public Mezzanine::Testing::AutomaticTestGroup
 void NegativeTestTests::operator ()()
 {
     // This group should serve as examples of failing tests.
-    TEST("DefaultTestFailing", false);
-    TEST_EQUAL("EqualityTestFailing", 1, 2);
-    TEST_EQUAL_EPSILON("EqualEpsilonFailing-Float", 0.1f, 0.2f);
-    TEST_EQUAL_EPSILON("EqualEpsilonFailing-Double", 0.1, 0.2);
-    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing-Float", 0.1f, 1.2f, 2);
-    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing-Double", 0.1, 1.2, 2);
-    TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed);
-    TEST_WITHIN_RANGE("TestWithinRangeFailingLow", 1, 99, 0);
-    TEST_WITHIN_RANGE("TestWithinRangeFailingHigh", 1, 99, 500);
-    TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); });
-    TEST_THROW("TestThrowFailingNonException", std::invalid_argument, []{ throw std::string("pass"); });
-    TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); });
-    TEST_NO_THROW("TestNoThrowFailingNonException", []{ throw std::string("Fail"); });
-    TEST_STRING_CONTAINS("TestStringContainsFailing", Mezzanine::String("Foo"), Mezzanine::String("Fubar"));
+    TEST("DefaultTestFailing", false)
+    TEST_EQUAL("EqualityTestFailing", 1, 2)
+    TEST_EQUAL_EPSILON("EqualEpsilonFailing-Float", 0.1f, 0.2f)
+    TEST_EQUAL_EPSILON("EqualEpsilonFailing-Double", 0.1, 0.2)
+    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing-Float", 0.1f, 1.2f, 2)
+    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonFailing-Double", 0.1, 1.2, 2)
+    TEST_RESULT("TestResultFailing", Mezzanine::Testing::TestResult::Failed)
+    TEST_WITHIN_RANGE("TestWithinRangeFailingLow", 1, 99, 0)
+    TEST_WITHIN_RANGE("TestWithinRangeFailingHigh", 1, 99, 500)
+    TEST_THROW("TestThrowFailing", std::invalid_argument, []{ throw std::out_of_range("pass"); })
+    TEST_THROW("TestThrowFailingNonException", std::invalid_argument, []{ throw std::string("pass"); })
+    TEST_NO_THROW("TestNoThrowFailing", []{ throw std::invalid_argument("Fail"); })
+    TEST_NO_THROW("TestNoThrowFailingNonException", []{ throw std::string("Fail"); })
+    TEST_STRING_CONTAINS("TestStringContainsFailing", Mezzanine::String("Foo"), Mezzanine::String("Fubar"))
 }
 
 // This class is not called directly by the Unit Test framework and is just used by
@@ -105,8 +105,8 @@ class MEZZ_LIB WarningTestTests : public Mezzanine::Testing::AutomaticTestGroup
 void WarningTestTests::operator ()()
 {
     // Here are some examples of test that should warn.
-    TEST_WARN("WarningTestWarning", false);
-    TEST_RESULT("TestResultWarning", Mezzanine::Testing::TestResult::Warning);
+    TEST_WARN("WarningTestWarning", false)
+    TEST_RESULT("TestResultWarning", Mezzanine::Testing::TestResult::Warning)
 }
 
 /// @brief This is the actual Test class. This tests our Test Macros.
@@ -121,18 +121,18 @@ class MEZZ_LIB TestTests : public Mezzanine::Testing::AutomaticTestGroup
 void TestTests::operator ()()
 {
     // Positive tests This should serve as examples for how to use this and get tests that passed.
-    TEST("DefaultTestPassing", true);
-    TEST_EQUAL("EqualityTestPassing", 1, 1);
-    TEST_WARN("WarningTestPassing", true);
-    TEST_EQUAL_EPSILON("EqualEpsilonPassing-Float", 0.1f, 0.1f);
-    TEST_EQUAL_EPSILON("EqualEpsilonPassing-Double", 0.1, 0.1);
-    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing-Float", 0.1f, 0.1f * 1.00f, 2);
-    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing-Double", 0.1, 0.1 * 1.00, 2);
-    TEST_RESULT("TestResultPassing", Mezzanine::Testing::TestResult::Success);
-    TEST_WITHIN_RANGE("TestWithinRangePassing", 1, 99, 50);
-    TEST_THROW("TestThrowPassing", std::invalid_argument, []{ throw std::invalid_argument("pass"); });
-    TEST_NO_THROW("TestNoThrowPassing", []{});
-    TEST_STRING_CONTAINS("TestStringContains", Mezzanine::String("Foo"), Mezzanine::String("Foobar"));
+    TEST("DefaultTestPassing", true)
+    TEST_EQUAL("EqualityTestPassing", 1, 1)
+    TEST_WARN("WarningTestPassing", true)
+    TEST_EQUAL_EPSILON("EqualEpsilonPassing-Float", 0.1f, 0.1f)
+    TEST_EQUAL_EPSILON("EqualEpsilonPassing-Double", 0.1, 0.1)
+    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing-Float", 0.1f, 0.1f * 1.00f, 2)
+    TEST_EQUAL_MULTI_EPSILON("EqualMultiEpsilonPassing-Double", 0.1, 0.1 * 1.00, 2)
+    TEST_RESULT("TestResultPassing", Mezzanine::Testing::TestResult::Success)
+    TEST_WITHIN_RANGE("TestWithinRangePassing", 1, 99, 50)
+    TEST_THROW("TestThrowPassing", std::invalid_argument, []{ throw std::invalid_argument("pass"); })
+    TEST_NO_THROW("TestNoThrowPassing", []{})
+    TEST_STRING_CONTAINS("TestStringContains", Mezzanine::String("Foo"), Mezzanine::String("Foobar"))
 
     // AddTestResult is the function that runs all these test macros. This should verify that calling those
     // macros twice with the same name fails
@@ -145,21 +145,21 @@ void TestTests::operator ()()
                                                          (Mezzanine::Testing::TestResult::Success),
                                                          "RunAutomaticTests", __FILE__, __LINE__));
         }
-    );
+    )
 
     // Failing Tests
     class NegativeTestTests Negation;
     Negation();
     for(const Mezzanine::Testing::TestData& SingleResult : Negation)
-        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Failed, SingleResult.Results); }
-    TEST_EQUAL("GetWorstShouldReturnFailure", Mezzanine::Testing::TestResult::Failed, Negation.GetWorstResults());
+        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Failed, SingleResult.Results) }
+    TEST_EQUAL("GetWorstShouldReturnFailure", Mezzanine::Testing::TestResult::Failed, Negation.GetWorstResults())
 
     // Warning Tests
     class WarningTestTests Warnifier;
     Warnifier();
     for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
-        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results); }
-    TEST_EQUAL("GetWorstShouldReturnWarning", Mezzanine::Testing::TestResult::Warning, Warnifier.GetWorstResults());
+        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results) }
+    TEST_EQUAL("GetWorstShouldReturnWarning", Mezzanine::Testing::TestResult::Warning, Warnifier.GetWorstResults())
 
     int TestCount = 0;
     int ConstTestCount = 0;
@@ -168,7 +168,7 @@ void TestTests::operator ()()
     for(UnitTestGroup::const_iterator iter = Warnifier.cbegin(); iter != Warnifier.cend(); iter++)
         { ConstTestCount++; }
 
-    TEST_EQUAL("ConstAndNormalIterationOverTestGroupSame", TestCount, ConstTestCount);
+    TEST_EQUAL("ConstAndNormalIterationOverTestGroupSame", TestCount, ConstTestCount)
 }
 
 RESTORE_WARNING_STATE

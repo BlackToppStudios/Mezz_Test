@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2020 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -149,7 +149,7 @@ namespace Mezzanine
                 /// @return A value from the Original Timings vector.
                 TimeType GetIndexValueFromPercent(PreciseReal Percent) const;
 
-                /// @brief How many times was the timed item executed/
+                /// @brief How many times was the timed item executed.
                 CountType Iterations = 0;
                 /// @brief How much was the total runtime with as much of the benchmark removed as possible.
                 TimeType Total = TimeType{0};
@@ -240,11 +240,11 @@ namespace Mezzanine
 
             std::chrono::high_resolution_clock::time_point StartTime{ std::chrono::high_resolution_clock::now() };
             std::chrono::high_resolution_clock::time_point TargetTime{ StartTime + MinimumDuration };
-            std::chrono::high_resolution_clock::time_point CurrentTime{std::chrono::high_resolution_clock::now()};
+            std::chrono::high_resolution_clock::time_point CurrentTime{ std::chrono::high_resolution_clock::now() };
 
             while(TargetTime >= CurrentTime)
             {
-                std::chrono::high_resolution_clock::time_point TrialBegin{std::chrono::high_resolution_clock::now()};
+                std::chrono::high_resolution_clock::time_point TrialBegin{ std::chrono::high_resolution_clock::now() };
                 ToTime();
                 CurrentTime = std::chrono::high_resolution_clock::now();
 

@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2020 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -66,32 +66,32 @@ RESTORE_WARNING_STATE
 
 void ConversionTests::operator ()()
 {
-    TEST_EQUAL("SuccessStringConvertsToResult",       TestResult::Success,       StringToTestResult("Success") );
-    TEST_EQUAL("SkippedStringConvertsToResult",       TestResult::Skipped,       StringToTestResult("Skipped") );
-    TEST_EQUAL("WarningStringConvertsToResult",       TestResult::Warning,       StringToTestResult("Warning") );
-    TEST_EQUAL("CancelledStringConvertsToResult",     TestResult::Cancelled,     StringToTestResult("Cancelled") );
-    TEST_EQUAL("InconclusiveStringConvertsToResult",  TestResult::Inconclusive,  StringToTestResult("Inconclusive") );
-    TEST_EQUAL("UnknownStringConvertsToResult",       TestResult::Unknown,       StringToTestResult("Unknown") );
-    TEST_EQUAL("FailedStringConvertsToResult",        TestResult::Failed,        StringToTestResult("Failed") );
-    TEST_EQUAL("NotApplicableStringConvertsToResult", TestResult::NotApplicable, StringToTestResult("NotApplicable") );
+    TEST_EQUAL("SuccessStringConvertsToResult",       TestResult::Success,       StringToTestResult("Success") )
+    TEST_EQUAL("SkippedStringConvertsToResult",       TestResult::Skipped,       StringToTestResult("Skipped") )
+    TEST_EQUAL("WarningStringConvertsToResult",       TestResult::Warning,       StringToTestResult("Warning") )
+    TEST_EQUAL("CancelledStringConvertsToResult",     TestResult::Cancelled,     StringToTestResult("Cancelled") )
+    TEST_EQUAL("InconclusiveStringConvertsToResult",  TestResult::Inconclusive,  StringToTestResult("Inconclusive") )
+    TEST_EQUAL("UnknownStringConvertsToResult",       TestResult::Unknown,       StringToTestResult("Unknown") )
+    TEST_EQUAL("FailedStringConvertsToResult",        TestResult::Failed,        StringToTestResult("Failed") )
+    TEST_EQUAL("NotApplicableStringConvertsToResult", TestResult::NotApplicable, StringToTestResult("NotApplicable") )
 
-    TEST_THROW("BedEmptyStrings",       std::invalid_argument, []{ StringToTestResult(""); } );
-    TEST_THROW("BadSStringTestResults", std::invalid_argument, []{ StringToTestResult("Suplex"); } );
-    TEST_THROW("BadWStringTestResults", std::invalid_argument, []{ StringToTestResult("Wrong(YesThisIs)"); } );
-    TEST_THROW("BadCStringTestResults", std::invalid_argument, []{ StringToTestResult("ClearlyWrong(YesThisIs)"); } );
-    TEST_THROW("BadIStringTestResults", std::invalid_argument, []{ StringToTestResult("Indecipherable"); } );
-    TEST_THROW("BadUStringTestResults", std::invalid_argument, []{ StringToTestResult("Unknowable"); } );
-    TEST_THROW("BadFStringTestResults", std::invalid_argument, []{ StringToTestResult("FThatIsYouGradeNow"); } );
-    TEST_THROW("BadNStringTestResults", std::invalid_argument, []{ StringToTestResult("NeverApplicable"); } );
+    TEST_THROW("BedEmptyStrings",       std::invalid_argument, []{ StringToTestResult(""); } )
+    TEST_THROW("BadSStringTestResults", std::invalid_argument, []{ StringToTestResult("Suplex"); } )
+    TEST_THROW("BadWStringTestResults", std::invalid_argument, []{ StringToTestResult("Wrong(YesThisIs)"); } )
+    TEST_THROW("BadCStringTestResults", std::invalid_argument, []{ StringToTestResult("ClearlyWrong(YesThisIs)"); } )
+    TEST_THROW("BadIStringTestResults", std::invalid_argument, []{ StringToTestResult("Indecipherable"); } )
+    TEST_THROW("BadUStringTestResults", std::invalid_argument, []{ StringToTestResult("Unknowable"); } )
+    TEST_THROW("BadFStringTestResults", std::invalid_argument, []{ StringToTestResult("FThatIsYouGradeNow"); } )
+    TEST_THROW("BadNStringTestResults", std::invalid_argument, []{ StringToTestResult("NeverApplicable"); } )
 
     // These tests aresort of an odd. These tests that XML output which is read by Jenkins and other test
     // result aggregation tools creates properly formatted XML when the test name might interfere. These won't
     // be reported in tests directly but will break our BTS Continuous integration if they don't work.
-    TEST("Test&Ampersands&InTestNamesBreaksNothing&", true);
-    TEST("Test\"QupteInTestNamesBreaksNothing\"", true);
-    TEST("Test'ApostropheInTestNamesBreaksNothing'", true);
-    TEST("Test>GreaterThanInTestNamesBreaksNothing>", true);
-    TEST("Test<LessThanInTestNamesBreaksNothing<", true);
+    TEST("Test&Ampersands&InTestNamesBreaksNothing&", true)
+    TEST("Test\"QupteInTestNamesBreaksNothing\"", true)
+    TEST("Test'ApostropheInTestNamesBreaksNothing'", true)
+    TEST("Test>GreaterThanInTestNamesBreaksNothing>", true)
+    TEST("Test<LessThanInTestNamesBreaksNothing<", true)
 }
 
 #endif

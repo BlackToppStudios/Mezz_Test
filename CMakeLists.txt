@@ -1,4 +1,4 @@
-# © Copyright 2010 - 2018 BlackTopp Studios Inc.
+# © Copyright 2010 - 2020 BlackTopp Studios Inc.
 # This file is part of The Mezzanine Engine.
 #
 #    The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -52,10 +52,10 @@ if(NOT JAGATI_Download)
     option(JAGATI_Download "Should the Jagati be downloaded automatically" ON)
 endif(NOT JAGATI_Download)
 if(JAGATI_Download)
-    set(JAGATI_Checksum "a2043610a5e0d315f0e268b9aa42bdd2819ed6e20a6f1f88cfa\
-ef4ec99ce149e87cff846f2eb7d0558d5d94f4006b963bfbc36ef897013179563335d5ea57767"
+    set(JAGATI_Checksum "6aa2eb83eca66c9a06519a1138e4d72b7a6243da13026020eb0\
+644ffd4c89e566e9716cc16a9fcee15651b65a517fbc61d4002b2f9e0883143a54c6684aabcb4"
         CACHE STRING "Check that when the Jagati is downloaded the right one is used (for consistency and security).")
-    set(JAGATI_Url "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.27.4/Jagati.cmake"
+    set(JAGATI_Url "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.30.2/Jagati.cmake"
         CACHE STRING "Where to download the Jagati from.")
     file(DOWNLOAD "${JAGATI_Url}" "${JAGATI_File}" EXPECTED_HASH SHA512=${JAGATI_Checksum})
 endif(JAGATI_Download)

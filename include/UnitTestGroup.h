@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2020 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -68,7 +68,6 @@ namespace Mezzanine
         SAVE_WARNING_STATE
         SUPPRESS_CLANG_WARNING("-Wpadded") // Testing code is not sensitive to care about 1 byte of padding
                                            // If we ever profile then we should disable this.
-        SUPPRESS_CLANG_WARNING("-Wweak-vtables")
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests, suitable for being all the tests of a small subsystem or single class.
         class MEZZ_LIB UnitTestGroup

@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2018 BlackTopp Studios Inc.
+// © Copyright 2010 - 2020 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -53,12 +53,12 @@ AUTOMATIC_TEST_GROUP(OutputBufferGuardTests, OutputBufferGuard)
     {
         Mezzanine::Testing::OutputBufferGuard Silencer(Guarded);
         Guarded << "Silenced";
-        TEST_EQUAL("StringStreamWasSilenced", "", Guarded.str());
-        TEST_EQUAL("BufferGuardHasWhatWasSaid", "Silenced", Silencer.GetSunkOutput());
+        TEST_EQUAL("StringStreamWasSilenced", "", Guarded.str())
+        TEST_EQUAL("BufferGuardHasWhatWasSaid", "Silenced", Silencer.GetSunkOutput())
     }
 
     Guarded << "Loudly";
-    TEST_EQUAL("StringStreamCanSpeakWhenGaurdLeaves", "Loudly", Guarded.str());
+    TEST_EQUAL("StringStreamCanSpeakWhenGaurdLeaves", "Loudly", Guarded.str())
 }
 
 #endif
