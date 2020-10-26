@@ -54,10 +54,20 @@
 AUTOMATIC_TEST_GROUP(WarningLoudTestTests, LoudWarnTests)
 {
     // Here are some examples of test that should warn and do so with loud output
+    TEST_WARN("TestWarn", false)
+}
+
+/// @brief TestTests to verify that Performance checks work correctly and emit messages.
+/// @details This class is not called directly by the Unit Test framework and is just used by LoudTestTests
+AUTOMATIC_TEST_GROUP(NonPerformantLoudTestTests, LoudWarnTests)
+{
+    // Here are some examples of test that should signal poor performance and do so with loud output
+    TEST_PERF("TestPerf", false)
     TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{})
     TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
                []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); })
 }
+
 
 /// @brief TestTests to verify that Failure works correctly and emit.
 /// @details This class is not called directly by the Unit Test framework and is just used by LoudTestTests
@@ -89,6 +99,15 @@ BENCHMARK_THREAD_TEST_GROUP(LoudTestTests, LoudTests)
     TEST("WarningsWereLoud", WarnifierOutput.empty() == false)
     for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
         { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results) }
+
+    // Performance Tests
+    class NonPerformantLoudTestTests Performifier;
+    Performifier();
+    Mezzanine::String PerformifierOutput(Performifier.GetTestLog());
+    TestLog << PerformifierOutput << '\n';
+    TEST("NonPerformantTestsWereLoud", PerformifierOutput.empty() == false)
+    for(const Mezzanine::Testing::TestData& SingleResult : Performifier)
+        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::NonPerformant, SingleResult.Results) }
 
     // Failing Tests
     class NegativeLoudTestTests Negation;

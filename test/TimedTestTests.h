@@ -86,9 +86,9 @@ public:
 /// @brief TestTests to verify that Warnings works correctly.
 /// @details This class is not called directly by the Unit Test framework and is called by the TimedTestTest
 /// to verify everything fails.
-SILENT_TEST_GROUP(WarningTimedTestTests, WarningTimedTest)
+SILENT_TEST_GROUP(TimedMacroFailureTestTests, WarningTimedTest)
 {
-    // Here are some examples of test that should warn.
+    // Here are some examples of test that should produce non successful performance warning results.
     TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{})
     TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
                []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); })
@@ -117,10 +117,10 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ })
 
     // Warning Timed Tests
-    class WarningTimedTestTests Warnifier;
-    Warnifier();
-    for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
-        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results) }
+    class TimedMacroFailureTestTests Timeifier;
+    Timeifier();
+    for(const Mezzanine::Testing::TestData& SingleResult : Timeifier)
+        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::NonPerformant, SingleResult.Results) }
 
     // Tests of Benchmark tools need a little and serve as poor examples of how to use this. These are testing
     // the framework tools and not actually using the gaurantees that statistical results provice. See below for a
