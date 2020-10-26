@@ -284,10 +284,10 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                DurationBench.Iterations,
                DurationBench.SortedTimings.size())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationTotal",
-                      PentileExpectedTotalLower.count(),
-                      PentileExpectedTotalUpper.count(),
-                      DurationBench.Total.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationTotal",
+                           PentileExpectedTotalLower.count(),
+                           PentileExpectedTotalUpper.count(),
+                           DurationBench.Total.count())
 
     TEST("MicroBenchmarkDurationWallTotal", DurationBench.WallTotal.count() >= DurationBench.Total.count())
 
@@ -296,35 +296,35 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                           DurationBench.UnsortOriginalTimings.cend(),
                            MicroBenchmarkResults::TimeType{0})
           / DurationBench.UnsortOriginalTimings.size() };
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationAverage",
-                      ExpectedAverage.count() - 1,
-                      ExpectedAverage.count() + 1,
-                      DurationBench.Average.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationAverage",
+                           ExpectedAverage.count() - 1,
+                           ExpectedAverage.count() + 1,
+                           DurationBench.Average.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationFastest",
-                      Pentile1TimeLower.count(),
-                      Pentile1TimeUpper.count(),
-                      DurationBench.Fastest.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationFastest",
+                           Pentile1TimeLower.count(),
+                           Pentile1TimeUpper.count(),
+                           DurationBench.Fastest.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile1st",
-                      Pentile1TimeLower.count(),
-                      Pentile1TimeUpper.count(),
-                      DurationBench.FasterThan99Percent.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationPercentile1st",
+                           Pentile1TimeLower.count(),
+                           Pentile1TimeUpper.count(),
+                           DurationBench.FasterThan99Percent.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile10th",
-                      Pentile1TimeLower.count(),
-                      DurationBench.GetIndexValueFromPercent(0.2).count(),
-                      DurationBench.FasterThan90Percent.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationPercentile10th",
+                           Pentile1TimeLower.count(),
+                           DurationBench.GetIndexValueFromPercent(0.2).count(),
+                           DurationBench.FasterThan90Percent.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationMedian",
-                      DurationBench.GetIndexValueFromPercent(0.4).count(),
-                      DurationBench.GetIndexValueFromPercent(0.6).count(),
-                      DurationBench.Median.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationMedian",
+                           DurationBench.GetIndexValueFromPercent(0.4).count(),
+                           DurationBench.GetIndexValueFromPercent(0.6).count(),
+                           DurationBench.Median.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile90th",
-                      Pentile5TimeLower.count(),
-                      DurationBench.FasterThan1Percent.count(),
-                      DurationBench.FasterThan10Percent.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationPercentile90th",
+                           Pentile5TimeLower.count(),
+                           DurationBench.FasterThan1Percent.count(),
+                           DurationBench.FasterThan10Percent.count())
 
     TEST("MicroBenchmarkDurationPercentile99th", Pentile5TimeLower.count()< DurationBench.FasterThan1Percent.count())
     TEST("MicroBenchmarkDurationSlowest", Pentile5TimeLower.count() < DurationBench.Slowest.count())
