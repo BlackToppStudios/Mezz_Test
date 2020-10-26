@@ -138,44 +138,44 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                MicroBenchmarkResults::CountType{1},
                SingleBench.SortedTimings.size())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSingleTotal",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.Total.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSingleTotal",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.Total.count())
 
     TEST_EQUAL("MicroBenchmarkSingleWallTotal",
                 SingleBench.WallTotal.count(),
                 SingleBench.Total.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSingleAverage",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.Average.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSingleAverage",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.Average.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSingleFastest",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.Fastest.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSingleFastest",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.Fastest.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSinglePercentile99th",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.FasterThan1Percent.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSinglePercentile99th",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.FasterThan1Percent.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSinglePercentile90th",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.FasterThan10Percent.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSinglePercentile90th",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.FasterThan10Percent.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSingleMedian",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.Median.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSingleMedian",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.Median.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSingleSlowest",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.Slowest.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSingleSlowest",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.Slowest.count())
 
     // Setup for triple bench test
     const MultilengthSleeper::Sleep FastestTime{std::chrono::milliseconds{3000}};
