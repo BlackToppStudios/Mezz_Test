@@ -60,13 +60,14 @@ namespace Mezzanine
             Success         = 0,        ///< Test was ran and appeared to work.
             Skipped         = 1,        ///< Test was simply not ran and this was intentional and does not mean failure.
             Cancelled       = 2,        ///< Was canceled by user, so success is unknown, but any user knows test was
-                                        /// cancelled and the test is not failed
-            Warning         = 3,        ///< Technically the test passed but there is something that is not quite right.
-            Inconclusive    = 4,        ///< If a user answers that with "don't know" in a test that involved
+                                        /// cancelled and the test is not failed.
+            NonPerformant   = 3,        ///< The Test worked but did not have sufficient performance.
+            Warning         = 4,        ///< Technically the test passed but there is something that is not quite right.
+            Inconclusive    = 5,        ///< If a user answers that with "don't know" in a test that involved
                                         /// interaction, The user knows there is a potential issue.
-            Failed          = 5,        ///< Known failure.
-            Unknown         = 6,        ///< Since we don't know what happened this is the worst kind of failure.
-            NotApplicable   = 7,        ///< This is not even a kind of failure, This is used to when referencing a
+            Failed          = 6,        ///< Known failure.
+            Unknown         = 7,        ///< Since we don't know what happened this is the worst kind of failure.
+            NotApplicable   = 8,        ///< This is not even a kind of failure, This is used to when referencing a
                                         /// test, so if this winds up coming out of a test, then something has failed.
             Highest = TestResult::NotApplicable  ///< Highest will always match the highest value of the class enum,
                                                  /// to make it easier to inspect.
@@ -83,6 +84,8 @@ namespace Mezzanine
         const Mezzanine::StringView SkippedString           ("Skipped");
         /// @brief Corresponds to TestResult::Cancelled.
         const Mezzanine::StringView CancelledString         ("Cancelled");
+        /// @brief Corresponds to TestResult::NonPerformant.
+        const Mezzanine::StringView NonPerformantString     ("NonPerformant");
         /// @brief Corresponds to TestResult::Warning.
         const Mezzanine::StringView WarningString           ("Warning");
         /// @brief Corresponds to TestResult::Inconclusive.
@@ -100,6 +103,8 @@ namespace Mezzanine
         const Mezzanine::StringView SkippedStringBox        ("[    Skipped    ]");
         /// @brief Corresponds to TestResult::Cancelled, but in a box. Must contain the non-box version.
         const Mezzanine::StringView CancelledStringBox      ("[   Cancelled   ]");
+        /// @brief Corresponds to TestResult::NonPerformant, but in a box. Must contain the non-box version.
+        const Mezzanine::StringView NonPerformantStringBox  ("[ NonPerformant ]");
         /// @brief Corresponds to TestResult::Warning, but in a box. Must contain the non-box version.
         const Mezzanine::StringView WarningStringBox        ("[    Warning    ]");
         /// @brief Corresponds to TestResult::Inconclusive, but in a box. Must contain the non-box version.

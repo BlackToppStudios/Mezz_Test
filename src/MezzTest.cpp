@@ -331,6 +331,7 @@ namespace Mezzanine
                     case TestResult::NotApplicable:
                     case TestResult::Unknown:
                     case TestResult::Warning:
+                    case TestResult::NonPerformant:
                         XmlContents << "    <testcase classname=\"" << OneResult.FileName<< "\" name=\""
                                         << SanitizeTestNameForJunit(OneResult.TestName) << "\">\n"
                                     << "        <failure type=\"" << OneResult.Results << "\">\n"

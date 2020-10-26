@@ -86,9 +86,9 @@ public:
 /// @brief TestTests to verify that Warnings works correctly.
 /// @details This class is not called directly by the Unit Test framework and is called by the TimedTestTest
 /// to verify everything fails.
-SILENT_TEST_GROUP(WarningTimedTestTests, WarningTimedTest)
+SILENT_TEST_GROUP(TimedMacroFailureTestTests, WarningTimedTest)
 {
-    // Here are some examples of test that should warn.
+    // Here are some examples of test that should produce non successful performance warning results.
     TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{})
     TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
                []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); })
@@ -117,10 +117,10 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ })
 
     // Warning Timed Tests
-    class WarningTimedTestTests Warnifier;
-    Warnifier();
-    for(const Mezzanine::Testing::TestData& SingleResult : Warnifier)
-        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::Warning, SingleResult.Results) }
+    class TimedMacroFailureTestTests Timeifier;
+    Timeifier();
+    for(const Mezzanine::Testing::TestData& SingleResult : Timeifier)
+        { TEST_EQUAL(SingleResult.TestName, Mezzanine::Testing::TestResult::NonPerformant, SingleResult.Results) }
 
     // Tests of Benchmark tools need a little and serve as poor examples of how to use this. These are testing
     // the framework tools and not actually using the gaurantees that statistical results provice. See below for a
@@ -138,44 +138,44 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                MicroBenchmarkResults::CountType{1},
                SingleBench.SortedTimings.size())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSingleTotal",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.Total.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSingleTotal",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.Total.count())
 
     TEST_EQUAL("MicroBenchmarkSingleWallTotal",
                 SingleBench.WallTotal.count(),
                 SingleBench.Total.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSingleAverage",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.Average.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSingleAverage",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.Average.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSingleFastest",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.Fastest.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSingleFastest",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.Fastest.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSinglePercentile99th",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.FasterThan1Percent.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSinglePercentile99th",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.FasterThan1Percent.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSinglePercentile90th",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.FasterThan10Percent.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSinglePercentile90th",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.FasterThan10Percent.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSingleMedian",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.Median.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSingleMedian",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.Median.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkSingleSlowest",
-                      SingleLowerRange.count(),
-                      SingleUpperRange.count(),
-                      SingleBench.Slowest.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkSingleSlowest",
+                           SingleLowerRange.count(),
+                           SingleUpperRange.count(),
+                           SingleBench.Slowest.count())
 
     // Setup for triple bench test
     const MultilengthSleeper::Sleep FastestTime{std::chrono::milliseconds{3000}};
@@ -284,10 +284,10 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                DurationBench.Iterations,
                DurationBench.SortedTimings.size())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationTotal",
-                      PentileExpectedTotalLower.count(),
-                      PentileExpectedTotalUpper.count(),
-                      DurationBench.Total.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationTotal",
+                           PentileExpectedTotalLower.count(),
+                           PentileExpectedTotalUpper.count(),
+                           DurationBench.Total.count())
 
     TEST("MicroBenchmarkDurationWallTotal", DurationBench.WallTotal.count() >= DurationBench.Total.count())
 
@@ -296,35 +296,35 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
                           DurationBench.UnsortOriginalTimings.cend(),
                            MicroBenchmarkResults::TimeType{0})
           / DurationBench.UnsortOriginalTimings.size() };
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationAverage",
-                      ExpectedAverage.count() - 1,
-                      ExpectedAverage.count() + 1,
-                      DurationBench.Average.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationAverage",
+                           ExpectedAverage.count() - 1,
+                           ExpectedAverage.count() + 1,
+                           DurationBench.Average.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationFastest",
-                      Pentile1TimeLower.count(),
-                      Pentile1TimeUpper.count(),
-                      DurationBench.Fastest.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationFastest",
+                           Pentile1TimeLower.count(),
+                           Pentile1TimeUpper.count(),
+                           DurationBench.Fastest.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile1st",
-                      Pentile1TimeLower.count(),
-                      Pentile1TimeUpper.count(),
-                      DurationBench.FasterThan99Percent.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationPercentile1st",
+                           Pentile1TimeLower.count(),
+                           Pentile1TimeUpper.count(),
+                           DurationBench.FasterThan99Percent.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile10th",
-                      Pentile1TimeLower.count(),
-                      DurationBench.GetIndexValueFromPercent(0.2).count(),
-                      DurationBench.FasterThan90Percent.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationPercentile10th",
+                           Pentile1TimeLower.count(),
+                           DurationBench.GetIndexValueFromPercent(0.2).count(),
+                           DurationBench.FasterThan90Percent.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationMedian",
-                      DurationBench.GetIndexValueFromPercent(0.4).count(),
-                      DurationBench.GetIndexValueFromPercent(0.6).count(),
-                      DurationBench.Median.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationMedian",
+                           DurationBench.GetIndexValueFromPercent(0.4).count(),
+                           DurationBench.GetIndexValueFromPercent(0.6).count(),
+                           DurationBench.Median.count())
 
-    TEST_WITHIN_RANGE("MicroBenchmarkDurationPercentile90th",
-                      Pentile5TimeLower.count(),
-                      DurationBench.FasterThan1Percent.count(),
-                      DurationBench.FasterThan10Percent.count())
+    TEST_WITHIN_RANGE_PERF("MicroBenchmarkDurationPercentile90th",
+                           Pentile5TimeLower.count(),
+                           DurationBench.FasterThan1Percent.count(),
+                           DurationBench.FasterThan10Percent.count())
 
     TEST("MicroBenchmarkDurationPercentile99th", Pentile5TimeLower.count()< DurationBench.FasterThan1Percent.count())
     TEST("MicroBenchmarkDurationSlowest", Pentile5TimeLower.count() < DurationBench.Slowest.count())
