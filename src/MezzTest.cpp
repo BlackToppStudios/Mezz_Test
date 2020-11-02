@@ -364,6 +364,7 @@ namespace Mezzanine
                                 << "            " << OneResult
                                 << "        </failure>\n"
                                 << "    </testcase>\n";
+
                 }
             }
             Output << "  </testsuite>";
