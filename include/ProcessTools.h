@@ -63,7 +63,7 @@ namespace Testing {
     /// @param ExecutablePath The path to the executable to be invoked.
     /// @param Command The command to attempt to run and direct its output.
     /// @return Returns the ExitCode and Cout/Cerr output of the command that was run.
-    CommandResult RunCommand(const StringView ExecutablePath, const StringView Command);
+    CommandResult MEZZ_LIB RunCommand(const StringView ExecutablePath, const StringView Command);
 
     /// @brief Launches a different process on the system and return only it's console output as a String.
     /// @remarks This function ignores the exit code of the command. If you want/need the exit code, use

@@ -72,7 +72,35 @@ namespace {
         HANDLE ChildProcess;
     };//ProcessInfo
 
-    ProcessInfo CreateCommandProcess(String ExecutablePath, String Arguments)
+    /// @brief Convenience type because Windows likes fatty Strings.
+    using WideString = std::wstring;
+
+    /// @brief Demotes a size_t to an int, which is required by the Win API.
+    /// @brief ToDemote The large integral type to be demoted.
+    /// @return Returns an int of the same value if it can be stored, or asserts otherwise.
+    [[nodiscard]]
+    int IntDemote(const size_t ToDemote)
+    {
+        assert( ToDemote <= static_cast<size_t>( std::numeric_limits<int>::max() ) );
+        return static_cast<int>(ToDemote);
+    }
+    /// @brief Converts a narrow (8-bit) string to a wide (16-bit) string.
+    /// @param Thin The string to be converted.
+    /// @return Returns a wide string with the converted contents.
+    [[nodiscard]]
+    WideString ConvertToWideString(const StringView Thin)
+    {
+        WideString Ret;
+        size_t ThinSize = Thin.size();
+        if( ThinSize > 0 ) {
+            size_t WideLength = ::MultiByteToWideChar(CP_UTF8,0,Thin.data(),IntDemote(ThinSize),nullptr,0);
+            Ret.resize(WideLength,L'\0');
+            ::MultiByteToWideChar(CP_UTF8,0,Thin.data(),IntDemote(ThinSize),&Ret[0],IntDemote(WideLength));
+        }
+        return Ret;
+    }
+
+    ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
         HANDLE Child_STDOUT_Read = NULL;
         HANDLE Child_STDOUT_Write = NULL;
@@ -85,54 +113,46 @@ namespace {
 
         // Create our Pipe
         if( !::CreatePipe(&Child_STDOUT_Read,&Child_STDOUT_Write,&SecurityAttrib,0) ) {
-            return { NULL, NULL };
+            throw std::runtime_error("Unable to create pipes for child process.");
         }
-        std::cout << "Pipe created.\n";
-        // Ensure handle isn't (?) inherited.
+        // Ensure handle isn't inherited.
         if( !::SetHandleInformation(Child_STDOUT_Read,HANDLE_FLAG_INHERIT,0) ) {
-            return { NULL, NULL };
+            throw std::runtime_error("Unable to set handle information for child process pipe.");
         }
-        std::cout << "Handle Info set.\n";
 
         // PROCESS_INFORMATION setup
         PROCESS_INFORMATION ProcessInfo;
         ZeroMemory(&ProcessInfo,sizeof(ProcessInfo));
 
         // STARTUPINFO setup
-        STARTUPINFO ProcessStartUp;
+        STARTUPINFOW ProcessStartUp;
         ZeroMemory(&ProcessStartUp,sizeof(ProcessStartUp));
         ProcessStartUp.cb = sizeof(ProcessStartUp);
-        ProcessStartUp.hStdError = Child_STDOUT_Write;
+        //ProcessStartUp.hStdError = Child_STDOUT_Write;
         ProcessStartUp.hStdOutput = Child_STDOUT_Write;
         ProcessStartUp.dwFlags |= STARTF_USESTDHANDLES;
 
-        std::cout << "Launching child process.\n";
+        WideString WideExecutablePath = ConvertToWideString(ExecutablePath);
+        WideString WideArguments = ConvertToWideString(Arguments);
 
-        BOOL ChildLaunch = ::CreateProcess(
-            ExecutablePath.empty() ? nullptr : ExecutablePath.data(),
-            Arguments.empty() ? nullptr : Arguments.data(),
+        BOOL ChildLaunch = ::CreateProcessW(
+            WideExecutablePath.empty() ? nullptr : WideExecutablePath.data(),
+            WideArguments.empty() ? nullptr : WideArguments.data(),
             nullptr,
             nullptr,
             TRUE,
-            CREATE_NEW_CONSOLE,
+            0,
             nullptr,
             nullptr,
             &ProcessStartUp,
             &ProcessInfo
         );
 
+        ::CloseHandle(Child_STDOUT_Write);
         if( !ChildLaunch ) {
             ::CloseHandle(Child_STDOUT_Read);
-            ::CloseHandle(Child_STDOUT_Write);
-
-            DWORD ErrCode = GetLastError();
-            StringStream Crash;
-            Crash << "\nFailed to create process: " << ErrCode << "\n";
-            throw std::runtime_error(Crash.str());
-
-            return { NULL, NULL };
+            throw std::runtime_error("Failed to launch child process.");
         }
-        std::cout << "Child process launched.\n";
         return { Child_STDOUT_Read, ProcessInfo.hProcess };
     }
 #else // Mezz_Windows
@@ -174,7 +194,7 @@ namespace {
         if( ProcessID == 0 ) { // Child
             ::close( Pipes[0] ); // Close Read end of pipe.
             ::dup2( Pipes[1], 1 ); // Direct cout file descriptor to our pipe.
-            ::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
+            //::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
             ::close( Pipes[1] ); // Done mangling pipes.
 
             char** ArgV = ConvertArguments(Arguments);
@@ -192,16 +212,9 @@ namespace {
     Testing::CommandResult RunCommandImpl(const StringView ExecutablePath, const StringView Command)
     {
         Testing::CommandResult Result;
-        std::cout << '\n' << "ExePath(Impl): " << ExecutablePath << " | Size: " << ExecutablePath.size();
-        std::cout << '\n' << "Command(Impl): " << Command << " | Size: " << Command.size();
-        std::cout << '\n';
 #ifdef MEZZ_Windows
-        ProcessInfo ChildInfo = CreateCommandProcess( String(ExecutablePath), String(Command) );
-        if( ChildInfo.ChildProcess == NULL || ChildInfo.ChildPipe == NULL ) {
-            return Result;
-        }
+        ProcessInfo ChildInfo = CreateCommandProcess( ExecutablePath, Command );
 
-        std::cout << "Reading from child process stdout.\n";
         DWORD BytesRead = 0;
         CHAR PipeBuf[1024];
         while( ::ReadFile(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf),&BytesRead,NULL) )
@@ -209,13 +222,8 @@ namespace {
             if( BytesRead == 0 ) {
                 break;
             }
-            std::cout << "Read " << BytesRead << " bytes from child stdout.\n";
-            std::cout.write(PipeBuf,BytesRead);
             Result.ConsoleOutput.append(PipeBuf,BytesRead);
         }
-
-        std::cout << "End of child stdout reached.\n";
-
         ::CloseHandle(ChildInfo.ChildPipe);
 
         //::WaitForSingleObject(ChildInfo.ChildProcess,INFINITE);
@@ -223,7 +231,7 @@ namespace {
         DWORD ExitStatus;
         ::GetExitCodeProcess(ChildInfo.ChildProcess,&ExitStatus);
         Result.ExitCode = ExitStatus;
-        std::cout << "Exiting with status " << Result.ExitCode << ".\n";
+        ::CloseHandle(ChildInfo.ChildProcess);
 #else // Mezz_Windows
         ProcessInfo ChildInfo = CreateCommandProcess( String(ExecutablePath), Command );
 
@@ -308,7 +316,7 @@ namespace Testing {
     String GetFileContents(const StringView FileName)
     {
         const String PickyName(FileName); // Picky because std::iostreams are not StringView aware yet.
-        std::ifstream ResultFile( PickyName );
+        std::ifstream ResultFile(PickyName);
         return String( std::istreambuf_iterator<char>(ResultFile), {} );
     }
 }// Testing

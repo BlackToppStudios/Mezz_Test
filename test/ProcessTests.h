@@ -47,34 +47,74 @@
 
 #include <fstream>
 
-using Mezzanine::String;
-using Mezzanine::Testing::GetCommandOutput;
-using Mezzanine::Testing::GetFileContents;
-
 /// @brief Tests for the class to store test data results.
 AUTOMATIC_TEST_GROUP(ProcessTests, Process)
 {
-    // make file and read it back.
-    const Mezzanine::String TestFilename("ProcessTestFile.txt");
-    const Mezzanine::String TestToken(
-                "I've seen things you people wouldn't believe. Attack ships on fire off the "
-                "shoulder of Orion. I watched C-beams glitter in the dark near the Tannhäuser "
-                "Gate. All those moments will be lost in time, like tears in rain. Time to die.");
-    std::ofstream TestFile(TestFilename);
-    TestFile << TestToken;
-    TestFile.close();
+    using namespace Mezzanine;
+    {//GetFileContents
+        const String TestFilename("ProcessTestFile.txt");
+        const String TestToken(
+                    "I've seen things you people wouldn't believe. Attack ships on fire off the "
+                    "shoulder of Orion. I watched C-beams glitter in the dark near the Tannhäuser "
+                    "Gate. All those moments will be lost in time, like tears in rain. Time to die.");
+        std::ofstream TestFile(TestFilename);
+        TestFile << TestToken;
+        TestFile.close();
 
-    TEST_EQUAL("GetFileContents", TestToken, GetFileContents(TestFilename))
+        TEST_EQUAL("GetFileContents(const_StringView)", TestToken, Testing::GetFileContents(TestFilename))
+    }//GetFileContents
 
+    {//GetCommandOutput
+        TEST_STRING_CONTAINS("GetCommandOutput(const_StringView)-foo",
+                             String("foo"),
+                             Testing::GetCommandOutput("cmake -E echo \"foo\""))
+        TEST_THROW("GetCommandOutput(const_StringView)-Throw-BadSymbol",
+                   std::runtime_error,
+                   []{ (void)Testing::GetCommandOutput("echo foo > somefile.txt"); })
+        TEST_THROW("GetCommandOutput(const_StringView)-Throw-BadExe",
+                   std::runtime_error,
+                   []{ (void)Testing::GetCommandOutput("NotARealFilePlzDontActuallyExist"); })
+    }//GetCommandOutput
 
-    // Try launching a process and reading its stdout
-    TEST_STRING_CONTAINS("GetCommandOutput-stdout",
-                         Mezzanine::String("foo"),
-                         GetCommandOutput("cmake -E echo \"foo\""));
-    TEST_THROW("GetCommandOutput-BadCommand",
-               std::runtime_error,
-               []{ (void)GetCommandOutput("echo foo > somefile.txt"); });
+    {//GetCommandOutput w/ ExecutablePath
+        // No good way to test this.
+    }//GetCommandOutput w/ ExecutablePath
 
+    {//OutputCommandToFile
+
+    }//OutputCommandToFile
+
+    {//OutputCommandToFile w/ ExecutablePath
+        // No good way to test this.
+    }//OutputCommandToFile w/ ExecutablePath
+
+    {//RunCommand
+        StringView Empty;
+        Testing::CommandResult HelloResult = Testing::RunCommand(Empty,"cmake -E echo Hello");
+        TEST_EQUAL("RunCommand(const_StringView,const_StringView)-Hello-ExitCode",
+                   Integer(0),
+                   HelloResult.ExitCode);
+        TEST_STRING_CONTAINS("RunCommand(const_StringView,const_StringView)-Hello-Output",
+                             String("Hello"),
+                             HelloResult.ConsoleOutput);
+        Testing::CommandResult FalseResult = Testing::RunCommand(Empty,"cmake -E false");
+        TEST_EQUAL("RunCommand(const_StringView,const_StringView)-FalseCommand-ExitCode",
+                   Integer(1),
+                   FalseResult.ExitCode);
+        TEST_EQUAL("RunCommand(const_StringView,const_StringView)-FalseCommand-Output",
+                   true,
+                   FalseResult.ConsoleOutput.empty());
+        std::cout << "\nFalseResult output: " << FalseResult.ConsoleOutput << ".\n";
+        Testing::CommandResult TrueResult = Testing::RunCommand(Empty,"cmake -E true");
+        TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-ExitCode",
+                   Integer(0),
+                   TrueResult.ExitCode);
+        TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-Output",
+                   true,
+                   TrueResult.ConsoleOutput.empty());
+    }//RunCommand
+
+    //Integer MEZZ_LIB OutputCommandToFile(const StringView Command, const StringView OutputFileName)
 }
 
 #endif
