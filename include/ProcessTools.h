@@ -47,6 +47,10 @@
 
 namespace Mezzanine {
 namespace Testing {
+
+SAVE_WARNING_STATE
+SUPPRESS_CLANG_WARNING("-Wpadded")
+
     /// @brief A simple struct for storing (some) output from a called process.
     struct MEZZ_LIB CommandResult
     {
@@ -55,6 +59,8 @@ namespace Testing {
         /// @brief The code returned when the called process exited.
         Integer ExitCode = EXIT_FAILURE;
     };//CommandResult
+
+RESTORE_WARNING_STATE
 
     ///////////////////////////////////////////////////////////////////////////////
     // Output to String

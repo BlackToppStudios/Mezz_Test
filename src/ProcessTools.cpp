@@ -171,13 +171,13 @@ namespace {
         static const String Splitters(" \t");
         std::vector<String> ArgVector;
         size_t StrPos = 0;
-        for( size_t NewPos = Arguments.find_first_of(StrPos,Splitters) ;
+        for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
              NewPos != String::npos ;
-             NewPos = Arguments.find_first_of(StrPos,Splitters) )
+             NewPos = Arguments.find_first_of(Splitters,StrPos) )
         {
-            String Token = Arguments.substr(StrPos,NewPos);
+            String Token{ Arguments.substr(StrPos,NewPos) };
             if( !Token.empty() ) {
-                ArgVector.push_back(std::move(Token));
+                ArgVector.push_back( std::move(Token) );
             }
             StrPos = NewPos;
         }
