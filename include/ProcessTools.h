@@ -50,10 +50,10 @@ namespace Testing {
     /// @brief A simple struct for storing (some) output from a called process.
     struct MEZZ_LIB CommandResult
     {
-        /// @brief The code returned when the called process exited.
-        Integer ExitCode = EXIT_FAILURE;
         /// @brief The output to cout and cerr from the called process.
         String ConsoleOutput;
+        /// @brief The code returned when the called process exited.
+        Integer ExitCode = EXIT_FAILURE;
     };//CommandResult
 
     ///////////////////////////////////////////////////////////////////////////////

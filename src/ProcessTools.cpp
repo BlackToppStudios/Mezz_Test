@@ -53,9 +53,13 @@ SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's impl
     #include "windows.h"
 #else // MEZZ_Windows
     #include "unistd.h"
+    #include <string.h>
+    #include <sys/types.h>
+    #include <sys/wait.h>
 #endif // MEZZ_Windows
 
 RESTORE_WARNING_STATE
+
 #include <exception>
 #include <cstdlib>
 
@@ -167,11 +171,11 @@ namespace {
         static const String Splitters(" \t");
         std::vector<String> ArgVector;
         size_t StrPos = 0;
-        for( size_t NewPos = Args.find_first_of(StrPos,Whitespace) ;
+        for( size_t NewPos = Arguments.find_first_of(StrPos,Splitters) ;
              NewPos != String::npos ;
-             NewPos = Args.find_first_of(StrPos,Splitters) )
+             NewPos = Arguments.find_first_of(StrPos,Splitters) )
         {
-            String Token = Args.substr(StrPos,NewPos);
+            String Token = Arguments.substr(StrPos,NewPos);
             if( !Token.empty() ) {
                 ArgVector.push_back(std::move(Token));
             }
@@ -185,7 +189,7 @@ namespace {
         return Ret;
     }
 
-    ProcessInfo CreateCommandProcess(StringView Executable, const StringView Arguments)
+    ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
         int Pipes[2];
         ::pipe(Pipes);
@@ -200,6 +204,8 @@ namespace {
             char** ArgV = ConvertArguments(Arguments);
             execvp(ExecutablePath.data(),ArgV);
             // At this point we disappear into a puff of logic
+            // But to appease compilers, we'll write code that pretends we didn't
+            return { 0, 0 };
         }else if( ProcessID > 0 ) { // Parent
             ::close( Pipes[1] ); // Close Write end of pipe
             return { Pipes[0], ProcessID };
@@ -240,14 +246,14 @@ namespace {
         // Start reading and keep on reading until we hit an error or EoF.
         while( ( BytesRead = ::read(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf)) ) > 0 )
         {
-            Result.ConsoleOutput.append(PipeBuf,BytesRead);
+            Result.ConsoleOutput.append(PipeBuf,static_cast<size_t>(BytesRead));
         }
         ::close(ChildInfo.ChildPipe);
 
         int Status = -1;
         ::waitpid(ChildInfo.ChildPID,&Status,0);
         if( WIFEXITED(Status) ) {
-            Result.ExitCode = WEXITSTATUS(Status)
+            Result.ExitCode = WEXITSTATUS(Status);
         }else if( WIFSIGNALED(Status) ) {
             Result.ExitCode = WTERMSIG(Status);
         }else{
