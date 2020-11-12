@@ -61,9 +61,10 @@ namespace Mezzanine
             switch(Convertable)
             {
                 case TestResult::Success:           return SuccessString;
-                case TestResult::Warning:           return WarningString;
                 case TestResult::Skipped:           return SkippedString;
                 case TestResult::Cancelled:         return CancelledString;
+                case TestResult::NonPerformant:     return NonPerformantString;
+                case TestResult::Warning:           return WarningString;
                 case TestResult::Inconclusive:      return InconclusiveString;
                 case TestResult::Failed:            return FailedString;
                 case TestResult::Unknown:           return UnknownString;
@@ -77,9 +78,10 @@ namespace Mezzanine
             switch(Convertable)
             {
                 case TestResult::Success:           return SuccessStringBox;
-                case TestResult::Warning:           return WarningStringBox;
                 case TestResult::Skipped:           return SkippedStringBox;
                 case TestResult::Cancelled:         return CancelledStringBox;
+                case TestResult::NonPerformant:     return NonPerformantStringBox;
+                case TestResult::Warning:           return WarningStringBox;
                 case TestResult::Inconclusive:      return InconclusiveStringBox;
                 case TestResult::Failed:            return FailedStringBox;
                 case TestResult::Unknown:           return UnknownStringBox;
@@ -139,8 +141,10 @@ namespace Mezzanine
                 case 'N':
                     if ( NotApplicableString == Text )
                         { return TestResult::NotApplicable;}
+                    else if ( NonPerformantString == Text )
+                        { return TestResult::NonPerformant;}
                     else
-                        { throw std::invalid_argument("Cannot convert to TestResult from text(F) " + Text); }
+                        { throw std::invalid_argument("Cannot convert to TestResult from text(N) " + Text); }
                 default:
                     { throw std::invalid_argument("Cannot convert to TestResult from text() " + Text); }
             }

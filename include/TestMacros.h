@@ -280,6 +280,31 @@ namespace Mezzanine
             #endif
         #endif
 
+        #ifndef TEST_PERF
+            /// @def TEST_PERF
+            /// @brief Just like TEST but if the test fails only a NonPerformant result is added.
+            /// @details This captures test location meta data and should be considered the default way to record tests
+            /// that warn instead of failing. This is useful for performance based tests or other situation that failure
+            /// doesn't indicate the system doesn't work. Avoid using this for tests that fail intermittently, those
+            /// should fixed.
+            /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
+            /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
+            /// AutomaticTestGroup.
+            /// @param Conditional A boolean result of some kind.
+            /// @param Name The name of the current test.
+            #ifdef __FUNCTION__
+                #define TEST_PERF(Name, Conditional)                                                                   \
+                        Test( (Name), (Conditional),                                                                   \
+                            Mezzanine::Testing::TestResult::NonPerformant, Mezzanine::Testing::TestResult::Success,    \
+                            __FUNCTION__, __FILE__, __LINE__ );
+            #else
+                #define TEST_PERF(Name, Conditional)                                                                   \
+                        Test( (Name), (Conditional),                                                                   \
+                            Mezzanine::Testing::TestResult::NonPerformant, Mezzanine::Testing::TestResult::Success,    \
+                            __func__, __FILE__, __LINE__ );
+            #endif
+        #endif
+
         #ifndef TEST_RESULT
             /// @def TEST_RESULT
             /// @brief An easy way to add a test and associated data to the currently running UnitTestGroup.
@@ -324,6 +349,60 @@ namespace Mezzanine
                 #define TEST_WITHIN_RANGE(Name, ExpectedLowerBound, ExpectedUpperBound, ActualResults);                \
                     TestWithinRange((Name), (ExpectedLowerBound), (ExpectedUpperBound), (ActualResults),               \
                               Mezzanine::Testing::TestResult::Failed, Mezzanine::Testing::TestResult::Success,         \
+                              __func__, __FILE__, __LINE__ );
+            #endif
+        #endif
+
+        #ifndef TEST_WITHIN_RANGE_WARN
+            /// @def TEST_WITHIN_RANGE_WARN
+            /// @brief Check if a value is in a given range, useful when a value is not deterministic but bounded.
+            /// @details This captures test location meta data and should be considered a tool for handling only the
+            /// least comfortable testing situation after other means have been carefully considered.
+            /// This uses the type's <= operators (right and left hand) and the type's << operator(ostream&) to emit an
+            /// error message displaying the received results and the actual results.
+            /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
+            /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
+            /// AutomaticTestGroup.
+            /// @param Name The name of the current test.
+            /// @param ExpectedLowerBound The Minimum of the target range inclusive.
+            /// @param ExpectedUpperBound The Maximum of the target range inclusive.
+            /// @param ActualResults Whatever gibberish your code actually emits.
+            #ifdef __FUNCTION__
+                #define TEST_WITHIN_RANGE_WARN(Name, ExpectedLowerBound, ExpectedUpperBound, ActualResults);           \
+                    TestWithinRange((Name), (ExpectedLowerBound), (ExpectedUpperBound), (ActualResults),               \
+                              Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,        \
+                              __FUNCTION__, __FILE__, __LINE__ );
+            #else
+                #define TEST_WITHIN_RANGE_WARN(Name, ExpectedLowerBound, ExpectedUpperBound, ActualResults);           \
+                    TestWithinRange((Name), (ExpectedLowerBound), (ExpectedUpperBound), (ActualResults),               \
+                              Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,        \
+                              __func__, __FILE__, __LINE__ );
+            #endif
+        #endif
+
+        #ifndef TEST_WITHIN_RANGE_PERF
+            /// @def TEST_WITHIN_RANGE_PERF
+            /// @brief Check if a value is in a given range, useful when a value is not deterministic but bounded.
+            /// @details This captures test location meta data and should be considered a tool for handling only the
+            /// least comfortable testing situation after other means have been carefully considered.
+            /// This uses the type's <= operators (right and left hand) and the type's << operator(ostream&) to emit an
+            /// error message displaying the received results and the actual results.
+            /// @note This calls a member function on the UnitTestGroup class, so it can only be used in UnitTestGroup
+            /// functions or in functions on classes inherited from UnitTestGroup, like BenchmarkTestGroup or
+            /// AutomaticTestGroup.
+            /// @param Name The name of the current test.
+            /// @param ExpectedLowerBound The Minimum of the target range inclusive.
+            /// @param ExpectedUpperBound The Maximum of the target range inclusive.
+            /// @param ActualResults Whatever gibberish your code actually emits.
+            #ifdef __FUNCTION__
+                #define TEST_WITHIN_RANGE_PERF(Name, ExpectedLowerBound, ExpectedUpperBound, ActualResults);           \
+                    TestWithinRange((Name), (ExpectedLowerBound), (ExpectedUpperBound), (ActualResults),               \
+                              Mezzanine::Testing::TestResult::NonPerformant, Mezzanine::Testing::TestResult::Success,  \
+                              __FUNCTION__, __FILE__, __LINE__ );
+            #else
+                #define TEST_WITHIN_RANGE_PERF(Name, ExpectedLowerBound, ExpectedUpperBound, ActualResults);           \
+                    TestWithinRange((Name), (ExpectedLowerBound), (ExpectedUpperBound), (ActualResults),               \
+                              Mezzanine::Testing::TestResult::NonPerformant, Mezzanine::Testing::TestResult::Success,  \
                               __func__, __FILE__, __LINE__ );
             #endif
         #endif
@@ -393,12 +472,12 @@ namespace Mezzanine
             #ifdef __FUNCTION__
                 #define TEST_TIMED(Name,  ExpectedTime, Variance, CodeToTime);                                         \
                     TestTimed((Name), (ExpectedTime), (Variance), (CodeToTime),                                        \
-                         Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,             \
+                         Mezzanine::Testing::TestResult::NonPerformant, Mezzanine::Testing::TestResult::Success,       \
                          __FUNCTION__, __FILE__, __LINE__ );
             #else
                 #define TEST_TIMED(Name,  ExpectedTime, Variance, CodeToTime);                                         \
                     TestTimed((Name), (ExpectedTime), (Variance), (CodeToTime),                                        \
-                         Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,             \
+                         Mezzanine::Testing::TestResult::NonPerformant, Mezzanine::Testing::TestResult::Success,       \
                          __func__, __FILE__, __LINE__ );
             #endif
         #endif
@@ -417,12 +496,12 @@ namespace Mezzanine
             #ifdef __FUNCTION__
                 #define TEST_TIMED_UNDER(Name, MaxAcceptable, CodeToTime);                                             \
                     TestTimedUnder((Name), (MaxAcceptable), (CodeToTime),                                              \
-                         Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,             \
+                         Mezzanine::Testing::TestResult::NonPerformant, Mezzanine::Testing::TestResult::Success,       \
                          __FUNCTION__, __FILE__, __LINE__ );
             #else
                 #define TEST_TIMED_UNDER(Name, MaxAcceptable, CodeToTime);                                             \
                     TestTimedUnder((Name), (MaxAcceptable), (CodeToTime),                                              \
-                         Mezzanine::Testing::TestResult::Warning, Mezzanine::Testing::TestResult::Success,             \
+                         Mezzanine::Testing::TestResult::NonPerformant, Mezzanine::Testing::TestResult::Success,       \
                          __func__, __FILE__, __LINE__ );
             #endif
         #endif
