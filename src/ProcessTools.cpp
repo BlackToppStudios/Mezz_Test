@@ -166,9 +166,8 @@ namespace {
         int ChildPID;
     };//ProcessInfo
 
-    /*char** ConvertArguments(const StringView Arguments)
+    char** ConvertArguments(const StringView Arguments)
     {
-        std::cout << "\nConverting Arguments.\n";
         const String Splitters(" \t");
         std::vector<String> ArgVector;
         size_t StrPos = 0;
@@ -187,8 +186,7 @@ namespace {
         char* Ret[ArgVector.size() + 1];// +1 for the nullptr at end.
         for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
             { Ret[Idx] = strdup( ArgVector[Idx].c_str() ); }
-        Ret[ArgVector.size() + 1] = nullptr;
-        std::cout << "\nFinished converting Arguments.\n";
+        Ret[ArgVector.size()] = nullptr;
         return Ret;
     }//*/
 
@@ -207,8 +205,8 @@ namespace {
             ::close( Pipes[1] ); // Done mangling pipes.
 
             std::cout << "\nConverting Arguments.\n";
-            //char** ArgV = ConvertArguments(Arguments);
-            const String Splitters(" \t");
+            char** ArgV = ConvertArguments(Arguments);
+            /*const String Splitters(" \t");
             std::vector<String> ArgVector;
             size_t StrPos = 0;
             for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
@@ -222,12 +220,11 @@ namespace {
                 StrPos = NewPos;
             }
 
-            char* ArgV[ArgVector.size() + 1];// +1 for the nullptr at end.
+            char* ArgV[256];
             for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
                 { ArgV[Idx] = strdup( ArgVector[Idx].c_str() ); }
-            ArgV[ArgVector.size() + 1] = nullptr;
+            ArgV[ArgVector.size()] = nullptr;//*/
             std::cout << "\nFinished converting Arguments.\n";
-            //execvp(ExecutablePath.data(),ArgV);
             execvp(ExecutablePath.data(),ArgV);
             // At this point we disappear into a puff of logic
             // But to appease compilers, we'll write code that pretends we didn't
