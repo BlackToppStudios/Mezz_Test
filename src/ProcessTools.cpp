@@ -267,7 +267,7 @@ namespace {
         ::CloseHandle(ChildInfo.ChildProcess);
 #else // Mezz_Windows
         String NonConstExecPath{ ExecutablePath };
-        ProcessInfo ChildInfo = CreateCommandProcess( NonConstExecutablePath, Command );
+        ProcessInfo ChildInfo = CreateCommandProcess( NonConstExecPath, Command );
 
         std::cout << "\nReading from Child pipe.\n";
         ssize_t BytesRead = -1;
