@@ -191,6 +191,7 @@ namespace {
 
     ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
+        std::cout << "\nEntering CreateCommandProcess.\n";
         int Pipes[2];
         if( ::pipe(Pipes) < 0 ) {
             throw std::runtime_error("Unable to create pipe for child process.");
@@ -230,6 +231,7 @@ namespace {
             return { 0, 0 };
         }else if( ProcessID > 0 ) { // Parent
             ::close( Pipes[1] ); // Close Write end of pipe
+            std::cout << "\nLeaving CreateCommandProcess.\n";
             return { Pipes[0], ProcessID };
         }else{
             throw std::runtime_error("Unable to create forked process.");
@@ -244,6 +246,7 @@ namespace {
 #ifdef MEZZ_Windows
         ProcessInfo ChildInfo = CreateCommandProcess( ExecutablePath, Command );
 
+        std::cout << "\nReading from Child pipe.\n";
         DWORD BytesRead = 0;
         CHAR PipeBuf[1024];
         while( ::ReadFile(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf),&BytesRead,NULL) )
@@ -254,6 +257,7 @@ namespace {
             Result.ConsoleOutput.append(PipeBuf,BytesRead);
         }
         ::CloseHandle(ChildInfo.ChildPipe);
+        std::cout << "\nDone reading from Child pipe.\n";
 
         //::WaitForSingleObject(ChildInfo.ChildProcess,INFINITE);
 
@@ -262,8 +266,10 @@ namespace {
         Result.ExitCode = ExitStatus;
         ::CloseHandle(ChildInfo.ChildProcess);
 #else // Mezz_Windows
-        ProcessInfo ChildInfo = CreateCommandProcess( String(ExecutablePath), Command );
+        String NonConstExecPath{ ExecutablePath };
+        ProcessInfo ChildInfo = CreateCommandProcess( NonConstExecutablePath, Command );
 
+        std::cout << "\nReading from Child pipe.\n";
         ssize_t BytesRead = -1;
         char PipeBuf[1024];
         // Start reading and keep on reading until we hit an error or EoF.
@@ -272,6 +278,7 @@ namespace {
             Result.ConsoleOutput.append(PipeBuf,static_cast<size_t>(BytesRead));
         }
         ::close(ChildInfo.ChildPipe);
+        std::cout << "\nDone reading from Child pipe.\n";
 
         int Status = -1;
         ::waitpid(ChildInfo.ChildPID,&Status,0);
