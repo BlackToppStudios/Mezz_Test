@@ -166,7 +166,7 @@ namespace {
         int ChildPID;
     };//ProcessInfo
 
-    char** ConvertArguments(const StringView Arguments)
+    /*char** ConvertArguments(const StringView Arguments)
     {
         std::cout << "\nConverting Arguments.\n";
         const String Splitters(" \t");
@@ -190,7 +190,7 @@ namespace {
         Ret[ArgVector.size() + 1] = nullptr;
         std::cout << "\nFinished converting Arguments.\n";
         return Ret;
-    }
+    }//*/
 
     ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
@@ -206,7 +206,28 @@ namespace {
             //::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
             ::close( Pipes[1] ); // Done mangling pipes.
 
-            char** ArgV = ConvertArguments(Arguments);
+            std::cout << "\nConverting Arguments.\n";
+            //char** ArgV = ConvertArguments(Arguments);
+            const String Splitters(" \t");
+            std::vector<String> ArgVector;
+            size_t StrPos = 0;
+            for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
+                 NewPos != String::npos ;
+                 NewPos = Arguments.find_first_of(Splitters,StrPos) )
+            {
+                String Token{ Arguments.substr(StrPos,NewPos) };
+                if( !Token.empty() ) {
+                    ArgVector.push_back( std::move(Token) );
+                }
+                StrPos = NewPos;
+            }
+
+            char* ArgV[ArgVector.size() + 1];// +1 for the nullptr at end.
+            for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
+                { ArgV[Idx] = strdup( ArgVector[Idx].c_str() ); }
+            ArgV[ArgVector.size() + 1] = nullptr;
+            std::cout << "\nFinished converting Arguments.\n";
+            //execvp(ExecutablePath.data(),ArgV);
             execvp(ExecutablePath.data(),ArgV);
             // At this point we disappear into a puff of logic
             // But to appease compilers, we'll write code that pretends we didn't
