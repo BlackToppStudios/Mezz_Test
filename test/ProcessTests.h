@@ -93,25 +93,25 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
         Testing::CommandResult HelloResult = Testing::RunCommand(Empty,"cmake -E echo Hello");
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-Hello-ExitCode",
                    Integer(0),
-                   HelloResult.ExitCode);
+                   HelloResult.ExitCode)
         TEST_STRING_CONTAINS("RunCommand(const_StringView,const_StringView)-Hello-Output",
                              String("Hello"),
-                             HelloResult.ConsoleOutput);
+                             HelloResult.ConsoleOutput)
         Testing::CommandResult FalseResult = Testing::RunCommand(Empty,"cmake -E false");
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-FalseCommand-ExitCode",
                    Integer(1),
-                   FalseResult.ExitCode);
+                   FalseResult.ExitCode)
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-FalseCommand-Output",
                    true,
-                   FalseResult.ConsoleOutput.empty());
+                   FalseResult.ConsoleOutput.empty())
         std::cout << "\nFalseResult output: " << FalseResult.ConsoleOutput << ".\n";
         Testing::CommandResult TrueResult = Testing::RunCommand(Empty,"cmake -E true");
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-ExitCode",
                    Integer(0),
-                   TrueResult.ExitCode);
+                   TrueResult.ExitCode)
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-Output",
                    true,
-                   TrueResult.ConsoleOutput.empty());
+                   TrueResult.ConsoleOutput.empty())
     }//RunCommand
 
     //Integer MEZZ_LIB OutputCommandToFile(const StringView Command, const StringView OutputFileName)

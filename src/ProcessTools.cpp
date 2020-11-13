@@ -168,7 +168,8 @@ namespace {
 
     char** ConvertArguments(const StringView Arguments)
     {
-        static const String Splitters(" \t");
+        std::cout << "\nConverting Arguments.\n";
+        const String Splitters(" \t");
         std::vector<String> ArgVector;
         size_t StrPos = 0;
         for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
@@ -182,17 +183,21 @@ namespace {
             StrPos = NewPos;
         }
 
-        char** Ret = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
+        //char** Ret = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
+        char* Ret[ArgVector.size() + 1];// +1 for the nullptr at end.
         for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
             { Ret[Idx] = strdup( ArgVector[Idx].c_str() ); }
         Ret[ArgVector.size() + 1] = nullptr;
+        std::cout << "\nFinished converting Arguments.\n";
         return Ret;
     }
 
     ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
         int Pipes[2];
-        ::pipe(Pipes);
+        if( ::pipe(Pipes) < 0 ) {
+            throw std::runtime_error("Unable to create pipe for child process.");
+        }
 
         pid_t ProcessID = ::fork();
         if( ProcessID == 0 ) { // Child
