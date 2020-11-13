@@ -239,6 +239,7 @@ namespace {
 
     Testing::CommandResult RunCommandImpl(const StringView ExecutablePath, const StringView Command)
     {
+        std::cout << "\nEntering RunCommandImpl.\n";
         Testing::CommandResult Result;
 #ifdef MEZZ_Windows
         ProcessInfo ChildInfo = CreateCommandProcess( ExecutablePath, Command );
@@ -283,6 +284,7 @@ namespace {
             Result.ExitCode = Status;
         }
 #endif // MEZZ_Windows
+        std::cout << "\nLeaving RunCommandImpl.\n";
         return Result;
     }
 }
