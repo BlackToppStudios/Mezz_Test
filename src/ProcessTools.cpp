@@ -182,8 +182,7 @@ namespace {
             StrPos = NewPos;
         }
 
-        //char** Ret = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
-        char* Ret[ArgVector.size() + 1];// +1 for the nullptr at end.
+        char** Ret = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
         for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
             { Ret[Idx] = strdup( ArgVector[Idx].c_str() ); }
         Ret[ArgVector.size()] = nullptr;
