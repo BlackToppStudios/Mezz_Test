@@ -172,7 +172,7 @@ namespace {
         std::vector<String> ArgVector;
         size_t StrPos = 0;
         for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
-             NewPos != String::npos ;
+             NewPos != StringVeiw::npos ;
              NewPos = Arguments.find_first_of(Splitters,StrPos) )
         {
             String Token{ Arguments.substr(StrPos,NewPos) };
@@ -205,12 +205,13 @@ namespace {
             ::close( Pipes[1] ); // Done mangling pipes.
 
             std::cout << "\nConverting Arguments.\n";
-            char** ArgV = ConvertArguments(Arguments);
-            /*const String Splitters(" \t");
+            //char** ArgV = ConvertArguments(Arguments);
+
+            const String Splitters(" \t");
             std::vector<String> ArgVector;
             size_t StrPos = 0;
             for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
-                 NewPos != String::npos ;
+                 NewPos != StringVeiw::npos ;
                  NewPos = Arguments.find_first_of(Splitters,StrPos) )
             {
                 String Token{ Arguments.substr(StrPos,NewPos) };
@@ -220,10 +221,12 @@ namespace {
                 StrPos = NewPos;
             }
 
-            char* ArgV[256];
+            //char** ArgV = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
+            char* ArgV[ArgVector.size() + 1];// +1 for the nullptr at end.
             for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
                 { ArgV[Idx] = strdup( ArgVector[Idx].c_str() ); }
-            ArgV[ArgVector.size()] = nullptr;//*/
+            ArgV[ArgVector.size()] = nullptr;
+
             std::cout << "\nFinished converting Arguments.\n";
             execvp(ExecutablePath.data(),ArgV);
             // At this point we disappear into a puff of logic
