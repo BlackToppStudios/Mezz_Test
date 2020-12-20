@@ -166,13 +166,13 @@ namespace {
         int ChildPID;
     };//ProcessInfo
 
-    char** ConvertArguments(const StringView Arguments)
+    /*char** ConvertArguments(const StringView Arguments)
     {
         const String Splitters(" \t");
         std::vector<String> ArgVector;
         size_t StrPos = 0;
         for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
-             NewPos != StringVeiw::npos ;
+             NewPos != StringView::npos ;
              NewPos = Arguments.find_first_of(Splitters,StrPos) )
         {
             String Token{ Arguments.substr(StrPos,NewPos) };
@@ -211,7 +211,7 @@ namespace {
             std::vector<String> ArgVector;
             size_t StrPos = 0;
             for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
-                 NewPos != StringVeiw::npos ;
+                 NewPos != StringView::npos ;
                  NewPos = Arguments.find_first_of(Splitters,StrPos) )
             {
                 String Token{ Arguments.substr(StrPos,NewPos) };
