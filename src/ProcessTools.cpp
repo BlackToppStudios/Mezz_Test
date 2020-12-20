@@ -212,7 +212,7 @@ namespace {
             size_t StrPos = 0;
             for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
                  NewPos != StringView::npos ;
-                 NewPos = Arguments.find_first_of(Splitters,StrPos) )
+                 NewPos = Arguments.find_first_of(Splitters,StrPos + 1) )
             {
                 String Token{ Arguments.substr(StrPos,NewPos) };
                 if( !Token.empty() ) {
