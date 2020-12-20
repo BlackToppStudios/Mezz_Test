@@ -284,6 +284,9 @@ namespace {
         while( ( BytesRead = ::read(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf)) ) > 0 )
         {
             std::cout << "\nRead " << BytesRead << " bytes from child pipe." << std::endl;
+            std::cout << "Message: \"";
+            std::cout.write(PipeBuf,BytesRead);
+            std::cout << "\"." << std::endl;
             Result.ConsoleOutput.append(PipeBuf,static_cast<size_t>(BytesRead));
         }
         ::close(ChildInfo.ChildPipe);
