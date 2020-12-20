@@ -236,8 +236,18 @@ namespace {
             ArgV[ArgVector.size()] = nullptr;//*/
 
             std::cout << "\nFinished converting Arguments." << std::endl;
-            execvp(ExecutablePath.data(),ArgV);
-            // At this point we disappear into a puff of logic
+            if( execvp(ExecutablePath.data(),ArgV) < 0 ) {
+                int ErrorNum = errno;
+                std::cout << "\nEncountered error: " << ErrorNum << " : ";
+                char ErrStr[256];
+                if( strerror_r(ErrorNum,ErrStr,256) != 0 ) {
+                    std::cout << "Unable to get error string.\n";
+                }
+                std::cout << ErrStr << "\n";
+                // Welp...it's been a good ride.
+                std::terminate();
+            }
+            // If all goes well we disappear into a puff of logic at this point
             // But to appease compilers, we'll write code that pretends we didn't
             return { 0, 0 };
         }else if( ProcessID > 0 ) { // Parent
