@@ -207,7 +207,30 @@ namespace {
             std::cout << "\nConverting Arguments." << std::endl;
             //char** ArgV = ConvertArguments(Arguments);
 
-            const String Splitters(" \t");
+            /*char* ArgV[64];//Arbitrary Max
+
+            size_t StrCount = 0;
+            for( char* CurrPos = Arguments.data() ; CurrPos != nullptr ; CurrPos += 1 )
+            {
+
+                ++StrCount;
+            }//*/
+
+            std::vector<String> ArgVector;
+            String TempStr;
+            for( StringView::iterator StrIt = Arguments.begin() ; StrIt != Arguments.end() ; ++StrIt )
+            {
+                if( (*StrIt) == ' ' || (*StrIt) == '\t' ) {
+                    if( !TempStr.empty() ) {
+                        ArgVector.push_back(TempStr);
+                        TempStr.clear();
+                    }
+                }else{
+                    TempStr.push_back(*StrIt);
+                }
+            }
+
+            /*const String Splitters(" \t");
             std::vector<String> ArgVector;
             size_t StrPos = 0;
             for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
@@ -219,7 +242,7 @@ namespace {
                     ArgVector.push_back( std::move(Token) );
                 }
                 StrPos = NewPos;
-            }
+            }//*/
 
             char** ArgV = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
             for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
@@ -230,7 +253,7 @@ namespace {
                 }
                 ArgV[Idx] = NewStr;
             }
-            ArgV[ArgVector.size()] = nullptr;
+            ArgV[ArgVector.size()] = nullptr;//*/
 
             std::cout << "\nFinished converting Arguments." << std::endl;
             execvp(ExecutablePath.data(),ArgV);
