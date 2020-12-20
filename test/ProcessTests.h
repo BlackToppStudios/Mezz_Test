@@ -51,7 +51,7 @@
 AUTOMATIC_TEST_GROUP(ProcessTests, Process)
 {
     using namespace Mezzanine;
-    std::cout << "\nStarting ProcessTests.\n";
+    std::cout << "\nStarting ProcessTests." << std::endl;
     {//GetFileContents
         const String TestFilename("ProcessTestFile.txt");
         const String TestToken(
@@ -65,7 +65,7 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
         TEST_EQUAL("GetFileContents(const_StringView)", TestToken, Testing::GetFileContents(TestFilename))
     }//GetFileContents
 
-    std::cout << "\nStarting GetCommandOutput Tests.\n";
+    std::cout << "\nStarting GetCommandOutput Tests." << std::endl;
     {//GetCommandOutput
         TEST_STRING_CONTAINS("GetCommandOutput(const_StringView)-foo",
                              String("foo"),
@@ -90,7 +90,7 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
         // No good way to test this.
     }//OutputCommandToFile w/ ExecutablePath
 
-    std::cout << "\nStarting RunCommand Tests.\n";
+    std::cout << "\nStarting RunCommand Tests." << std::endl;
     {//RunCommand
         StringView Empty;
         Testing::CommandResult HelloResult = Testing::RunCommand(Empty,"cmake -E echo Hello");

@@ -191,7 +191,7 @@ namespace {
 
     ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
-        std::cout << "\nEntering CreateCommandProcess.\n";
+        std::cout << "\nEntering CreateCommandProcess." << std::endl;
         int Pipes[2];
         if( ::pipe(Pipes) < 0 ) {
             throw std::runtime_error("Unable to create pipe for child process.");
@@ -204,7 +204,7 @@ namespace {
             //::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
             ::close( Pipes[1] ); // Done mangling pipes.
 
-            std::cout << "\nConverting Arguments.\n";
+            std::cout << "\nConverting Arguments." << std::endl;
             //char** ArgV = ConvertArguments(Arguments);
 
             const String Splitters(" \t");
@@ -232,14 +232,14 @@ namespace {
             }
             ArgV[ArgVector.size()] = nullptr;
 
-            std::cout << "\nFinished converting Arguments.\n";
+            std::cout << "\nFinished converting Arguments." << std::endl;
             execvp(ExecutablePath.data(),ArgV);
             // At this point we disappear into a puff of logic
             // But to appease compilers, we'll write code that pretends we didn't
             return { 0, 0 };
         }else if( ProcessID > 0 ) { // Parent
             ::close( Pipes[1] ); // Close Write end of pipe
-            std::cout << "\nLeaving CreateCommandProcess.\n";
+            std::cout << "\nLeaving CreateCommandProcess." << std::endl;
             return { Pipes[0], ProcessID };
         }else{
             throw std::runtime_error("Unable to create forked process.");
@@ -249,12 +249,12 @@ namespace {
 
     Testing::CommandResult RunCommandImpl(const StringView ExecutablePath, const StringView Command)
     {
-        std::cout << "\nEntering RunCommandImpl.\n";
+        std::cout << "\nEntering RunCommandImpl." << std::endl;
         Testing::CommandResult Result;
 #ifdef MEZZ_Windows
         ProcessInfo ChildInfo = CreateCommandProcess( ExecutablePath, Command );
 
-        std::cout << "\nReading from Child pipe.\n";
+        std::cout << "\nReading from Child pipe." << std::endl;
         DWORD BytesRead = 0;
         CHAR PipeBuf[1024];
         while( ::ReadFile(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf),&BytesRead,NULL) )
@@ -265,7 +265,7 @@ namespace {
             Result.ConsoleOutput.append(PipeBuf,BytesRead);
         }
         ::CloseHandle(ChildInfo.ChildPipe);
-        std::cout << "\nDone reading from Child pipe.\n";
+        std::cout << "\nDone reading from Child pipe." << std::endl;
 
         //::WaitForSingleObject(ChildInfo.ChildProcess,INFINITE);
 
@@ -277,17 +277,17 @@ namespace {
         String NonConstExecPath{ ExecutablePath };
         ProcessInfo ChildInfo = CreateCommandProcess( NonConstExecPath, Command );
 
-        std::cout << "\nReading from Child pipe.\n";
+        std::cout << "\nReading from Child pipe." << std::endl;
         ssize_t BytesRead = -1;
         char PipeBuf[1024];
         // Start reading and keep on reading until we hit an error or EoF.
         while( ( BytesRead = ::read(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf)) ) > 0 )
         {
-            std::cout << "\nRead " << BytesRead << " bytes from child pipe.\n";
+            std::cout << "\nRead " << BytesRead << " bytes from child pipe." << std::endl;
             Result.ConsoleOutput.append(PipeBuf,static_cast<size_t>(BytesRead));
         }
         ::close(ChildInfo.ChildPipe);
-        std::cout << "\nDone reading from Child pipe.\n";
+        std::cout << "\nDone reading from Child pipe." << std::endl;
 
         int Status = -1;
         ::waitpid(ChildInfo.ChildPID,&Status,0);
@@ -300,7 +300,7 @@ namespace {
             Result.ExitCode = Status;
         }
 #endif // MEZZ_Windows
-        std::cout << "\nLeaving RunCommandImpl.\n";
+        std::cout << "\nLeaving RunCommandImpl." << std::endl;
         return Result;
     }
 }
