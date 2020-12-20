@@ -223,7 +223,13 @@ namespace {
 
             char** ArgV = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
             for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
-                { ArgV[Idx] = strdup( ArgVector[Idx].c_str() ); }
+            {
+                char* NewStr = strdup( ArgVector[Idx].c_str() );
+                if( NewStr == nullptr ) {
+                    std::cout << "\nArgument String Invalid : " << ArgVector[Idx] << "\n";
+                }
+                ArgV[Idx] = NewStr;
+            }
             ArgV[ArgVector.size()] = nullptr;
 
             std::cout << "\nFinished converting Arguments.\n";
