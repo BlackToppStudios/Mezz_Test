@@ -337,6 +337,22 @@ namespace Testing {
         return RunCommandImpl(SafePath,SafeCommand);
     }
 
+    CommandResult RunCommand(const StringView Command)
+    {
+#ifdef MEZZ_Windows
+        // Windows is happy to parse just a single string for everything.
+        StringView Empty;
+        return RunCommand(Empty,Command);
+#else // Mezz_Windows
+        // Posix is NOT happy to do the same.  The strings must be separate.
+        /// @todo Maybe handle filename paths with spaces?
+        size_t SplitPos = Command.find_first_of(" \t");
+        const String ExecPath{ Command.substr(0,SplitPos) };
+        const String ArgsStr{ Command.substr(SplitPos + 1) };
+        return RunCommand(ExecPath,ArgsStr);
+#endif // MEZZ_Windows
+    }
+
     String GetCommandOutput(const StringView ExecutablePath, const StringView Command)
     {
         const Mezzanine::String SafePath( SanitizeProcessCommand(ExecutablePath) );
@@ -348,8 +364,18 @@ namespace Testing {
 
     String GetCommandOutput(const StringView Command)
     {
+#ifdef MEZZ_Windows
+        // Windows is happy to parse just a single string for everything.
         StringView Empty;
         return GetCommandOutput(Empty,Command);
+#else // Mezz_Windows
+        // Posix is NOT happy to do the same.  The strings must be separate.
+        /// @todo Maybe handle filename paths with spaces?
+        size_t SplitPos = Command.find_first_of(" \t");
+        const String ExecPath{ Command.substr(0,SplitPos) };
+        const String ArgsStr{ Command.substr(SplitPos + 1) };
+        return GetCommandOutput(ExecPath,ArgsStr);
+#endif // MEZZ_Windows
     }
 
     ///////////////////////////////////////////////////////////////////////////////

@@ -92,15 +92,14 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
 
     std::cout << "\nStarting RunCommand Tests." << std::endl;
     {//RunCommand
-        StringView Empty;
-        Testing::CommandResult HelloResult = Testing::RunCommand(Empty,"cmake -E echo Hello");
+        Testing::CommandResult HelloResult = Testing::RunCommand("cmake -E echo Hello");
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-Hello-ExitCode",
                    Integer(0),
                    HelloResult.ExitCode)
         TEST_STRING_CONTAINS("RunCommand(const_StringView,const_StringView)-Hello-Output",
                              String("Hello"),
                              HelloResult.ConsoleOutput)
-        Testing::CommandResult FalseResult = Testing::RunCommand(Empty,"cmake -E false");
+        Testing::CommandResult FalseResult = Testing::RunCommand("cmake -E false");
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-FalseCommand-ExitCode",
                    Integer(1),
                    FalseResult.ExitCode)
@@ -108,7 +107,7 @@ AUTOMATIC_TEST_GROUP(ProcessTests, Process)
                    true,
                    FalseResult.ConsoleOutput.empty())
         std::cout << "\nFalseResult output: " << FalseResult.ConsoleOutput << ".\n";
-        Testing::CommandResult TrueResult = Testing::RunCommand(Empty,"cmake -E true");
+        Testing::CommandResult TrueResult = Testing::RunCommand("cmake -E true");
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-ExitCode",
                    Integer(0),
                    TrueResult.ExitCode)
