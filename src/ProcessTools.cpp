@@ -205,6 +205,8 @@ namespace {
             ::close( Pipes[1] ); // Done mangling pipes.
 
             std::cout << "\nConverting Arguments." << std::endl;
+            std::cout << "\nExecPath: \"" << ExecutablePath << "\"." << std::endl;
+            std::cout << "\nArguments: \"" << Arguments << "\"." << std::endl;
             //char** ArgV = ConvertArguments(Arguments);
 
             std::vector<String> ArgVector;
@@ -223,6 +225,10 @@ namespace {
             if( !TempStr.empty() ) {
                 ArgVector.push_back(TempStr);
             }
+
+            std::cout << "\nTokenized Output:" << std::endl;
+            for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
+                { std::cout << Idx << ": \"" << ArgVector[Idx] << "\"." << std::endl; }
 
             char** ArgV = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
             for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
