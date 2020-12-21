@@ -243,7 +243,7 @@ namespace {
                 if( strerror_r(ErrorNum,ErrStr,256) != 0 ) {
                     std::cout << "Unable to get error string.\n";
                 }
-                std::cout << ErrStr << "\n";
+                std::cout << ErrStr << std::endl;
                 // Welp...it's been a good ride.
                 std::terminate();
             }
@@ -296,7 +296,7 @@ namespace {
         // Start reading and keep on reading until we hit an error or EoF.
         while( ( BytesRead = ::read(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf)) ) > 0 )
         {
-            std::cout << "\nRead " << BytesRead << " bytes from child pipe." << std::endl;
+            std::cout << "\nRead " << BytesRead << " bytes from Child pipe." << std::endl;
             std::cout << "Message: \"";
             std::cout.write(PipeBuf,BytesRead);
             std::cout << "\"." << std::endl;
