@@ -209,7 +209,7 @@ namespace {
             std::cout << "\nArguments: \"" << Arguments << "\"." << std::endl;
             //char** ArgV = ConvertArguments(Arguments);
 
-            std::vector<String> ArgVector;
+            std::vector<Mezzanine::String> ArgVector;
             String TempStr;
             for( StringView::iterator StrIt = Arguments.begin() ; StrIt != Arguments.end() ; ++StrIt )
             {
@@ -347,9 +347,13 @@ namespace Testing {
         // Posix is NOT happy to do the same.  The strings must be separate.
         /// @todo Maybe handle filename paths with spaces?
         size_t SplitPos = Command.find_first_of(" \t");
-        const String ExecPath{ Command.substr(0,SplitPos) };
-        const String ArgsStr{ Command.substr(SplitPos + 1) };
-        return RunCommand(ExecPath,ArgsStr);
+        const Mezzanine::String ExecPath{ Command.substr(0,SplitPos) };
+        //const Mezzanine::String ArgsStr{};
+        //if( SplitPos < Command.size() ) {
+        //    ArgsStr.append( Command.substr(SplitPos + 1) );
+        //}
+        //return RunCommand(ExecPath,ArgsStr);
+        return GetCommandOutput(ExecPath,Command);
 #endif // MEZZ_Windows
     }
 
@@ -372,9 +376,13 @@ namespace Testing {
         // Posix is NOT happy to do the same.  The strings must be separate.
         /// @todo Maybe handle filename paths with spaces?
         size_t SplitPos = Command.find_first_of(" \t");
-        const String ExecPath{ Command.substr(0,SplitPos) };
-        const String ArgsStr{ Command.substr(SplitPos + 1) };
-        return GetCommandOutput(ExecPath,ArgsStr);
+        const Mezzanine::String ExecPath{ Command.substr(0,SplitPos) };
+        //const Mezzanine::String ArgsStr{};
+        //if( SplitPos < Command.size() ) {
+        //    ArgsStr.append( Command.substr(SplitPos + 1) );
+        //}
+        //return GetCommandOutput(ExecPath,ArgsStr);
+        return GetCommandOutput(ExecPath,Command);
 #endif // MEZZ_Windows
     }
 
