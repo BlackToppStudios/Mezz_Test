@@ -71,7 +71,7 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
                              String("foo"),
                              Testing::GetCommandOutput("cmake -E echo \"foo\""))
         TEST_STRING_CONTAINS("GetCommandOutput(const_StringView)-BadExe",
-                             String("No such file or directory"),
+                             String("Process Error"),
                              Testing::GetCommandOutput("NotARealFilePlzDontActuallyExist"))
         TEST_THROW("GetCommandOutput(const_StringView)-Throw-BadSymbol",
                    std::runtime_error,
