@@ -48,7 +48,7 @@
 #include <fstream>
 
 /// @brief Tests for the class to store test data results.
-AUTOMATIC_TEST_GROUP(ProcessTests, Process)
+BENCHMARK_TEST_GROUP(ProcessTests, Process)
 {
     using namespace Mezzanine;
     std::cout << "\nStarting ProcessTests." << std::endl;
