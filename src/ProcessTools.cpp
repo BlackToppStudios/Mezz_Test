@@ -353,7 +353,7 @@ namespace Testing {
         //    ArgsStr.append( Command.substr(SplitPos + 1) );
         //}
         //return RunCommand(ExecPath,ArgsStr);
-        return GetCommandOutput(ExecPath,Command);
+        return RunCommand(ExecPath,Command);
 #endif // MEZZ_Windows
     }
 
