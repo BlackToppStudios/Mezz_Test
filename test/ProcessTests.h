@@ -70,12 +70,12 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
         TEST_STRING_CONTAINS("GetCommandOutput(const_StringView)-foo",
                              String("foo"),
                              Testing::GetCommandOutput("cmake -E echo \"foo\""))
+        TEST_STRING_CONTAINS("GetCommandOutput(const_StringView)-BadExe",
+                             String("No such file or directory"),
+                             Testing::GetCommandOutput("NotARealFilePlzDontActuallyExist"))
         TEST_THROW("GetCommandOutput(const_StringView)-Throw-BadSymbol",
                    std::runtime_error,
                    []{ (void)Testing::GetCommandOutput("echo foo > somefile.txt"); })
-        TEST_THROW("GetCommandOutput(const_StringView)-Throw-BadExe",
-                   std::runtime_error,
-                   []{ (void)Testing::GetCommandOutput("NotARealFilePlzDontActuallyExist"); })
     }//GetCommandOutput
 
     {//GetCommandOutput w/ ExecutablePath
@@ -106,7 +106,10 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-FalseCommand-Output",
                    true,
                    FalseResult.ConsoleOutput.empty())
-        std::cout << "\nFalseResult output: " << FalseResult.ConsoleOutput << ".\n";
+        std::cout << "\nFalseResult output: " << std::endl;
+        for( char CurrChar : FalseResult.ConsoleOutput )
+            { std::cout << int(CurrChar) << " "; }
+        std::cout << std::endl;
         Testing::CommandResult TrueResult = Testing::RunCommand("cmake -E true");
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-ExitCode",
                    Integer(0),
@@ -114,9 +117,11 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-Output",
                    true,
                    TrueResult.ConsoleOutput.empty())
+        std::cout << "\nTrueResult output: " << std::endl;
+        for( char CurrChar : TrueResult.ConsoleOutput )
+            { std::cout << int(CurrChar) << " "; }
+        std::cout << std::endl;
     }//RunCommand
-
-    //Integer MEZZ_LIB OutputCommandToFile(const StringView Command, const StringView OutputFileName)
 }
 
 #endif

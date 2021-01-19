@@ -239,13 +239,12 @@ namespace {
             std::cout << "\nAttempting to launch process with command: \"" << ExecutablePath << " " << Arguments << "\"." << std::endl;
             if( execvp(ExecutablePath.data(),ArgV) < 0 ) {
                 int ErrorNum = errno;
-                std::cout << "\nEncountered error: " << ErrorNum << " : ";
                 /*char ErrStr[256];
                 if( strerror_r(ErrorNum,ErrStr,256) != 0 ) {
                     std::cout << "Unable to get error string.\n";
                 }
                 std::cout << ErrStr << std::endl;//*/
-                std::cout << ::strerror(ErrorNum) << std::endl;
+                std::cout << ::strerror(ErrorNum) << "(" << ErrorNum << ")" << std::endl;
                 // Welp...it's been a good ride.
                 std::terminate();
             }
