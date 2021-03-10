@@ -99,28 +99,32 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
         TEST_STRING_CONTAINS("RunCommand(const_StringView,const_StringView)-Hello-Output",
                              String("Hello"),
                              HelloResult.ConsoleOutput)
-        Testing::CommandResult FalseResult = Testing::RunCommand("cmake -E false");
+        // This line would be better and more to the point, but isn't supported on all platforms.
+        //Testing::CommandResult FalseResult = Testing::RunCommand("cmake -E false");
+        Testing::CommandResult FalseResult = Testing::RunCommand("git asdfg");
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-FalseCommand-ExitCode",
                    Integer(1),
                    FalseResult.ExitCode)
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-FalseCommand-Output",
                    true,
                    FalseResult.ConsoleOutput.empty())
-        std::cout << "\nFalseResult output: " << std::endl;
-        for( char CurrChar : FalseResult.ConsoleOutput )
-            { std::cout << int(CurrChar) << " "; }
-        std::cout << std::endl;
-        Testing::CommandResult TrueResult = Testing::RunCommand("cmake -E true");
+        //std::cout << "\nFalseResult output: " << std::endl;
+        //for( char CurrChar : FalseResult.ConsoleOutput )
+        //    { std::cout << int(CurrChar) << " "; }
+        //std::cout << std::endl;
+        // Like above, this is more direct but isn't supported on all platforms.
+        //Testing::CommandResult TrueResult = Testing::RunCommand("cmake -E true");
+        Testing::CommandResult TrueResult = Testing::RunCommand("git --help");
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-ExitCode",
                    Integer(0),
                    TrueResult.ExitCode)
         TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-Output",
-                   true,
+                   false,
                    TrueResult.ConsoleOutput.empty())
-        std::cout << "\nTrueResult output: " << std::endl;
-        for( char CurrChar : TrueResult.ConsoleOutput )
-            { std::cout << int(CurrChar) << " "; }
-        std::cout << std::endl;
+        //std::cout << "\nTrueResult output: " << std::endl;
+        //for( char CurrChar : TrueResult.ConsoleOutput )
+        //    { std::cout << int(CurrChar) << " "; }
+        //std::cout << std::endl;
     }//RunCommand
 }
 

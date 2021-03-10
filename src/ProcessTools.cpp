@@ -74,6 +74,8 @@ namespace {
     {
         HANDLE ChildPipe;
         HANDLE ChildProcess;
+        DWORD ErrorNum = 0;
+        String ErrorStr;
     };//ProcessInfo
 
     /// @brief Convenience type because Windows likes fatty Strings.
@@ -100,6 +102,23 @@ namespace {
             size_t WideLength = ::MultiByteToWideChar(CP_UTF8,0,Thin.data(),IntDemote(ThinSize),nullptr,0);
             Ret.resize(WideLength,L'\0');
             ::MultiByteToWideChar(CP_UTF8,0,Thin.data(),IntDemote(ThinSize),&Ret[0],IntDemote(WideLength));
+        }
+        return Ret;
+    }
+
+    /// @brief Converts a wide (16-bit) String to a narrow (8-bit) String.
+    /// @param Wide The String to be converted.
+    /// @param Length The length of the String to be converted.
+    /// @return Returns a narrow String with the converted contents.
+    [[nodiscard]]
+    String ConvertToNarrowString(const wchar_t* Wide, const size_t Length)
+    {
+        String Ret;
+        if( Length > 0 && Length < size_t( std::numeric_limits<int>::max() ) ) {
+            int CastedLength = static_cast<int>(Length);
+            int NarrowLength = ::WideCharToMultiByte(CP_UTF8,0,Wide,CastedLength,nullptr,0,nullptr,nullptr);
+            Ret.resize(static_cast<size_t>(NarrowLength),'\0');
+            ::WideCharToMultiByte(CP_UTF8,0,Wide,CastedLength,&Ret[0],static_cast<int>(Ret.size()),nullptr,nullptr);
         }
         return Ret;
     }
@@ -155,9 +174,21 @@ namespace {
         ::CloseHandle(Child_STDOUT_Write);
         if( !ChildLaunch ) {
             ::CloseHandle(Child_STDOUT_Read);
-            throw std::runtime_error("Failed to launch child process.");
+            DWORD ErrorNum = GetLastError();
+            StringStream ErrorStream;
+            ErrorStream << "Process Error: ";
+            wchar_t WideBuffer[256];
+            DWORD WrittenChars = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                                nullptr,
+                                                ErrorNum,
+                                                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                                                WideBuffer,
+                                                sizeof(WideBuffer) / sizeof(wchar_t),
+                                                nullptr);
+            ErrorStream << ConvertToNarrowString(WideBuffer,WrittenChars);
+            return { 0, 0, ErrorNum, ErrorStream.str() };
         }
-        return { Child_STDOUT_Read, ProcessInfo.hProcess };
+        return { Child_STDOUT_Read, ProcessInfo.hProcess, 0, String() };
     }
 #else // Mezz_Windows
     struct MEZZ_LIB ProcessInfo
@@ -244,9 +275,9 @@ namespace {
                     std::cout << "Unable to get error string.\n";
                 }
                 std::cout << ErrStr << std::endl;//*/
-                std::cout << "Process Error: " << ::strerror(ErrorNum) << "(" << ErrorNum << ")" << std::endl;
+                std::cout << "Process Error: " << ::strerror(ErrorNum) << "(" << ErrorNum << ")";
                 // Welp...it's been a good ride.
-                std::terminate();
+                std::exit(EXIT_FAILURE);
             }
             // If all goes well we disappear into a puff of logic at this point
             // But to appease compilers, we'll write code that pretends we didn't
@@ -267,6 +298,11 @@ namespace {
         Testing::CommandResult Result;
 #ifdef MEZZ_Windows
         ProcessInfo ChildInfo = CreateCommandProcess( ExecutablePath, Command );
+        if( ChildInfo.ErrorNum != 0 ) {
+            Result.ExitCode = 1;
+            Result.ConsoleOutput = ChildInfo.ErrorStr;
+            return Result;
+        }
 
         std::cout << "\nReading from Child pipe." << std::endl;
         DWORD BytesRead = 0;
@@ -347,11 +383,6 @@ namespace Testing {
         /// @todo Maybe handle filename paths with spaces?
         size_t SplitPos = Command.find_first_of(" \t");
         const Mezzanine::String ExecPath{ Command.substr(0,SplitPos) };
-        //const Mezzanine::String ArgsStr{};
-        //if( SplitPos < Command.size() ) {
-        //    ArgsStr.append( Command.substr(SplitPos + 1) );
-        //}
-        //return RunCommand(ExecPath,ArgsStr);
         return RunCommand(ExecPath,Command);
 #endif // MEZZ_Windows
     }
@@ -376,11 +407,6 @@ namespace Testing {
         /// @todo Maybe handle filename paths with spaces?
         size_t SplitPos = Command.find_first_of(" \t");
         const Mezzanine::String ExecPath{ Command.substr(0,SplitPos) };
-        //const Mezzanine::String ArgsStr{};
-        //if( SplitPos < Command.size() ) {
-        //    ArgsStr.append( Command.substr(SplitPos + 1) );
-        //}
-        //return GetCommandOutput(ExecPath,ArgsStr);
         return GetCommandOutput(ExecPath,Command);
 #endif // MEZZ_Windows
     }
