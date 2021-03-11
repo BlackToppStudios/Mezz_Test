@@ -49,6 +49,8 @@
 SAVE_WARNING_STATE
 SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's implementation
                           // of malloc.h where they use a comma in an assert.
+SUPPRESS_VC_WARNING(4668) // _WIN32_WINNT_WIN10_RS5 isn't defined causing a warning which
+                          // is escalated into an error.
 #ifdef MEZZ_Windows
     #include "windows.h"
 #else // MEZZ_Windows
@@ -59,6 +61,14 @@ SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's impl
 #endif // MEZZ_Windows
 
 RESTORE_WARNING_STATE
+
+#ifdef max
+#undef max
+#endif // max
+
+#ifdef min
+#undef min
+#endif // max
 
 #include <exception>
 #include <cstdlib>
