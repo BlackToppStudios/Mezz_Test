@@ -80,14 +80,14 @@ namespace
     {
         CallingTableType CallingTable;
 
-        CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = EXIT_FAILURE; };
-        CallingTable[RunInThisProcessToken] = [&Results]{ Results.InSubProcess = true; };
-        CallingTable[NoThreads] = [&Results]{ Results.ForceSingleThread = true; };
-        CallingTable[JunitXMLAToken] = [&Results]{ Results.EmitJunitXml = true; };
-        CallingTable[JunitXMLBToken] = [&Results]{ Results.EmitJunitXml = true; };
+        CallingTable[HelpToken] = [&Results]() noexcept { Results.ExitWithError = EXIT_FAILURE; };
+        CallingTable[RunInThisProcessToken] = [&Results]() noexcept { Results.InSubProcess = true; };
+        CallingTable[NoThreads] = [&Results]() noexcept { Results.ForceSingleThread = true; };
+        CallingTable[JunitXMLAToken] = [&Results]() noexcept { Results.EmitJunitXml = true; };
+        CallingTable[JunitXMLBToken] = [&Results]() noexcept { Results.EmitJunitXml = true; };
 
         // Debug does both Single thread and Single process.
-        auto RunHere = [&Results]{ Results.InSubProcess = true; Results.ForceSingleThread = true; };
+        auto RunHere = [&Results]() noexcept { Results.InSubProcess = true; Results.ForceSingleThread = true; };
         CallingTable[DebugAToken] = RunHere;
         CallingTable[DebugBToken] = RunHere;
 
@@ -110,8 +110,8 @@ namespace
                 { if(!OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
         };
 
-        CallingTable[SkipSummaryToken] = [&Results](){ Results.SkipSummary = true; };
-        CallingTable[SkipFileToken] = [&Results](){ Results.SkipFile = true; };
+        CallingTable[SkipSummaryToken] = [&Results]() noexcept { Results.SkipSummary = true; };
+        CallingTable[SkipFileToken] = [&Results]() noexcept { Results.SkipFile = true; };
 
         return CallingTable;
     }

@@ -89,9 +89,9 @@ public:
 SILENT_TEST_GROUP(TimedMacroFailureTestTests, WarningTimedTest)
 {
     // Here are some examples of test that should produce non successful performance warning results.
-    TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{})
+    TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []() noexcept {})
     TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
-               []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); })
+               []() noexcept { std::this_thread::sleep_for( std::chrono::milliseconds(5) ); })
 }
 
 /// @brief This is the actual Test class. This tests our Test Macros that are time sensitive.
@@ -114,7 +114,7 @@ BENCHMARK_TEST_GROUP(TimedTestTests, TimedTest)
     // These amounts of time very short to be measuring this way. longer running tests can be more precise.
     TEST_TIMED("TestTimedPassing", SleepTime, MilliSecondEpsilon, Sleeper)
 
-    TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []{ })
+    TEST_TIMED_UNDER("TestTimedUnderPassing", std::chrono::microseconds(5000), []() noexcept {})
 
     // Warning Timed Tests
     class TimedMacroFailureTestTests Timeifier;
