@@ -67,7 +67,7 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
     {//GetCommandOutput
         TEST_EQUAL("GetCommandOutput(const_StringView)-foo",
                    String("foo"),
-                   Testing::GetCommandOutput("cmake -E echo \"foo\""))
+                   Testing::GetCommandOutput("cmake -E echo foo"))
         TEST_STRING_CONTAINS("GetCommandOutput(const_StringView)-BadExe",
                              String("Process Error"),
                              Testing::GetCommandOutput("NotARealFilePlzDontActuallyExist"))
@@ -115,7 +115,8 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
     }//RunCommand w/ ExecutablePath
 
     {//OutputCommandToFile
-        Integer ExitCode = Testing::OutputCommandToFile("cmake -E echo \"Antidisestablishmentimperialism\"","ProcessOutputTest.txt");
+        Integer ExitCode = Testing::OutputCommandToFile("cmake -E echo Antidisestablishmentimperialism",
+                                                        "ProcessOutputTest.txt");
         String CommandOutput = Testing::GetFileContents("ProcessOutputTest.txt");
         TEST_EQUAL("OutputCommandToFile(const_StringView,const_StringView)-ExitCode",
                    Integer(0),
