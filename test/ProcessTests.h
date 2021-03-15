@@ -51,7 +51,6 @@
 BENCHMARK_TEST_GROUP(ProcessTests, Process)
 {
     using namespace Mezzanine;
-    std::cout << "\nStarting ProcessTests." << std::endl;
     {//GetFileContents
         const String TestFilename("ProcessTestFile.txt");
         const String TestToken(
@@ -65,11 +64,10 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
         TEST_EQUAL("GetFileContents(const_StringView)", TestToken, Testing::GetFileContents(TestFilename))
     }//GetFileContents
 
-    std::cout << "\nStarting GetCommandOutput Tests." << std::endl;
     {//GetCommandOutput
-        TEST_STRING_CONTAINS("GetCommandOutput(const_StringView)-foo",
-                             String("foo"),
-                             Testing::GetCommandOutput("cmake -E echo \"foo\""))
+        TEST_EQUAL("GetCommandOutput(const_StringView)-foo",
+                   String("foo"),
+                   Testing::GetCommandOutput("cmake -E echo \"foo\""))
         TEST_STRING_CONTAINS("GetCommandOutput(const_StringView)-BadExe",
                              String("Process Error"),
                              Testing::GetCommandOutput("NotARealFilePlzDontActuallyExist"))
@@ -82,50 +80,64 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
         // No good way to test this.
     }//GetCommandOutput w/ ExecutablePath
 
-    {//OutputCommandToFile
+    {//RunCommand
+        Testing::CommandResult HelloResult = Testing::RunCommand("cmake -E echo Hello");
+        TEST_EQUAL("RunCommand(const_StringView)-Hello-ExitCode",
+                   Integer(0),
+                   HelloResult.ExitCode)
+        TEST_STRING_CONTAINS("RunCommand(const_StringView)-Hello-Output",
+                             String("Hello"),
+                             HelloResult.ConsoleOutput)
 
+        Testing::CommandResult FalseResult = Testing::RunCommand("git asdfg");
+        TEST_EQUAL("RunCommand(const_StringView)-FalseCommand-ExitCode",
+                   Integer(1),
+                   FalseResult.ExitCode)
+        TEST_EQUAL("RunCommand(const_StringView)-FalseCommand-Output",
+                   true,
+                   FalseResult.ConsoleOutput.empty())
+
+        Testing::CommandResult TrueResult = Testing::RunCommand("git --help");
+        TEST_EQUAL("RunCommand(const_StringView)-TrueCommand-ExitCode",
+                   Integer(0),
+                   TrueResult.ExitCode)
+        TEST_EQUAL("RunCommand(const_StringView)-TrueCommand-Output",
+                   false,
+                   TrueResult.ConsoleOutput.empty())
+
+        TEST_THROW("RunCommand(const_StringView)-Throw-BadSymbol",
+                   std::runtime_error,
+                   []{ (void)Testing::RunCommand("echo foo | somefile.txt"); })
+    }//RunCommand
+
+    {//RunCommand w/ ExecutablePath
+        // No good way to test this.
+    }//RunCommand w/ ExecutablePath
+
+    {//OutputCommandToFile
+        Integer ExitCode = Testing::OutputCommandToFile("cmake -E echo \"Antidisestablishmentimperialism\"","ProcessOutputTest.txt");
+        String CommandOutput = Testing::GetFileContents("ProcessOutputTest.txt");
+        TEST_EQUAL("OutputCommandToFile(const_StringView,const_StringView)-ExitCode",
+                   Integer(0),
+                   ExitCode)
+        TEST_EQUAL("OutputCommandToFile(const_StringView,const_StringView)-Output",
+                   String("Antidisestablishmentimperialism"),
+                   CommandOutput)
+
+        std::cout << "\nEnd Char: " << int(CommandOutput.back()) << std::endl;
+        if( CommandOutput.back() == '\n' ) {
+            std::cout << "End char is a newline." << std::endl;
+        }else{
+            std::cout << "End char is not a newline." << std::endl;
+        }
+        TEST_THROW("OutputCommandToFile(const_StringView,const_StringView)-Throw-BadSymbol",
+                   std::runtime_error,
+                   []{ (void)Testing::OutputCommandToFile("echo foo < somefile.txt","BadText.txt"); })
     }//OutputCommandToFile
 
     {//OutputCommandToFile w/ ExecutablePath
         // No good way to test this.
     }//OutputCommandToFile w/ ExecutablePath
-
-    std::cout << "\nStarting RunCommand Tests." << std::endl;
-    {//RunCommand
-        Testing::CommandResult HelloResult = Testing::RunCommand("cmake -E echo Hello");
-        TEST_EQUAL("RunCommand(const_StringView,const_StringView)-Hello-ExitCode",
-                   Integer(0),
-                   HelloResult.ExitCode)
-        TEST_STRING_CONTAINS("RunCommand(const_StringView,const_StringView)-Hello-Output",
-                             String("Hello"),
-                             HelloResult.ConsoleOutput)
-        // This line would be better and more to the point, but isn't supported on all platforms.
-        //Testing::CommandResult FalseResult = Testing::RunCommand("cmake -E false");
-        Testing::CommandResult FalseResult = Testing::RunCommand("git asdfg");
-        TEST_EQUAL("RunCommand(const_StringView,const_StringView)-FalseCommand-ExitCode",
-                   Integer(1),
-                   FalseResult.ExitCode)
-        TEST_EQUAL("RunCommand(const_StringView,const_StringView)-FalseCommand-Output",
-                   true,
-                   FalseResult.ConsoleOutput.empty())
-        //std::cout << "\nFalseResult output: " << std::endl;
-        //for( char CurrChar : FalseResult.ConsoleOutput )
-        //    { std::cout << int(CurrChar) << " "; }
-        //std::cout << std::endl;
-        // Like above, this is more direct but isn't supported on all platforms.
-        //Testing::CommandResult TrueResult = Testing::RunCommand("cmake -E true");
-        Testing::CommandResult TrueResult = Testing::RunCommand("git --help");
-        TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-ExitCode",
-                   Integer(0),
-                   TrueResult.ExitCode)
-        TEST_EQUAL("RunCommand(const_StringView,const_StringView)-TrueCommand-Output",
-                   false,
-                   TrueResult.ConsoleOutput.empty())
-        //std::cout << "\nTrueResult output: " << std::endl;
-        //for( char CurrChar : TrueResult.ConsoleOutput )
-        //    { std::cout << int(CurrChar) << " "; }
-        //std::cout << std::endl;
-    }//RunCommand
 }
 
 #endif

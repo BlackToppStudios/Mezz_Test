@@ -232,7 +232,6 @@ namespace {
 
     ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
-        std::cout << "\nEntering CreateCommandProcess." << std::endl;
         int Pipes[2];
         if( ::pipe(Pipes) < 0 ) {
             throw std::runtime_error("Unable to create pipe for child process.");
@@ -244,11 +243,6 @@ namespace {
             ::dup2( Pipes[1], 1 ); // Direct cout file descriptor to our pipe.
             //::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
             ::close( Pipes[1] ); // Done mangling pipes.
-
-            //std::cout << "\nConverting Arguments." << std::endl;
-            //std::cout << "\nExecPath: \"" << ExecutablePath << "\"." << std::endl;
-            //std::cout << "\nArguments: \"" << Arguments << "\"." << std::endl;
-            //char** ArgV = ConvertArguments(Arguments);
 
             std::vector<Mezzanine::String> ArgVector;
             String TempStr;
@@ -267,25 +261,12 @@ namespace {
                 ArgVector.push_back(TempStr);
             }
 
-            //std::cout << "\nTokenized Output:" << std::endl;
-            //for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
-            //    { std::cout << Idx << ": \"" << ArgVector[Idx] << "\"." << std::endl; }
-
             char** ArgV = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
             for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
                 { ArgV[Idx] = strdup( ArgVector[Idx].c_str() ); }
             ArgV[ArgVector.size()] = nullptr;//*/
 
-            //std::cout << "\nFinished converting Arguments." << std::endl;
-            //std::cout << "\nAttempting to launch process with command: \"" << ExecutablePath << " " << Arguments << "\"." << std::endl;
             if( execvp(ExecutablePath.data(),ArgV) < 0 ) {
-                int ErrorNum = errno;
-                /*char ErrStr[256];
-                if( strerror_r(ErrorNum,ErrStr,256) != 0 ) {
-                    std::cout << "Unable to get error string.\n";
-                }
-                std::cout << ErrStr << std::endl;//*/
-                std::cout << "Process Error: " << ::strerror(ErrorNum) << "(" << ErrorNum << ")";
                 // Welp...it's been a good ride.
                 std::exit(EXIT_FAILURE);
             }
@@ -294,7 +275,6 @@ namespace {
             return { 0, 0 };
         }else if( ProcessID > 0 ) { // Parent
             ::close( Pipes[1] ); // Close Write end of pipe
-            std::cout << "\nLeaving CreateCommandProcess." << std::endl;
             return { Pipes[0], ProcessID };
         }else{
             throw std::runtime_error("Unable to create forked process.");
@@ -304,7 +284,6 @@ namespace {
 
     Testing::CommandResult RunCommandImpl(const StringView ExecutablePath, const StringView Command)
     {
-        std::cout << "\nEntering RunCommandImpl." << std::endl;
         Testing::CommandResult Result;
 #ifdef MEZZ_Windows
         ProcessInfo ChildInfo = CreateCommandProcess( ExecutablePath, Command );
@@ -314,7 +293,6 @@ namespace {
             return Result;
         }
 
-        std::cout << "\nReading from Child pipe." << std::endl;
         DWORD BytesRead = 0;
         CHAR PipeBuf[1024];
         while( ::ReadFile(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf),&BytesRead,NULL) )
@@ -325,32 +303,24 @@ namespace {
             Result.ConsoleOutput.append(PipeBuf,BytesRead);
         }
         ::CloseHandle(ChildInfo.ChildPipe);
-        std::cout << "\nDone reading from Child pipe." << std::endl;
-
-        //::WaitForSingleObject(ChildInfo.ChildProcess,INFINITE);
 
         DWORD ExitStatus;
         ::GetExitCodeProcess(ChildInfo.ChildProcess,&ExitStatus);
         Result.ExitCode = ExitStatus;
         ::CloseHandle(ChildInfo.ChildProcess);
+        // Trim newlines
+        while( Result.ConsoleOutput.back() == '\n' || Result.ConsoleOutput.back() == '\r' )
+            { Result.ConsoleOutput.pop_back(); }
 #else // Mezz_Windows
         String NonConstExecPath{ ExecutablePath };
         ProcessInfo ChildInfo = CreateCommandProcess( NonConstExecPath, Command );
 
-        std::cout << "\nReading from Child pipe." << std::endl;
         ssize_t BytesRead = -1;
         char PipeBuf[1024];
         // Start reading and keep on reading until we hit an error or EoF.
         while( ( BytesRead = ::read(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf)) ) > 0 )
-        {
-            std::cout << "\nRead " << BytesRead << " bytes from Child pipe." << std::endl;
-            std::cout << "Message: \"";
-            std::cout.write(PipeBuf,BytesRead);
-            std::cout << "\"." << std::endl;
-            Result.ConsoleOutput.append(PipeBuf,static_cast<size_t>(BytesRead));
-        }
+            { Result.ConsoleOutput.append(PipeBuf,static_cast<size_t>(BytesRead)); }
         ::close(ChildInfo.ChildPipe);
-        std::cout << "\nDone reading from Child pipe." << std::endl;
 
         int Status = -1;
         ::waitpid(ChildInfo.ChildPID,&Status,0);
@@ -362,8 +332,10 @@ namespace {
             // No idea what else could have happened
             Result.ExitCode = Status;
         }
+        // Trim newlines
+        while( Result.ConsoleOutput.back() == '\n' )
+            { Result.ConsoleOutput.pop_back(); }
 #endif // MEZZ_Windows
-        std::cout << "\nLeaving RunCommandImpl." << std::endl;
         return Result;
     }
 }
@@ -378,7 +350,7 @@ namespace Testing {
         const Mezzanine::String SafePath( SanitizeProcessCommand(ExecutablePath) );
         const Mezzanine::String SafeCommand( SanitizeProcessCommand(Command) );
         if( SafeCommand != Command )
-            { throw std::runtime_error("Command name included unsafe characters, it would not run correctly."); }
+            { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
         return RunCommandImpl(SafePath,SafeCommand);
     }
 
@@ -402,7 +374,7 @@ namespace Testing {
         const Mezzanine::String SafePath( SanitizeProcessCommand(ExecutablePath) );
         const Mezzanine::String SafeCommand( SanitizeProcessCommand(Command) );
         if( SafeCommand != Command )
-            { throw std::runtime_error("Command name included unsafe characters, it would not run correctly."); }
+            { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
         return RunCommandImpl(SafePath,SafeCommand).ConsoleOutput;
     }
 
@@ -432,7 +404,7 @@ namespace Testing {
         const Mezzanine::String SafeCommand( SanitizeProcessCommand(Command) );
         const Mezzanine::String SafeOutputFileName( SanitizeProcessCommand(OutputFileName) );
         if( SafeCommand != Command )
-            { throw std::runtime_error("Command name included unsafe characters, it would not run correctly."); }
+            { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
         std::ofstream OutputFile(SafeOutputFileName);
         CommandResult Result = RunCommandImpl(SafePath,SafeCommand);
         OutputFile << Result.ConsoleOutput;
