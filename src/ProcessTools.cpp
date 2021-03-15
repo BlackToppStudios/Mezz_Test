@@ -309,8 +309,10 @@ namespace {
         Result.ExitCode = ExitStatus;
         ::CloseHandle(ChildInfo.ChildProcess);
         // Trim newlines
-        while( Result.ConsoleOutput.back() == '\n' || Result.ConsoleOutput.back() == '\r' )
-            { Result.ConsoleOutput.pop_back(); }
+        if( !Result.ConsoleOutput.empty() ) {
+            while( Result.ConsoleOutput.back() == '\n' || Result.ConsoleOutput.back() == '\r' )
+                { Result.ConsoleOutput.pop_back(); }
+        }
 #else // Mezz_Windows
         String NonConstExecPath{ ExecutablePath };
         ProcessInfo ChildInfo = CreateCommandProcess( NonConstExecPath, Command );
@@ -333,8 +335,10 @@ namespace {
             Result.ExitCode = Status;
         }
         // Trim newlines
-        while( Result.ConsoleOutput.back() == '\n' )
-            { Result.ConsoleOutput.pop_back(); }
+        if( !Result.ConsoleOutput.empty() ) {
+            while( Result.ConsoleOutput.back() == '\n' )
+                { Result.ConsoleOutput.pop_back(); }
+        }
 #endif // MEZZ_Windows
         return Result;
     }

@@ -124,12 +124,6 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
                    String("Antidisestablishmentimperialism"),
                    CommandOutput)
 
-        std::cout << "\nEnd Char: " << int(CommandOutput.back()) << std::endl;
-        if( CommandOutput.back() == '\n' ) {
-            std::cout << "End char is a newline." << std::endl;
-        }else{
-            std::cout << "End char is not a newline." << std::endl;
-        }
         TEST_THROW("OutputCommandToFile(const_StringView,const_StringView)-Throw-BadSymbol",
                    std::runtime_error,
                    []{ (void)Testing::OutputCommandToFile("echo foo < somefile.txt","BadText.txt"); })
