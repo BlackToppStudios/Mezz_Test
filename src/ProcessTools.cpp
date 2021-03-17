@@ -80,11 +80,16 @@ RESTORE_WARNING_STATE
 namespace {
     using namespace Mezzanine;
 #ifdef MEZZ_Windows
+    /// @brief A struct with basic info that can be returned from attempting to launch a process.
     struct MEZZ_LIB ProcessInfo
     {
-        HANDLE ChildPipe;
-        HANDLE ChildProcess;
+        /// @brief A HANDLE belonging to the output end of the child processes cout pipe.
+        HANDLE ChildPipe = 0;
+        /// @brief A HANDLE belonging to the child process itself.
+        HANDLE ChildProcess = 0;
+        /// @brief The error code given if the process failed to launch.
         DWORD ErrorNum = 0;
+        /// @brief The error string given if the process failed to launch.
         String ErrorStr;
     };//ProcessInfo
 
@@ -133,6 +138,11 @@ namespace {
         return Ret;
     }
 
+    /// @brief Creates and launches a new process.
+    /// @param ExecutablePath Specifies the path to the exe that will be launched. Can be empty.
+    /// @param Arguments The space separated arguments given to the exe being launched. This MUST include
+    /// the path the executable as the first argument.
+    /// @return Returns a ProcessInfo struct containing information about the launched process or it's failure.
     ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
         HANDLE Child_STDOUT_Read = NULL;
@@ -201,35 +211,20 @@ namespace {
         return { Child_STDOUT_Read, ProcessInfo.hProcess, 0, String() };
     }
 #else // Mezz_Windows
+    /// @brief A simple struct containing the basic information of a launched child process.
     struct MEZZ_LIB ProcessInfo
     {
-        int ChildPipe;
-        int ChildPID;
+        int ChildPipe = 0;
+        int ChildPID = 0;
     };//ProcessInfo
 
-    /*char** ConvertArguments(const StringView Arguments)
-    {
-        const String Splitters(" \t");
-        std::vector<String> ArgVector;
-        size_t StrPos = 0;
-        for( size_t NewPos = Arguments.find_first_of(Splitters,StrPos) ;
-             NewPos != StringView::npos ;
-             NewPos = Arguments.find_first_of(Splitters,StrPos) )
-        {
-            String Token{ Arguments.substr(StrPos,NewPos) };
-            if( !Token.empty() ) {
-                ArgVector.push_back( std::move(Token) );
-            }
-            StrPos = NewPos;
-        }
-
-        char** Ret = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
-        for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
-            { Ret[Idx] = strdup( ArgVector[Idx].c_str() ); }
-        Ret[ArgVector.size()] = nullptr;
-        return Ret;
-    }//*/
-
+    /// @brief Creates and launches a new process.
+    /// @remarks The path to the executable to be launched must appear in both parameters to this function.
+    /// @param ExecutablePath Specifies the path to the exe that will be launched. MUST contain
+    /// the path to the executable being launched.
+    /// @param Arguments The space separated arguments given to the exe being launched. This MUST include
+    /// the path the executable as the first argument.
+    /// @return Returns a ProcessInfo struct containing information about the launched process.
     ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
         int Pipes[2];
@@ -268,6 +263,8 @@ namespace {
 
             if( execvp(ExecutablePath.data(),ArgV) < 0 ) {
                 // Welp...it's been a good ride.
+                int ErrorNum = errno;
+                std::cout << "Process Error: " << ::strerror(ErrorNum);
                 std::exit(EXIT_FAILURE);
             }
             // If all goes well we disappear into a puff of logic at this point
@@ -282,6 +279,10 @@ namespace {
     }
 #endif // MEZZ_Windows
 
+    /// @brief Launches a new process with the given command and collects it's output.
+    /// @param ExecutablePath The path to the executable to be launched.
+    /// @param Command The arguments given to the launched executable.
+    /// @return Returns a command result, containing the exit code and console output of the launched executable.
     Testing::CommandResult RunCommandImpl(const StringView ExecutablePath, const StringView Command)
     {
         Testing::CommandResult Result;
@@ -411,7 +412,7 @@ namespace Testing {
         const Mezzanine::String SafeOutputFileName( SanitizeProcessCommand(OutputFileName) );
         if( SafeCommand != Command )
             { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
-        std::ofstream OutputFile(SafeOutputFileName);
+        std::ofstream OutputFile(SafeOutputFileName,std::ios::trunc);
         CommandResult Result = RunCommandImpl(SafePath,SafeCommand);
         OutputFile << Result.ConsoleOutput;
         return Result.ExitCode;
