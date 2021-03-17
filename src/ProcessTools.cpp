@@ -234,6 +234,7 @@ namespace {
 
         pid_t ProcessID = ::fork();
         if( ProcessID == 0 ) { // Child
+            std::cout.setstate(std::ios::failbit); // Set failbit on cout so it discards other output.
             ::close( Pipes[0] ); // Close Read end of pipe.
             ::dup2( Pipes[1], 1 ); // Direct cout file descriptor to our pipe.
             //::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
@@ -264,6 +265,8 @@ namespace {
             if( execvp(ExecutablePath.data(),ArgV) < 0 ) {
                 // Welp...it's been a good ride.
                 int ErrorNum = errno;
+                // Restore cout
+                std::cout.clear();
                 std::cout << "Process Error: " << ::strerror(ErrorNum);
                 std::exit(EXIT_FAILURE);
             }
@@ -412,8 +415,8 @@ namespace Testing {
         const Mezzanine::String SafeOutputFileName( SanitizeProcessCommand(OutputFileName) );
         if( SafeCommand != Command )
             { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
-        std::ofstream OutputFile(SafeOutputFileName,std::ios::trunc);
         CommandResult Result = RunCommandImpl(SafePath,SafeCommand);
+        std::ofstream OutputFile(SafeOutputFileName,std::ios::trunc);
         OutputFile << Result.ConsoleOutput;
         return Result.ExitCode;
     }
