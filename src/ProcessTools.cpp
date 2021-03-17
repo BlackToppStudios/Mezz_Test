@@ -232,9 +232,9 @@ namespace {
             throw std::runtime_error("Unable to create pipe for child process.");
         }
 
+        std::cout.flush(); // Clean out the pipes before they may be important.
         pid_t ProcessID = ::fork();
         if( ProcessID == 0 ) { // Child
-            std::cout.setstate(std::ios::failbit); // Set failbit on cout so it discards other output.
             ::close( Pipes[0] ); // Close Read end of pipe.
             ::dup2( Pipes[1], 1 ); // Direct cout file descriptor to our pipe.
             //::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
@@ -265,8 +265,6 @@ namespace {
             if( execvp(ExecutablePath.data(),ArgV) < 0 ) {
                 // Welp...it's been a good ride.
                 int ErrorNum = errno;
-                // Restore cout
-                std::cout.clear();
                 std::cout << "Process Error: " << ::strerror(ErrorNum);
                 std::exit(EXIT_FAILURE);
             }
@@ -424,8 +422,17 @@ namespace Testing {
     Integer OutputCommandToFile(const StringView Command,
                                 const StringView OutputFileName)
     {
+#ifdef MEZZ_Windows
+        // Windows is happy to parse just a single string for everything.
         StringView Empty;
         return OutputCommandToFile(Empty,Command,OutputFileName);
+#else // Mezz_Windows
+        // Posix is NOT happy to do the same.  The strings must be separate.
+        /// @todo Maybe handle filename paths with spaces?
+        size_t SplitPos = Command.find_first_of(" \t");
+        const Mezzanine::String ExecPath{ Command.substr(0,SplitPos) };
+        return OutputCommandToFile(ExecPath,Command,OutputFileName);
+#endif // MEZZ_Windows
     }
 
     String GetFileContents(const StringView FileName)
