@@ -241,8 +241,8 @@ namespace {
     String ExtractExecPath(const StringView ExtractFrom)
     {
         /// @todo Maybe handle filename paths with spaces?
-        size_t SplitPos = Command.find_first_of(" \t");
-        return Command.substr(0,SplitPos);
+        size_t SplitPos = ExtractFrom.find_first_of(" \t");
+        return ExtractFrom.substr(0,SplitPos);
     }
 
     /// @brief Creates and launches a new process.
