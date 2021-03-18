@@ -63,16 +63,20 @@ SUPPRESS_CLANG_WARNING("-Wpadded")
 RESTORE_WARNING_STATE
 
     /// @brief Launches a different process on the system.
-    /// @note ExecutablePath cannot be empty on Posix systems or this function will fail.
-    /// @param ExecutablePath The file system path to the executable to be invoked.
+    /// @note ExecutableName cannot be empty on Posix systems or this function will fail.
+    /// @param ExePathName The identifier for the executable to be launched. This can be an absolute path,
+    /// relative path, or a just an executable that will be searched for in the system PATH.
     /// @param Command The command to attempt to run and direct its output.
     /// @return Returns the ExitCode and Cout output of the command that was run.
     [[nodiscard]]
-    CommandResult MEZZ_LIB RunCommand(const StringView ExecutablePath, const StringView Command);
+    CommandResult MEZZ_LIB RunCommand(const StringView ExePathName, const StringView Command);
     /// @brief Launches a different process on the system.
     /// @remarks This function will interpret all of the text up until the first delimiter (space or tab)
     /// to be the path to the executable to be launched. If that executable has a space in it's path, use
-    /// the two parameter version of this function instead.
+    /// the two parameter version of this function instead. @n@n
+    /// Like the two parameter version, the first part of the command that specifies the executable to be
+    /// launched can be an absolute path, relative path, or just an executable to be searched for in the
+    /// system PATH.
     /// @param Command The command to attempt to run and direct its output.
     /// @return Returns the ExitCode and Cout output of the command that was run.
     [[nodiscard]]

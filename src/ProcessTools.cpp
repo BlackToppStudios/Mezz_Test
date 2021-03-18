@@ -146,12 +146,12 @@ namespace {
         { return !ToCheck.empty() && ( ToCheck.back() == '\n' || ToCheck.back() == '\r' ); }
 
     /// @brief Creates and launches a new process.
-    /// @param ExecutablePath Specifies the path to the exe that will be launched. Can be empty.
+    /// @param ExePathName Specifies the exe that will be launched. Can be empty.
     /// @param Arguments The space separated arguments given to the exe being launched. This MUST include
     /// the path the executable as the first argument.
     /// @return Returns a ProcessInfo struct containing information about the launched process or it's failure.
     [[nodiscard]]
-    ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
+    ProcessInfo CreateCommandProcess(StringView ExePathName, const StringView Arguments)
     {
         HANDLE Child_STDOUT_Read = NULL;
         HANDLE Child_STDOUT_Write = NULL;
@@ -183,11 +183,11 @@ namespace {
         ProcessStartUp.hStdOutput = Child_STDOUT_Write;
         ProcessStartUp.dwFlags |= STARTF_USESTDHANDLES;
 
-        WideString WideExecutablePath = ConvertToWideString(ExecutablePath);
+        WideString WideExePathName = ConvertToWideString(ExePathName);
         WideString WideArguments = ConvertToWideString(Arguments);
 
         BOOL ChildLaunch = ::CreateProcessW(
-            WideExecutablePath.empty() ? nullptr : WideExecutablePath.data(),
+            WideExePathName.empty() ? nullptr : WideExePathName.data(),
             WideArguments.empty() ? nullptr : WideArguments.data(),
             nullptr,
             nullptr,
@@ -247,13 +247,13 @@ namespace {
 
     /// @brief Creates and launches a new process.
     /// @remarks The path to the executable to be launched must appear in both parameters to this function.
-    /// @param ExecutablePath Specifies the path to the exe that will be launched. MUST contain
-    /// the path to the executable being launched.
+    /// @param ExePathName Specifies the exe that will be launched. MUST contain the path to the executable
+    /// being launched.
     /// @param Arguments The space separated arguments given to the exe being launched. This MUST include
     /// the path the executable as the first argument.
     /// @return Returns a ProcessInfo struct containing information about the launched process.
     [[nodiscard]]
-    ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
+    ProcessInfo CreateCommandProcess(StringView ExePathName, const StringView Arguments)
     {
         int Pipes[2];
         if( ::pipe(Pipes) < 0 ) {
@@ -290,7 +290,7 @@ namespace {
                 { ArgV[Idx] = strdup( ArgVector[Idx].c_str() ); }
             ArgV[ArgVector.size()] = nullptr;//*/
 
-            if( execvp(ExecutablePath.data(),ArgV) < 0 ) {
+            if( execvp(ExePathName.data(),ArgV) < 0 ) {
                 // Welp...it's been a good ride.
                 int ErrorNum = errno;
                 std::cout << "Process Error: " << ::strerror(ErrorNum);
@@ -309,15 +309,15 @@ namespace {
 #endif // MEZZ_Windows
 
     /// @brief Launches a new process with the given command and collects it's output.
-    /// @param ExecutablePath The path to the executable to be launched.
+    /// @param ExePathName The absolute path, relative path, or file name in the system path to be executed.
     /// @param Command The arguments given to the launched executable.
     /// @return Returns a command result, containing the exit code and console output of the launched executable.
     [[nodiscard]]
-    Testing::CommandResult RunCommandImpl(const StringView ExecutablePath, const StringView Command)
+    Testing::CommandResult RunCommandImpl(const StringView ExePathName, const StringView Command)
     {
         Testing::CommandResult Result;
 #ifdef MEZZ_Windows
-        ProcessInfo ChildInfo = CreateCommandProcess( ExecutablePath, Command );
+        ProcessInfo ChildInfo = CreateCommandProcess( ExePathName, Command );
         if( ChildInfo.ErrorNum != 0 ) {
             Result.ExitCode = 1;
             Result.ConsoleOutput = ChildInfo.ErrorStr;
@@ -340,7 +340,7 @@ namespace {
         Result.ExitCode = ExitStatus;
         ::CloseHandle(ChildInfo.ChildProcess);
 #else // Mezz_Windows
-        String NonConstExecPath{ ExecutablePath };
+        String NonConstExecPath{ ExePathName };
         ProcessInfo ChildInfo = CreateCommandProcess( NonConstExecPath, Command );
 
         ssize_t BytesRead = -1;
@@ -373,13 +373,13 @@ namespace Testing {
     ///////////////////////////////////////////////////////////////////////////////
     // Output to String
 
-    CommandResult RunCommand(const StringView ExecutablePath, const StringView Command)
+    CommandResult RunCommand(const StringView ExePathName, const StringView Command)
     {
-        const Mezzanine::String SafePath( SanitizeProcessCommand(ExecutablePath) );
+        const Mezzanine::String SafePathName( SanitizeProcessCommand(ExePathName) );
         const Mezzanine::String SafeCommand( SanitizeProcessCommand(Command) );
         if( SafeCommand != Command )
             { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
-        return RunCommandImpl(SafePath,SafeCommand);
+        return RunCommandImpl(SafePathName,SafeCommand);
     }
 
     CommandResult RunCommand(const StringView Command)
