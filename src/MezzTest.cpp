@@ -213,13 +213,11 @@ namespace Mezzanine
             {
                 OneTestGroup(); // Run tests and discard results, the parent process will grab it.
             } else {
-                String LogFileName = OneTestGroup.Name() + "_SubProcess.log";
-                OutputCommandToFile(
-                    Options.CommandName + " " + OneTestGroup.Name() + " " +
-                        RunInThisProcessToken + " " + SkipSummaryToken,
-                    LogFileName
-                );
-                String ProcessLog = GetFileContents(LogFileName);
+                String Command = Options.CommandName + " " +
+                                 OneTestGroup.Name() + " " +
+                                 RunInThisProcessToken + " " +
+                                 SkipSummaryToken;
+                String ProcessLog = RunCommand(Command).ConsoleOutput;
                 std::istringstream LogStream(ProcessLog);
                 Mezzanine::String OneLine;
                 while( std::getline(LogStream, OneLine) )

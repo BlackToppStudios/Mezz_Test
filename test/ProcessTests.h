@@ -51,34 +51,6 @@
 BENCHMARK_TEST_GROUP(ProcessTests, Process)
 {
     using namespace Mezzanine;
-    {//GetFileContents
-        const String TestFilename("ProcessTestFile.txt");
-        const String TestToken(
-                    "I've seen things you people wouldn't believe. Attack ships on fire off the "
-                    "shoulder of Orion. I watched C-beams glitter in the dark near the Tannhäuser "
-                    "Gate. All those moments will be lost in time, like tears in rain. Time to die.");
-        std::ofstream TestFile(TestFilename);
-        TestFile << TestToken;
-        TestFile.close();
-
-        TEST_EQUAL("GetFileContents(const_StringView)", TestToken, Testing::GetFileContents(TestFilename))
-    }//GetFileContents
-
-    {//GetCommandOutput
-        TEST_EQUAL("GetCommandOutput(const_StringView)-foo",
-                   String("foo"),
-                   Testing::GetCommandOutput("cmake -E echo foo"))
-        TEST_STRING_CONTAINS("GetCommandOutput(const_StringView)-BadExe",
-                             String("Process Error"),
-                             Testing::GetCommandOutput("NotARealFilePlzDontActuallyExist"))
-        TEST_THROW("GetCommandOutput(const_StringView)-Throw-BadSymbol",
-                   std::runtime_error,
-                   []{ (void)Testing::GetCommandOutput("echo foo > somefile.txt"); })
-    }//GetCommandOutput
-
-    {//GetCommandOutput w/ ExecutablePath
-        // No good way to test this.
-    }//GetCommandOutput w/ ExecutablePath
 
     {//RunCommand
         Testing::CommandResult HelloResult = Testing::RunCommand("cmake -E echo Hello");
@@ -113,26 +85,6 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
     {//RunCommand w/ ExecutablePath
         // No good way to test this.
     }//RunCommand w/ ExecutablePath
-
-    {//OutputCommandToFile
-        Integer ExitCode = Testing::OutputCommandToFile("cmake -E echo Antidisestablishmentimperialism",
-                                                        "ProcessOutputTest.txt");
-        String CommandOutput = Testing::GetFileContents("ProcessOutputTest.txt");
-        TEST_EQUAL("OutputCommandToFile(const_StringView,const_StringView)-ExitCode",
-                   Integer(0),
-                   ExitCode)
-        TEST_EQUAL("OutputCommandToFile(const_StringView,const_StringView)-Output",
-                   String("Antidisestablishmentimperialism"),
-                   CommandOutput)
-
-        TEST_THROW("OutputCommandToFile(const_StringView,const_StringView)-Throw-BadSymbol",
-                   std::runtime_error,
-                   []{ (void)Testing::OutputCommandToFile("echo foo < somefile.txt","BadText.txt"); })
-    }//OutputCommandToFile
-
-    {//OutputCommandToFile w/ ExecutablePath
-        // No good way to test this.
-    }//OutputCommandToFile w/ ExecutablePath
 }
 
 #endif
