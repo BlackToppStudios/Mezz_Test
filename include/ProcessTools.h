@@ -54,7 +54,7 @@ SUPPRESS_CLANG_WARNING("-Wpadded")
     /// @brief A simple struct for storing (some) output from a called process.
     struct MEZZ_LIB CommandResult
     {
-        /// @brief The output to cout and cerr from the called process.
+        /// @brief The output to cout from the called process.
         String ConsoleOutput;
         /// @brief The code returned when the called process exited.
         Integer ExitCode = EXIT_FAILURE;
@@ -67,23 +67,25 @@ RESTORE_WARNING_STATE
 
     /// @brief Launches a different process on the system.
     /// @note ExecutablePath cannot be empty on Posix systems or this function will fail.
-    /// @param ExecutablePath The path to the executable to be invoked.
+    /// @param ExecutablePath The file system path to the executable to be invoked.
     /// @param Command The command to attempt to run and direct its output.
-    /// @return Returns the ExitCode and Cout/Cerr output of the command that was run.
+    /// @return Returns the ExitCode and Cout output of the command that was run.
+    [[nodiscard]]
     CommandResult MEZZ_LIB RunCommand(const StringView ExecutablePath, const StringView Command);
     /// @brief Launches a different process on the system.
     /// @remarks This function will interpret all of the text up until the first delimiter (space or tab)
     /// to be the path to the executable to be launched. If that executable has a space in it's path, use
     /// the two parameter version of this function instead.
     /// @param Command The command to attempt to run and direct its output.
-    /// @return Returns the ExitCode and Cout/Cerr output of the command that was run.
+    /// @return Returns the ExitCode and Cout output of the command that was run.
+    [[nodiscard]]
     CommandResult MEZZ_LIB RunCommand(const StringView Command);
 
     /// @brief Launches a different process on the system and return only it's console output as a String.
     /// @note ExecutablePath cannot be empty on Posix systems or this function will fail.
     /// @remarks This function ignores the exit code of the command. If you want/need the exit code, use
     /// @ref RunCommand instead.
-    /// @param ExecutablePath The path to the executable to be invoked.
+    /// @param ExecutablePath The file system path to the executable to be invoked.
     /// @param Command The command to attempt to run and direct its output.
     /// @return Returns a String containing the output of the specified command.
     [[nodiscard]]
@@ -108,7 +110,7 @@ RESTORE_WARNING_STATE
     /// @details This launches a process, redirects its output to a file and returns the command's exit code.
     /// This is a simple wrapper around std::system, concatenating output redirection to the command. Because of
     /// this "|", "<" and ">" are not allowed in commands passed to this.
-    /// @param ExecutablePath The path to the executable to be invoked.
+    /// @param ExecutablePath The file system path to the executable to be invoked.
     /// @param Command The command to attempt to run and direct its output.
     /// @param OutputFileName The file to put all the console output of the command.
     /// @return Returns the exit code of the command.

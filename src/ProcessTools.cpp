@@ -138,11 +138,19 @@ namespace {
         return Ret;
     }
 
+    /// @brief Gets whether or not the back of a String can be trimmed.
+    /// @param ToCheck The String to check for trimming.
+    /// @return Returns true if the back of the String can be trimmed/removed.
+    [[nodiscard]]
+    Boole CanTrimBack(const String& ToCheck)
+        { return !ToCheck.empty() && ( ToCheck.back() == '\n' || ToCheck.back() == '\r' ); }
+
     /// @brief Creates and launches a new process.
     /// @param ExecutablePath Specifies the path to the exe that will be launched. Can be empty.
     /// @param Arguments The space separated arguments given to the exe being launched. This MUST include
     /// the path the executable as the first argument.
     /// @return Returns a ProcessInfo struct containing information about the launched process or it's failure.
+    [[nodiscard]]
     ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
         HANDLE Child_STDOUT_Read = NULL;
@@ -218,6 +226,25 @@ namespace {
         int ChildPID = 0;
     };//ProcessInfo
 
+    /// @brief Gets whether or not the back of a String can be trimmed.
+    /// @param ToCheck The String to check for trimming.
+    /// @return Returns true if the back of the String can be trimmed/removed.
+    [[nodiscard]]
+    Boole CanTrimBack(const String& ToCheck)
+        { return ( !ToCheck.empty() && ToCheck.back() == '\n' ); }
+
+    // Move this out of the if/else should windows actually need it.
+    /// @brief Extracts just the file system path to the executable from a complete command.
+    /// @param ExtractFrom The String containing the complete command.
+    /// @return Returns a substring of the parameter (presumably) containing the path to the executable.
+    [[nodiscard]]
+    String ExtractExecPath(const StringView ExtractFrom)
+    {
+        /// @todo Maybe handle filename paths with spaces?
+        size_t SplitPos = Command.find_first_of(" \t");
+        return Command.substr(0,SplitPos);
+    }
+
     /// @brief Creates and launches a new process.
     /// @remarks The path to the executable to be launched must appear in both parameters to this function.
     /// @param ExecutablePath Specifies the path to the exe that will be launched. MUST contain
@@ -225,6 +252,7 @@ namespace {
     /// @param Arguments The space separated arguments given to the exe being launched. This MUST include
     /// the path the executable as the first argument.
     /// @return Returns a ProcessInfo struct containing information about the launched process.
+    [[nodiscard]]
     ProcessInfo CreateCommandProcess(StringView ExecutablePath, const StringView Arguments)
     {
         int Pipes[2];
@@ -284,6 +312,7 @@ namespace {
     /// @param ExecutablePath The path to the executable to be launched.
     /// @param Command The arguments given to the launched executable.
     /// @return Returns a command result, containing the exit code and console output of the launched executable.
+    [[nodiscard]]
     Testing::CommandResult RunCommandImpl(const StringView ExecutablePath, const StringView Command)
     {
         Testing::CommandResult Result;
@@ -310,12 +339,6 @@ namespace {
         ::GetExitCodeProcess(ChildInfo.ChildProcess,&ExitStatus);
         Result.ExitCode = ExitStatus;
         ::CloseHandle(ChildInfo.ChildProcess);
-        // Trim newlines
-        while( !Result.ConsoleOutput.empty() &&
-               ( Result.ConsoleOutput.back() == '\n' || Result.ConsoleOutput.back() == '\r' ) )
-        {
-            Result.ConsoleOutput.pop_back();
-        }
 #else // Mezz_Windows
         String NonConstExecPath{ ExecutablePath };
         ProcessInfo ChildInfo = CreateCommandProcess( NonConstExecPath, Command );
@@ -337,13 +360,10 @@ namespace {
             // No idea what else could have happened
             Result.ExitCode = Status;
         }
-        // Trim newlines
-        while( !Result.ConsoleOutput.empty() &&
-               Result.ConsoleOutput.back() == '\n' )
-        {
-            Result.ConsoleOutput.pop_back();
-        }
 #endif // MEZZ_Windows
+        // Trim newlines
+        while( CanTrimBack(Result.ConsoleOutput) )
+            { Result.ConsoleOutput.pop_back(); }
         return Result;
     }
 }
@@ -370,9 +390,7 @@ namespace Testing {
         return RunCommand(Empty,Command);
 #else // Mezz_Windows
         // Posix is NOT happy to do the same.  The strings must be separate.
-        /// @todo Maybe handle filename paths with spaces?
-        size_t SplitPos = Command.find_first_of(" \t");
-        const Mezzanine::String ExecPath{ Command.substr(0,SplitPos) };
+        const Mezzanine::String ExecPath{ ExtractExecPath(Command) };
         return RunCommand(ExecPath,Command);
 #endif // MEZZ_Windows
     }
@@ -394,9 +412,7 @@ namespace Testing {
         return GetCommandOutput(Empty,Command);
 #else // Mezz_Windows
         // Posix is NOT happy to do the same.  The strings must be separate.
-        /// @todo Maybe handle filename paths with spaces?
-        size_t SplitPos = Command.find_first_of(" \t");
-        const Mezzanine::String ExecPath{ Command.substr(0,SplitPos) };
+        const Mezzanine::String ExecPath{ ExtractExecPath(Command) };
         return GetCommandOutput(ExecPath,Command);
 #endif // MEZZ_Windows
     }
@@ -428,9 +444,7 @@ namespace Testing {
         return OutputCommandToFile(Empty,Command,OutputFileName);
 #else // Mezz_Windows
         // Posix is NOT happy to do the same.  The strings must be separate.
-        /// @todo Maybe handle filename paths with spaces?
-        size_t SplitPos = Command.find_first_of(" \t");
-        const Mezzanine::String ExecPath{ Command.substr(0,SplitPos) };
+        const Mezzanine::String ExecPath{ ExtractExecPath(Command) };
         return OutputCommandToFile(ExecPath,Command,OutputFileName);
 #endif // MEZZ_Windows
     }
