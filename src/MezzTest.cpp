@@ -112,6 +112,7 @@ namespace
 
         CallingTable[SkipSummaryToken] = [&Results]() noexcept { Results.SkipSummary = true; };
         CallingTable[SkipFileToken] = [&Results]() noexcept { Results.SkipFile = true; };
+        CallingTable[DoBenchmarkToken] = [&Results]() noexcept { Results.DoBenchmark = true; };
 
         return CallingTable;
     }
@@ -130,7 +131,7 @@ namespace Mezzanine
     {
         ParsedCommandLineArgs DealWithdCommandLineArgs(int argc, char** argv, const CoreTestGroup& TestInstances)
         {
-            ParsedCommandLineArgs Results{ {}, "Mezz_Tester", EXIT_SUCCESS, false, false, false, false, false};
+            ParsedCommandLineArgs Results;
 
             if (argc > 0) //Not really sure how this would happen, but I would rather test and not have silent failures.
                 { Results.CommandName = argv[0]; }
@@ -289,11 +290,14 @@ namespace Mezzanine
 
                 // Run all of the rest tests right here.
                 TestTimer SingleThreadTimer;
+
                 if(TestGroupForThread.IsMultiProcessSafe())
                 {
                     RunSubProcessTest(Options, TestGroupForThread);
                 } else {
-                    TestGroupForThread.operator()();
+                    // @todo expand the UnitTestGroup class to make this more specific
+                    if(Options.DoBenchmark)
+                        { TestGroupForThread.operator()(); }
                 }
 
                 // Synchronize with single threaded part.
