@@ -242,7 +242,7 @@ namespace {
     {
         /// @todo Maybe handle filename paths with spaces?
         size_t SplitPos = ExtractFrom.find_first_of(" \t");
-        return ExtractFrom.substr(0,SplitPos);
+        return String{ ExtractFrom.substr(0,SplitPos) };
     }
 
     /// @brief Creates and launches a new process.
