@@ -47,8 +47,28 @@
 #include "SuppressWarnings.h"
 
 SAVE_WARNING_STATE
-SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's implementation 
+SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's implementation
                           // of malloc.h where they use a comma in an assert.
+SUPPRESS_VC_WARNING(4668) // _WIN32_WINNT_WIN10_RS5 isn't defined causing a warning which
+                          // is escalated into an error.
+#ifdef MEZZ_Windows
+    #include "windows.h"
+#else // MEZZ_Windows
+    #include "unistd.h"
+    #include <string.h>
+    #include <sys/types.h>
+    #include <sys/wait.h>
+#endif // MEZZ_Windows
+
+RESTORE_WARNING_STATE
+
+#ifdef max
+#undef max
+#endif // max
+
+#ifdef min
+#undef min
+#endif // max
 
 #include <exception>
 #include <cstdlib>
@@ -57,44 +77,322 @@ SUPPRESS_VC_WARNING(4548) // This was added to suppress a warning in MSVC's impl
 #include <fstream>
 #include <limits>
 
-RESTORE_WARNING_STATE
-
-namespace Mezzanine
-{
-    namespace Testing
+namespace {
+    using namespace Mezzanine;
+#ifdef MEZZ_Windows
+    /// @brief A struct with basic info that can be returned from attempting to launch a process.
+    struct MEZZ_LIB ProcessInfo
     {
-        Mezzanine::String RunCommand(const Mezzanine::String& Command, const Mezzanine::String& TempFileName)
-        {
-            const Mezzanine::String SafeCommand(SanitizeProcessCommand(Command));
-            const Mezzanine::String SafeTempFileName(SanitizeProcessCommand(TempFileName));
-            if(SafeCommand != Command)
-                { throw std::runtime_error("Command name included unsafe characters, it would not run correctly."); }
-            const Mezzanine::String CommandToRun(SafeCommand + " 2>&1 > " + SafeTempFileName);
+        /// @brief A HANDLE belonging to the output end of the child processes cout pipe.
+        HANDLE ChildPipe = 0;
+        /// @brief A HANDLE belonging to the child process itself.
+        HANDLE ChildProcess = 0;
+        /// @brief The error code given if the process failed to launch.
+        DWORD ErrorNum = 0;
+        /// @brief The error string given if the process failed to launch.
+        String ErrorStr;
+    };//ProcessInfo
 
-            // erase the file and only write out
-            std::ofstream IgnoredResultCode(SafeTempFileName + ".return.txt", std::ios::trunc | std::ios::out);
-            // The result from std::system is useless here but suppresssing this is non-trivial.
-            IgnoredResultCode << std::system(CommandToRun.c_str());
+    /// @brief Convenience type because Windows likes fatty Strings.
+    using WideString = std::wstring;
 
-            return GetFileContents(SafeTempFileName);
+    /// @brief Demotes a size_t to an int, which is required by the Win API.
+    /// @brief ToDemote The large integral type to be demoted.
+    /// @return Returns an int of the same value if it can be stored, or asserts otherwise.
+    [[nodiscard]]
+    int IntDemote(const size_t ToDemote)
+    {
+        assert( ToDemote <= static_cast<size_t>( std::numeric_limits<int>::max() ) );
+        return static_cast<int>(ToDemote);
+    }
+    /// @brief Converts a narrow (8-bit) string to a wide (16-bit) string.
+    /// @param Thin The string to be converted.
+    /// @return Returns a wide string with the converted contents.
+    [[nodiscard]]
+    WideString ConvertToWideString(const StringView Thin)
+    {
+        WideString Ret;
+        size_t ThinSize = Thin.size();
+        if( ThinSize > 0 ) {
+            size_t WideLength = ::MultiByteToWideChar(CP_UTF8,0,Thin.data(),IntDemote(ThinSize),nullptr,0);
+            Ret.resize(WideLength,L'\0');
+            ::MultiByteToWideChar(CP_UTF8,0,Thin.data(),IntDemote(ThinSize),&Ret[0],IntDemote(WideLength));
+        }
+        return Ret;
+    }
+
+    /// @brief Converts a wide (16-bit) String to a narrow (8-bit) String.
+    /// @param Wide The String to be converted.
+    /// @param Length The length of the String to be converted.
+    /// @return Returns a narrow String with the converted contents.
+    [[nodiscard]]
+    String ConvertToNarrowString(const wchar_t* Wide, const size_t Length)
+    {
+        String Ret;
+        if( Length > 0 && Length < size_t( std::numeric_limits<int>::max() ) ) {
+            int CastedLength = static_cast<int>(Length);
+            int NarrowLength = ::WideCharToMultiByte(CP_UTF8,0,Wide,CastedLength,nullptr,0,nullptr,nullptr);
+            Ret.resize(static_cast<size_t>(NarrowLength),'\0');
+            ::WideCharToMultiByte(CP_UTF8,0,Wide,CastedLength,&Ret[0],static_cast<int>(Ret.size()),nullptr,nullptr);
+        }
+        return Ret;
+    }
+
+    /// @brief Gets whether or not the back of a String can be trimmed.
+    /// @param ToCheck The String to check for trimming.
+    /// @return Returns true if the back of the String can be trimmed/removed.
+    [[nodiscard]]
+    Boole CanTrimBack(const String& ToCheck)
+        { return !ToCheck.empty() && ( ToCheck.back() == '\n' || ToCheck.back() == '\r' ); }
+
+    /// @brief Creates and launches a new process.
+    /// @param ExePathName Specifies the exe that will be launched. Can be empty.
+    /// @param Arguments The space separated arguments given to the exe being launched. This MUST include
+    /// the path the executable as the first argument.
+    /// @return Returns a ProcessInfo struct containing information about the launched process or it's failure.
+    [[nodiscard]]
+    ProcessInfo CreateCommandProcess(StringView ExePathName, const StringView Arguments)
+    {
+        HANDLE Child_STDOUT_Read = NULL;
+        HANDLE Child_STDOUT_Write = NULL;
+
+        // SECURITY_ATTRIBUTES setup
+        SECURITY_ATTRIBUTES SecurityAttrib;
+        SecurityAttrib.nLength = sizeof(SECURITY_ATTRIBUTES);
+        SecurityAttrib.bInheritHandle = TRUE;
+        SecurityAttrib.lpSecurityDescriptor = NULL;
+
+        // Create our Pipe
+        if( !::CreatePipe(&Child_STDOUT_Read,&Child_STDOUT_Write,&SecurityAttrib,0) ) {
+            throw std::runtime_error("Unable to create pipes for child process.");
+        }
+        // Ensure handle isn't inherited.
+        if( !::SetHandleInformation(Child_STDOUT_Read,HANDLE_FLAG_INHERIT,0) ) {
+            throw std::runtime_error("Unable to set handle information for child process pipe.");
         }
 
-        SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wsign-conversion") // std::streamoff are signed with the string constructor takes
-        // size_type which is unsigned. So this is only good for files with fewer than 2^31 bytes.
-        SUPPRESS_GCC_WARNING("-Wconversion") // The same issue but an extra warning GCC raises.
-        SUPPRESS_VC_WARNING(4244) // Same conversion issue, why is there not a better way in std to handle this.
-        SUPPRESS_VC_WARNING(4365) // Why does the same code throw multiple warnings
-        Mezzanine::String GetFileContents(const Mezzanine::String& Filename)
-        {
-            std::ifstream ResultReader(Filename, std::ios::binary | std::ios::ate);
-            std::streamoff FileSize{ResultReader.tellg()};
-            ResultReader.seekg(std::ios::beg);
-            String FileContents(FileSize,0);
-            ResultReader.read(&FileContents[0], FileSize);
-            return FileContents;
-        }
-        RESTORE_WARNING_STATE
+        // PROCESS_INFORMATION setup
+        PROCESS_INFORMATION ProcessInfo;
+        ZeroMemory(&ProcessInfo,sizeof(ProcessInfo));
 
-    }// Testing
+        // STARTUPINFO setup
+        STARTUPINFOW ProcessStartUp;
+        ZeroMemory(&ProcessStartUp,sizeof(ProcessStartUp));
+        ProcessStartUp.cb = sizeof(ProcessStartUp);
+        //ProcessStartUp.hStdError = Child_STDOUT_Write;
+        ProcessStartUp.hStdOutput = Child_STDOUT_Write;
+        ProcessStartUp.dwFlags |= STARTF_USESTDHANDLES;
+
+        WideString WideExePathName = ConvertToWideString(ExePathName);
+        WideString WideArguments = ConvertToWideString(Arguments);
+
+        BOOL ChildLaunch = ::CreateProcessW(
+            WideExePathName.empty() ? nullptr : WideExePathName.data(),
+            WideArguments.empty() ? nullptr : WideArguments.data(),
+            nullptr,
+            nullptr,
+            TRUE,
+            0,
+            nullptr,
+            nullptr,
+            &ProcessStartUp,
+            &ProcessInfo
+        );
+
+        ::CloseHandle(Child_STDOUT_Write);
+        if( !ChildLaunch ) {
+            ::CloseHandle(Child_STDOUT_Read);
+            DWORD ErrorNum = GetLastError();
+            StringStream ErrorStream;
+            ErrorStream << "Process Error: ";
+            wchar_t WideBuffer[256];
+            DWORD WrittenChars = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                                nullptr,
+                                                ErrorNum,
+                                                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                                                WideBuffer,
+                                                sizeof(WideBuffer) / sizeof(wchar_t),
+                                                nullptr);
+            ErrorStream << ConvertToNarrowString(WideBuffer,WrittenChars);
+            return { 0, 0, ErrorNum, ErrorStream.str() };
+        }
+        return { Child_STDOUT_Read, ProcessInfo.hProcess, 0, String() };
+    }
+#else // Mezz_Windows
+    /// @brief A simple struct containing the basic information of a launched child process.
+    struct MEZZ_LIB ProcessInfo
+    {
+        int ChildPipe = 0;
+        int ChildPID = 0;
+    };//ProcessInfo
+
+    /// @brief Gets whether or not the back of a String can be trimmed.
+    /// @param ToCheck The String to check for trimming.
+    /// @return Returns true if the back of the String can be trimmed/removed.
+    [[nodiscard]]
+    Boole CanTrimBack(const String& ToCheck)
+        { return ( !ToCheck.empty() && ToCheck.back() == '\n' ); }
+
+    // Move this out of the if/else should windows actually need it.
+    /// @brief Extracts just the file system path to the executable from a complete command.
+    /// @param ExtractFrom The String containing the complete command.
+    /// @return Returns a substring of the parameter (presumably) containing the path to the executable.
+    [[nodiscard]]
+    String ExtractExecPath(const StringView ExtractFrom)
+    {
+        /// @todo Maybe handle filename paths with spaces?
+        size_t SplitPos = ExtractFrom.find_first_of(" \t");
+        return String{ ExtractFrom.substr(0,SplitPos) };
+    }
+
+    /// @brief Creates and launches a new process.
+    /// @remarks The path to the executable to be launched must appear in both parameters to this function.
+    /// @param ExePathName Specifies the exe that will be launched. MUST contain the path to the executable
+    /// being launched.
+    /// @param Arguments The space separated arguments given to the exe being launched. This MUST include
+    /// the path the executable as the first argument.
+    /// @return Returns a ProcessInfo struct containing information about the launched process.
+    [[nodiscard]]
+    ProcessInfo CreateCommandProcess(StringView ExePathName, const StringView Arguments)
+    {
+        int Pipes[2];
+        if( ::pipe(Pipes) < 0 ) {
+            throw std::runtime_error("Unable to create pipe for child process.");
+        }
+
+        std::cout.flush(); // Clean out the pipes before they may be important.
+        pid_t ProcessID = ::fork();
+        if( ProcessID == 0 ) { // Child
+            ::close( Pipes[0] ); // Close Read end of pipe.
+            ::dup2( Pipes[1], 1 ); // Direct cout file descriptor to our pipe.
+            //::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
+            ::close( Pipes[1] ); // Done mangling pipes.
+
+            std::vector<Mezzanine::String> ArgVector;
+            String TempStr;
+            for( StringView::iterator StrIt = Arguments.begin() ; StrIt != Arguments.end() ; ++StrIt )
+            {
+                if( (*StrIt) == ' ' || (*StrIt) == '\t' ) {
+                    if( !TempStr.empty() ) {
+                        ArgVector.push_back(TempStr);
+                        TempStr.clear();
+                    }
+                }else{
+                    TempStr.push_back(*StrIt);
+                }
+            }
+            if( !TempStr.empty() ) {
+                ArgVector.push_back(TempStr);
+            }
+
+            char** ArgV = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
+            for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
+                { ArgV[Idx] = strdup( ArgVector[Idx].c_str() ); }
+            ArgV[ArgVector.size()] = nullptr;//*/
+
+            if( execvp(ExePathName.data(),ArgV) < 0 ) {
+                // Welp...it's been a good ride.
+                int ErrorNum = errno;
+                std::cout << "Process Error: " << ::strerror(ErrorNum);
+                std::exit(EXIT_FAILURE);
+            }
+            // If all goes well we disappear into a puff of logic at this point
+            // But to appease compilers, we'll write code that pretends we didn't
+            return { 0, 0 };
+        }else if( ProcessID > 0 ) { // Parent
+            ::close( Pipes[1] ); // Close Write end of pipe
+            return { Pipes[0], ProcessID };
+        }else{
+            throw std::runtime_error("Unable to create forked process.");
+        }
+    }
+#endif // MEZZ_Windows
+
+    /// @brief Launches a new process with the given command and collects it's output.
+    /// @param ExePathName The absolute path, relative path, or file name in the system path to be executed.
+    /// @param Command The arguments given to the launched executable.
+    /// @return Returns a command result, containing the exit code and console output of the launched executable.
+    [[nodiscard]]
+    Testing::CommandResult RunCommandImpl(const StringView ExePathName, const StringView Command)
+    {
+        Testing::CommandResult Result;
+#ifdef MEZZ_Windows
+        ProcessInfo ChildInfo = CreateCommandProcess( ExePathName, Command );
+        if( ChildInfo.ErrorNum != 0 ) {
+            Result.ExitCode = 1;
+            Result.ConsoleOutput = ChildInfo.ErrorStr;
+            return Result;
+        }
+
+        DWORD BytesRead = 0;
+        CHAR PipeBuf[1024];
+        while( ::ReadFile(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf),&BytesRead,NULL) )
+        {
+            if( BytesRead == 0 ) {
+                break;
+            }
+            Result.ConsoleOutput.append(PipeBuf,BytesRead);
+        }
+        ::CloseHandle(ChildInfo.ChildPipe);
+
+        DWORD ExitStatus;
+        ::GetExitCodeProcess(ChildInfo.ChildProcess,&ExitStatus);
+        Result.ExitCode = ExitStatus;
+        ::CloseHandle(ChildInfo.ChildProcess);
+#else // Mezz_Windows
+        String NonConstExecPath{ ExePathName };
+        ProcessInfo ChildInfo = CreateCommandProcess( NonConstExecPath, Command );
+
+        ssize_t BytesRead = -1;
+        char PipeBuf[1024];
+        // Start reading and keep on reading until we hit an error or EoF.
+        while( ( BytesRead = ::read(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf)) ) > 0 )
+            { Result.ConsoleOutput.append(PipeBuf,static_cast<size_t>(BytesRead)); }
+        ::close(ChildInfo.ChildPipe);
+
+        int Status = -1;
+        ::waitpid(ChildInfo.ChildPID,&Status,0);
+        if( WIFEXITED(Status) ) {
+            Result.ExitCode = WEXITSTATUS(Status);
+        }else if( WIFSIGNALED(Status) ) {
+            Result.ExitCode = WTERMSIG(Status);
+        }else{
+            // No idea what else could have happened
+            Result.ExitCode = Status;
+        }
+#endif // MEZZ_Windows
+        // Trim newlines
+        while( CanTrimBack(Result.ConsoleOutput) )
+            { Result.ConsoleOutput.pop_back(); }
+        return Result;
+    }
+}
+
+namespace Mezzanine {
+namespace Testing {
+    ///////////////////////////////////////////////////////////////////////////////
+    // Output to String
+
+    CommandResult RunCommand(const StringView ExePathName, const StringView Command)
+    {
+        const Mezzanine::String SafePathName( SanitizeProcessCommand(ExePathName) );
+        const Mezzanine::String SafeCommand( SanitizeProcessCommand(Command) );
+        if( SafeCommand != Command )
+            { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
+        return RunCommandImpl(SafePathName,SafeCommand);
+    }
+
+    CommandResult RunCommand(const StringView Command)
+    {
+#ifdef MEZZ_Windows
+        // Windows is happy to parse just a single string for everything.
+        StringView Empty;
+        return RunCommand(Empty,Command);
+#else // Mezz_Windows
+        // Posix is NOT happy to do the same.  The strings must be separate.
+        const Mezzanine::String ExecPath{ ExtractExecPath(Command) };
+        return RunCommand(ExecPath,Command);
+#endif // MEZZ_Windows
+    }
+}// Testing
 }// Mezzanine

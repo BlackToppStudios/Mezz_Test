@@ -74,25 +74,29 @@ namespace Mezzanine
                 std::vector<UnitTestGroup*> TestsToRun;
 
                 /// @brief This will store the name of the command that launched this executable at run time.
-                Mezzanine::String CommandName;
+                Mezzanine::String CommandName = "Mezz_Tester";
 
                 /// @brief If not ExitCode::ExitSuccess then the caller should exit immediately.
-                ExitCode ExitWithError;
+                ExitCode ExitWithError = EXIT_SUCCESS;
 
                 /// @brief The current process depth as interpreted by Main.
-                Boole InSubProcess;
+                Boole InSubProcess = false ;
 
                 /// @brief Force single threaded to help troubleshoot.
-                Boole ForceSingleThread;
+                Boole ForceSingleThread = false;
 
                 /// @brief Skip writing the log file.
-                Boole SkipFile;
+                Boole SkipFile = false;
 
                 /// @brief Skip writing the summary at the end.
-                Boole SkipSummary;
+                Boole SkipSummary = false;
 
                 /// @brief Create Junit Xml output files?
-                Boole EmitJunitXml;
+                Boole EmitJunitXml = false;
+
+                /// @brief Should the Benchmarks be run? Defaults to false.
+                Boole DoBenchmark = false;
+
             };// ParsedCommandLineArgs
         RESTORE_WARNING_STATE
 
@@ -206,6 +210,9 @@ namespace Mezzanine
 
         /// @brief The token to pass on the command line to not emit a log file.
         static const Mezzanine::String SkipFileToken("skipfile");
+
+        /// @brief The token to pass on the command line to not emit a log file.
+        static const Mezzanine::String DoBenchmarkToken("dobenchmark");
 
         /// @brief The token to pass as a prefix to a test to skip it.
         static const Mezzanine::String SkipTestToken("skip-");

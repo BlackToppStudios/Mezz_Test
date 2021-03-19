@@ -48,10 +48,10 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        Mezzanine::String RightTrim(const Mezzanine::String& Text)
+        Mezzanine::String RightTrim(const Mezzanine::StringView Text)
         {
             Mezzanine::String HayStack(Text);
-            Mezzanine::String::size_type found{HayStack.find_last_not_of(" \n\r\t")};
+            Mezzanine::StringView::size_type found{HayStack.find_last_not_of(" \n\r\t")};
             if (found != String::npos)
                 { HayStack.erase(found+1); }
             else
@@ -59,22 +59,22 @@ namespace Mezzanine
             return HayStack;
         }
 
-        Mezzanine::String rtrim(const Mezzanine::String& Text)
+        Mezzanine::String rtrim(const Mezzanine::StringView Text)
             { return RightTrim(Text); }
 
-        Mezzanine::String AllLower(const String& StringToConvert)
+        Mezzanine::String AllLower(const Mezzanine::StringView StringToConvert)
         {
             Mezzanine::String Results;
             Results.reserve(StringToConvert.size());
-            for(const Mezzanine::String::value_type& Letter : StringToConvert)
+            for(const Mezzanine::StringView::value_type& Letter : StringToConvert)
                 { Results.push_back( static_cast<Mezzanine::String::value_type>(tolower(Letter)) ); }
             return Results;
         }
 
-        Mezzanine::String SanitizeFileName(const Mezzanine::String& OriginalFilename)
+        Mezzanine::String SanitizeFileName(const Mezzanine::StringView OriginalFilename)
         {
             Mezzanine::String Results(OriginalFilename);
-            for(Mezzanine::String::value_type& OneChar : Results)
+            for(Mezzanine::StringView::value_type& OneChar : Results)
             {
                 switch(OneChar)
                 {
@@ -89,10 +89,10 @@ namespace Mezzanine
             return Results;
         }
 
-        Mezzanine::String SanitizeProcessCommand(const Mezzanine::String& OriginalProcess)
+        Mezzanine::String SanitizeProcessCommand(const Mezzanine::StringView OriginalProcess)
         {
             Mezzanine::String Results(OriginalProcess);
-            for(Mezzanine::String::value_type& OneChar : Results)
+            for(Mezzanine::StringView::value_type& OneChar : Results)
             {
                 switch(OneChar)
                 {

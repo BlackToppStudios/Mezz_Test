@@ -47,34 +47,44 @@
 
 #include <fstream>
 
-using Mezzanine::String;
-using Mezzanine::Testing::RunCommand;
-using Mezzanine::Testing::GetFileContents;
-
 /// @brief Tests for the class to store test data results.
-AUTOMATIC_TEST_GROUP(ProcessTests, Process)
+BENCHMARK_TEST_GROUP(ProcessTests, Process)
 {
-    // make file and read it back.
-    const Mezzanine::String TestFilename("ProcessTestFile.txt");
-    const Mezzanine::String TestToken(
-                "I've seen things you people wouldn't believe. Attack ships on fire off the "
-                "shoulder of Orion. I watched C-beams glitter in the dark near the Tannhäuser "
-                "Gate. All those moments will be lost in time, like tears in rain. Time to die.");
-    std::ofstream TestFile(TestFilename);
-    TestFile << TestToken;
-    TestFile.close();
+    using namespace Mezzanine;
 
-    TEST_EQUAL("GetFileContents", TestToken, GetFileContents(TestFilename))
+    {//RunCommand
+        Testing::CommandResult HelloResult = Testing::RunCommand("cmake -E echo Hello");
+        TEST_EQUAL("RunCommand(const_StringView)-Hello-ExitCode",
+                   Integer(0),
+                   HelloResult.ExitCode)
+        TEST_STRING_CONTAINS("RunCommand(const_StringView)-Hello-Output",
+                             String("Hello"),
+                             HelloResult.ConsoleOutput)
 
+        Testing::CommandResult FalseResult = Testing::RunCommand("git asdfg");
+        TEST_EQUAL("RunCommand(const_StringView)-FalseCommand-ExitCode",
+                   Integer(1),
+                   FalseResult.ExitCode)
+        TEST_EQUAL("RunCommand(const_StringView)-FalseCommand-Output",
+                   true,
+                   FalseResult.ConsoleOutput.empty())
 
-    // Try launching a process and reading its stdout
-    TEST_STRING_CONTAINS("RunCommand-stdout",
-                         Mezzanine::String("foo"),
-                         RunCommand("cmake -E echo \"foo\"", "RunCommandScratch.txt"))
-    TEST_THROW("RunCommand-BadCommand",
-               std::runtime_error,
-               []{ RunCommand("echo foo > somefile.txt", "ShouldExistRunCommandScratch.txt"); })
+        Testing::CommandResult TrueResult = Testing::RunCommand("git --help");
+        TEST_EQUAL("RunCommand(const_StringView)-TrueCommand-ExitCode",
+                   Integer(0),
+                   TrueResult.ExitCode)
+        TEST_EQUAL("RunCommand(const_StringView)-TrueCommand-Output",
+                   false,
+                   TrueResult.ConsoleOutput.empty())
 
+        TEST_THROW("RunCommand(const_StringView)-Throw-BadSymbol",
+                   std::runtime_error,
+                   []{ (void)Testing::RunCommand("echo foo | somefile.txt"); })
+    }//RunCommand
+
+    {//RunCommand w/ ExecutablePath
+        // No good way to test this.
+    }//RunCommand w/ ExecutablePath
 }
 
 #endif

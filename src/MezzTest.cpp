@@ -80,14 +80,14 @@ namespace
     {
         CallingTableType CallingTable;
 
-        CallingTable[HelpToken] = [&Results](){ Results.ExitWithError = EXIT_FAILURE; };
-        CallingTable[RunInThisProcessToken] = [&Results]{ Results.InSubProcess = true; };
-        CallingTable[NoThreads] = [&Results]{ Results.ForceSingleThread = true; };
-        CallingTable[JunitXMLAToken] = [&Results]{ Results.EmitJunitXml = true; };
-        CallingTable[JunitXMLBToken] = [&Results]{ Results.EmitJunitXml = true; };
+        CallingTable[HelpToken] = [&Results]() noexcept { Results.ExitWithError = EXIT_FAILURE; };
+        CallingTable[RunInThisProcessToken] = [&Results]() noexcept { Results.InSubProcess = true; };
+        CallingTable[NoThreads] = [&Results]() noexcept { Results.ForceSingleThread = true; };
+        CallingTable[JunitXMLAToken] = [&Results]() noexcept { Results.EmitJunitXml = true; };
+        CallingTable[JunitXMLBToken] = [&Results]() noexcept { Results.EmitJunitXml = true; };
 
         // Debug does both Single thread and Single process.
-        auto RunHere = [&Results]{ Results.InSubProcess = true; Results.ForceSingleThread = true; };
+        auto RunHere = [&Results]() noexcept { Results.InSubProcess = true; Results.ForceSingleThread = true; };
         CallingTable[DebugAToken] = RunHere;
         CallingTable[DebugBToken] = RunHere;
 
@@ -110,8 +110,9 @@ namespace
                 { if(!OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
         };
 
-        CallingTable[SkipSummaryToken] = [&Results](){ Results.SkipSummary = true; };
-        CallingTable[SkipFileToken] = [&Results](){ Results.SkipFile = true; };
+        CallingTable[SkipSummaryToken] = [&Results]() noexcept { Results.SkipSummary = true; };
+        CallingTable[SkipFileToken] = [&Results]() noexcept { Results.SkipFile = true; };
+        CallingTable[DoBenchmarkToken] = [&Results]() noexcept { Results.DoBenchmark = true; };
 
         return CallingTable;
     }
@@ -130,7 +131,7 @@ namespace Mezzanine
     {
         ParsedCommandLineArgs DealWithdCommandLineArgs(int argc, char** argv, const CoreTestGroup& TestInstances)
         {
-            ParsedCommandLineArgs Results{ {}, "Mezz_Tester", EXIT_SUCCESS, false, false, false, false, false};
+            ParsedCommandLineArgs Results;
 
             if (argc > 0) //Not really sure how this would happen, but I would rather test and not have silent failures.
                 { Results.CommandName = argv[0]; }
@@ -213,11 +214,11 @@ namespace Mezzanine
             {
                 OneTestGroup(); // Run tests and discard results, the parent process will grab it.
             } else {
-                String ProcessLog = RunCommand(
-                    Options.CommandName + " " + OneTestGroup.Name() + " " +
-                        RunInThisProcessToken + " " + SkipSummaryToken,
-                    OneTestGroup.Name() + "_SubProcess.log"
-                );
+                String Command = Options.CommandName + " " +
+                                 OneTestGroup.Name() + " " +
+                                 RunInThisProcessToken + " " +
+                                 SkipSummaryToken;
+                String ProcessLog = RunCommand(Command).ConsoleOutput;
                 std::istringstream LogStream(ProcessLog);
                 Mezzanine::String OneLine;
                 while( std::getline(LogStream, OneLine) )
@@ -289,11 +290,14 @@ namespace Mezzanine
 
                 // Run all of the rest tests right here.
                 TestTimer SingleThreadTimer;
+
                 if(TestGroupForThread.IsMultiProcessSafe())
                 {
                     RunSubProcessTest(Options, TestGroupForThread);
                 } else {
-                    TestGroupForThread.operator()();
+                    // @todo expand the UnitTestGroup class to make this more specific
+                    if(Options.DoBenchmark)
+                        { TestGroupForThread.operator()(); }
                 }
 
                 // Synchronize with single threaded part.

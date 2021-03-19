@@ -64,7 +64,7 @@ AUTOMATIC_TEST_GROUP(NonPerformantLoudTestTests, LoudWarnTests)
 {
     // Here are some examples of test that should signal poor performance and do so with loud output
     TEST_PERF("TestPerf", false)
-    TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []{})
+    TEST_TIMED("TestTimedWarning", std::chrono::microseconds(5000), std::chrono::microseconds(1000), []() noexcept {})
     TEST_TIMED_UNDER("TestTimedUnderWarning", std::chrono::microseconds(1),
                []{ std::this_thread::sleep_for( std::chrono::milliseconds(5) ); })
     TEST_WITHIN_RANGE_PERF("TestWithinRangePerf",1,3,4)

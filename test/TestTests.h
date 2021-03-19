@@ -131,7 +131,7 @@ void TestTests::operator ()()
     TEST_RESULT("TestResultPassing", Mezzanine::Testing::TestResult::Success)
     TEST_WITHIN_RANGE("TestWithinRangePassing", 1, 99, 50)
     TEST_THROW("TestThrowPassing", std::invalid_argument, []{ throw std::invalid_argument("pass"); })
-    TEST_NO_THROW("TestNoThrowPassing", []{})
+    TEST_NO_THROW("TestNoThrowPassing", []() noexcept {})
     TEST_STRING_CONTAINS("TestStringContains", Mezzanine::String("Foo"), Mezzanine::String("Foobar"))
 
     // AddTestResult is the function that runs all these test macros. This should verify that calling those

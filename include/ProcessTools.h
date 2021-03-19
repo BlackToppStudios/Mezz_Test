@@ -45,25 +45,43 @@
 
 #include "DataTypes.h"
 
-namespace Mezzanine
-{
-    namespace Testing
-    {
-        /// @brief Run a process and capture its console output.
-        /// @param Command The command to attempt to run and capture its output.
-        /// @param TempFileName The file to put all the console output of the command to be transferred back here.
-        /// @return Everything the subprocess emits to the console (stdout or stderr) as a single concatenated string.
-        /// @details This launches a process, redirects its output to a file and reads that file to return that output.
-        /// This is a simple wrapper around std::system, concatenating output redirection to the command. Because of
-        /// this "|", "<" and ">" are not allowed in commands passed to this.
-        Mezzanine::String MEZZ_LIB RunCommand(const Mezzanine::String& Command,
-                                              const Mezzanine::String& TempFileName);
+namespace Mezzanine {
+namespace Testing {
 
-        /// @brief Get all the text in a file.
-        /// @param Filename The file to read.
-        /// @return A string with the contents.
-        Mezzanine::String MEZZ_LIB GetFileContents(const Mezzanine::String& Filename);
-    }// Testing
+SAVE_WARNING_STATE
+SUPPRESS_CLANG_WARNING("-Wpadded")
+
+    /// @brief A simple struct for storing (some) output from a called process.
+    struct MEZZ_LIB CommandResult
+    {
+        /// @brief The output to cout from the called process.
+        String ConsoleOutput;
+        /// @brief The code returned when the called process exited.
+        Integer ExitCode = EXIT_FAILURE;
+    };//CommandResult
+
+RESTORE_WARNING_STATE
+
+    /// @brief Launches a different process on the system.
+    /// @note ExecutableName cannot be empty on Posix systems or this function will fail.
+    /// @param ExePathName The identifier for the executable to be launched. This can be an absolute path,
+    /// relative path, or a just an executable that will be searched for in the system PATH.
+    /// @param Command The command to attempt to run and direct its output.
+    /// @return Returns the ExitCode and Cout output of the command that was run.
+    [[nodiscard]]
+    CommandResult MEZZ_LIB RunCommand(const StringView ExePathName, const StringView Command);
+    /// @brief Launches a different process on the system.
+    /// @remarks This function will interpret all of the text up until the first delimiter (space or tab)
+    /// to be the path to the executable to be launched. If that executable has a space in it's path, use
+    /// the two parameter version of this function instead. @n@n
+    /// Like the two parameter version, the first part of the command that specifies the executable to be
+    /// launched can be an absolute path, relative path, or just an executable to be searched for in the
+    /// system PATH.
+    /// @param Command The command to attempt to run and direct its output.
+    /// @return Returns the ExitCode and Cout output of the command that was run.
+    [[nodiscard]]
+    CommandResult MEZZ_LIB RunCommand(const StringView Command);
+}// Testing
 }// Mezzanine
 
 #endif
