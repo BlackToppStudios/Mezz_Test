@@ -132,6 +132,38 @@ namespace Mezzanine
                 void FileName ::operator ()()
         #endif
 
+        /// @def ISOLATED_TEST_GROUP
+        /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::BenchmarkTestGroup so it
+        /// will not run parallel to any other tests and will get its own process.
+        #ifndef ISOLATED_TEST_GROUP
+            #define ISOLATED_TEST_GROUP(FileName, TestName)                                                            \
+                class MEZZ_LIB FileName : public Mezzanine::Testing::IsolatedTestGroup                                 \
+                {                                                                                                      \
+                    public:                                                                                            \
+                        virtual ~FileName() override = default;                                                        \
+                        virtual void operator ()() override;                                                           \
+                        virtual Mezzanine::String Name() const override                                                \
+                            { return QUOTE(TestName); }                                                                \
+                };                                                                                                     \
+                void FileName ::operator ()()
+        #endif
+
+        /// @def ISOLATED_THREAD_TEST_GROUP
+        /// @brief Defines a test group that policy settings in the class Mezzanine::Testing::BenchmarkThreadTestGroup
+        /// so it will not run parallel to any other tests and will get its own process.
+        #ifndef ISOLATED_THREAD_TEST_GROUP
+            #define ISOLATED_THREAD_TEST_GROUP(FileName, TestName)                                                     \
+                class MEZZ_LIB FileName : public Mezzanine::Testing::IsolatedThreadTestGroup                           \
+                {                                                                                                      \
+                    public:                                                                                            \
+                        virtual ~FileName() override = default;                                                        \
+                        virtual void operator ()() override;                                                           \
+                        virtual Mezzanine::String Name() const override                                                \
+                            { return QUOTE(TestName); }                                                                \
+                };                                                                                                     \
+                void FileName ::operator ()()
+        #endif
+
         /// @def SILENT_TEST_GROUP
         /// @brief Defines a test group that uses policy settings in the class
         /// Mezzanine::Testing::SilentTestGroup so it will not emit normal test reporting until the summary.

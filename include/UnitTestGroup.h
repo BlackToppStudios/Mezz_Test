@@ -66,8 +66,10 @@ namespace Mezzanine
         //int PrintList(CoreTestGroup &TestGroups);
 
         SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wpadded") // Testing code is not sensitive to care about 1 byte of padding
-                                           // If we ever profile then we should disable this.
+        SUPPRESS_GCC_WARNING("-Wpadded")
+        SUPPRESS_CLANG_WARNING("-Wpadded") // Testing code is not performce sensitive enough to care about a few bytes
+                                           // of padding.
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// @brief A single group of tests, suitable for being all the tests of a small subsystem or single class.
         class MEZZ_LIB UnitTestGroup
@@ -81,6 +83,20 @@ namespace Mezzanine
             TestDataStorageType TestDataStorage;
 
         protected:
+
+            /// @brief A place to store execution policy information. To keep it all together
+            struct ExecutionBitsStruct {
+
+                /// @brief Set if this test must be skipped, supercedes requests to run test.
+                Boole ForceSkip = false;
+
+                /// @brief Set if this test test is specifically set to run.
+                Boole ShouldExecute = false;
+            };
+
+            /// @brief All the execution policy bits aligned (padded really) in a way trades space for warning fixes.
+            alignas(std::stringstream) ExecutionBitsStruct ExecutionBits;
+
             /// @brief A place for each test to send its logs.
             /// @details This should be strictly preferred to cout because this is thread safe.
             std::stringstream TestLog;
@@ -132,9 +148,14 @@ namespace Mezzanine
             virtual Boole IsMultiProcessSafe() const;
 
             /// @brief Decides it the test should run as part of a default invocation of the test suite.
-            /// @return defaults to true. All tests that are interactive or take an inordinate amount of time should
+            /// @return Defaults to true. All tests that are interactive or take an inordinate amount of time should
             /// override this and return false.
             virtual Boole ShouldRunAutomatically() const;
+
+            /// @brief Is the test intended to be a long runnning test
+            /// @return Defaults to false. If true the test includes time sensitives portion that could take a while or
+            /// is too unstable for normal
+            virtual Boole IsBenchmark() const;
 
             //////////////////////////////////////////////////////
             // MetaPolicy methods, don't override these, they use the policy methods.
@@ -148,6 +169,17 @@ namespace Mezzanine
             /// @return True if the process is either thread or process safe or
             /// (IsMultiThreadSafe() || IsMultiThreadSafe()).
             Boole CanBeParallel() const;
+
+            //////////////////////////////////////////////////////
+            // Execution Policy Methods, set at runtime
+
+            /// @brief Force this test to be skipped when invoked by the test suite.
+            void SetForceSkip();
+            /// @brief Request this test to be run when invoked by the test suite.
+            void SetScheduledToRun();
+            /// @brief Interprets the execution bits and returns whether or not this should run
+            /// @return True is this should run, false if this should not.
+            Boole ShouldRun() const;
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Make all UnitTestGroups look like a container of TestDatas

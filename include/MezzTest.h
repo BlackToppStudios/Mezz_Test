@@ -70,9 +70,6 @@ namespace Mezzanine
             /// @brief A struct storing everything that might be passed in on the command line.
             struct MEZZ_LIB ParsedCommandLineArgs
             {
-                /// @brief The list of tests to run.
-                std::vector<UnitTestGroup*> TestsToRun;
-
                 /// @brief This will store the name of the command that launched this executable at run time.
                 Mezzanine::String CommandName = "Mezz_Tester";
 
@@ -81,21 +78,25 @@ namespace Mezzanine
 
                 /// @brief The current process depth as interpreted by Main.
                 Boole InSubProcess = false ;
-
                 /// @brief Force single threaded to help troubleshoot.
                 Boole ForceSingleThread = false;
-
                 /// @brief Skip writing the log file.
                 Boole SkipFile = false;
-
                 /// @brief Skip writing the summary at the end.
                 Boole SkipSummary = false;
-
                 /// @brief Create Junit Xml output files?
                 Boole EmitJunitXml = false;
 
-                /// @brief Should the Benchmarks be run? Defaults to false.
-                Boole DoBenchmark = false;
+                /// @brief User Requested benchmarks be run, defaults to false.
+                Boole DoBenchmarkTests = false;
+                /// @brief User requested all the tests, defaults to false.
+                Boole DoAllTests = false;
+                /// @brief User requested tests intended for automatic run, defaults to false.
+                Boole DoAutomaticTests = false;
+                /// @brief User requested tests that have interactive parts, defaults to false.
+                Boole DoInteracticeTests = false;
+                /// @brief Call the default tests when the user requested nothing else.
+                Boole DoDefaultTests = true;
 
             };// ParsedCommandLineArgs
         RESTORE_WARNING_STATE
@@ -128,28 +129,36 @@ namespace Mezzanine
                                         UnitTestGroup& OneTestGroup);
 
         /// @brief Run all the tests that run in other threads.
+        /// @param TestInstances The tests to iterate over and run thread-safe tests.
         /// @param Options The options passed in by the user.
         /// @param AllResults The place to store test results.
         /// @param TestTimings The place to store all test timings.
-        void MEZZ_LIB RunParallelThreads(const ParsedCommandLineArgs& Options,
+        void MEZZ_LIB RunParallelThreads(const CoreTestGroup& TestInstances,
+                                         const ParsedCommandLineArgs& Options,
                                          UnitTestGroup::TestDataStorageType& AllResults,
                                          std::vector<NamedDuration>& TestTimings);
 
         /// @brief Run all the tests that DON'T run in other threads.
+        /// @param TestInstances The tests to iterate over and run all the tests that must no be parallelized.
         /// @param Options The options passed in by the user.
         /// @param AllResults The place to store test results.
         /// @param TestTimings The place to store all test timings.
-        void MEZZ_LIB RunSerializedTests(const ParsedCommandLineArgs& Options,
+        void MEZZ_LIB RunSerializedTests(const CoreTestGroup& TestInstances,
+                                         const ParsedCommandLineArgs& Options,
                                          UnitTestGroup::TestDataStorageType& AllResults,
                                          std::vector<NamedDuration>& TestTimings);
 
+        /// @brief Write out results as an XML file that Jenkins and other Junit compatible tools can use.
+        /// @param AllResults The results to write.
         void MEZZ_LIB EmitJunitResults(const UnitTestGroup::TestDataStorageType& AllResults);
 
         /// @brief Run all the tests per their normal execution policies.
+        /// @param TestInstances The tests to iterate over run if appropriate.
         /// @param Options The options about what tests to run.
         /// @param TestTimings A collection of timings this will add to.
         /// @return A collections of all the results.
-        UnitTestGroup::TestDataStorageType MEZZ_LIB RunTests(const ParsedCommandLineArgs& Options,
+        UnitTestGroup::TestDataStorageType MEZZ_LIB RunTests(const CoreTestGroup& TestInstances,
+                                                             const ParsedCommandLineArgs& Options,
                                                              std::vector<NamedDuration>& TestTimings);
 
         /// @brief This is the entry point for the unit test executable.
@@ -199,10 +208,14 @@ namespace Mezzanine
         /// @brief The token to pass on the command line to run all the tests.
         static const Mezzanine::String AllToken("all");
 
-        /// @brief The token to pass on the command line to run all tests intended for unattended execution.
+
+        /// @brief The token to pass on the command line to run MOST tests intended unattended execution.
+        static const Mezzanine::String DefaultToken("default");
+
+        /// @brief The token to pass on the command line to run ALL tests intended for unattended execution.
         static const Mezzanine::String AutomaticToken("automatic");
 
-        /// @brief The token to pass on the command line to run all tests NOT intended for unattended execution.
+        /// @brief The token to pass on the command line to run ALL tests NOT intended for unattended execution.
         static const Mezzanine::String InteractiveToken("interactive");
 
         /// @brief The token to pass on the command line to skip the summary.
@@ -212,7 +225,7 @@ namespace Mezzanine
         static const Mezzanine::String SkipFileToken("skipfile");
 
         /// @brief The token to pass on the command line to not emit a log file.
-        static const Mezzanine::String DoBenchmarkToken("dobenchmark");
+        static const Mezzanine::String DoBenchmarkToken("benchmark");
 
         /// @brief The token to pass as a prefix to a test to skip it.
         static const Mezzanine::String SkipTestToken("skip-");

@@ -69,14 +69,26 @@ namespace Mezzanine
         Boole UnitTestGroup::ShouldRunAutomatically() const
             { return true; }
 
-        //////////////////////////////////////////////////////
-        // MetaPolicy methods, don't override these, they use the policy methods.
+        Boole UnitTestGroup::IsBenchmark() const
+            { return false; }
+
+//////////////////////////////////////////////////////
+// MetaPolicy methods, don't override these, they use the policy methods for overidable behavior.
 
         Boole UnitTestGroup::MustBeSerialized() const
             { return !IsMultiThreadSafe() && !IsMultiProcessSafe(); }
 
         Boole UnitTestGroup::CanBeParallel() const
             { return IsMultiThreadSafe() || IsMultiProcessSafe(); }
+
+        void UnitTestGroup::SetForceSkip()
+            { ExecutionBits.ForceSkip = true; }
+
+        void UnitTestGroup::SetScheduledToRun()
+            { ExecutionBits.ShouldExecute = true; }
+
+        Boole UnitTestGroup::ShouldRun() const
+            { return ExecutionBits.ShouldExecute && !ExecutionBits.ForceSkip; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Make all UnitTestGroups look like a container of TestDatas

@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of the a group that does performance sensitive things.
+/// @brief The definition of the a group of tests that is duration sensitive and thread isoloated.
 
 #include "BenchmarkThreadTestGroup.h"
 
@@ -47,11 +47,8 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        Boole BenchmarkThreadTestGroup::IsMultiThreadSafe() const
-            { return false; }
-
-        Boole BenchmarkThreadTestGroup::IsMultiProcessSafe() const
-            { return false; }
+        Boole BenchmarkThreadTestGroup::IsBenchmark() const
+            { return true; }
 
     }// Testing
 }// Mezzanine

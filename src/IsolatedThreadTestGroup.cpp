@@ -37,38 +37,21 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_BenchmarkTestGroup_h
-#define Mezz_Test_BenchmarkTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that is duration sensitive and process isoloated.
+/// @brief The definition of the a group of tests that is performance sensitive and single thread isoloated.
 
-#include "UnitTestGroup.h"
-#include "IsolatedTestGroup.h"
+#include "IsolatedThreadTestGroup.h"
 
 namespace Mezzanine
 {
     namespace Testing
     {
-        SAVE_WARNING_STATE
-        SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
+        Boole IsolatedThreadTestGroup::IsMultiThreadSafe() const
+            { return true; }
 
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief Benchmarks are performance sensitive, and require special attention.
-        /// @details Because the smallest load can affect performance, this inherits from @ref IsolatedTestGroup to
-        /// insure as few things as possible interfere with tests.
-        /// test group finishes.
-        class MEZZ_LIB BenchmarkTestGroup : public Mezzanine::Testing::IsolatedTestGroup
-        {
-        public:
-            /// @brief Default virtual deconstructor to allow for polymorphism.
-            virtual ~BenchmarkTestGroup() override = default;
+        Boole IsolatedThreadTestGroup::IsMultiProcessSafe() const
+            { return false; }
 
-            Boole IsBenchmark() const override;
-
-        };
-        RESTORE_WARNING_STATE
     }// Testing
 }// Mezzanine
-
-#endif

@@ -76,6 +76,8 @@ namespace
         return Sanitized;
     }
 
+    // This creates a collection of functions to execute later that can modify the Post Processing Command Line
+    // arguments when it becomes convenient to do so.
     CallingTableType CreateMainArgsCallingTable(const CoreTestGroup& TestInstances, ParsedCommandLineArgs& Results)
     {
         CallingTableType CallingTable;
@@ -91,28 +93,73 @@ namespace
         CallingTable[DebugAToken] = RunHere;
         CallingTable[DebugBToken] = RunHere;
 
-        CallingTable[AllToken] = [&Results, &TestInstances]()
+        // A little lambda, so it is just a little harder to forget to disable the default flag.
+        auto ScheduleTest = [&Results](const CoreTestGroup::value_type& OneTest)
         {
-            Results.TestsToRun.clear();
-            for(CoreTestGroup::value_type OneTest : TestInstances)
-                { Results.TestsToRun.push_back(OneTest.second); }
+            OneTest.second->SetScheduledToRun();
+            Results.DoDefaultTests = false;
         };
 
-        CallingTable[AutomaticToken] = [&Results, &TestInstances]()
+        for(const CoreTestGroup::value_type& OneTest : TestInstances)
         {
+            // Insert flag adjustments that request tests to run into calling table
+            CallingTable[OneTest.first] = [&OneTest, &ScheduleTest]()
+                { ScheduleTest(OneTest); };
+
+            // Insert flag adjustments that force a test to be skipped.
+            CallingTable[SkipTestToken+OneTest.first] = [&OneTest]()
+                { OneTest.second->SetForceSkip(); };
+        }
+
+        CallingTable[AllToken] = [&Results, &TestInstances, &ScheduleTest]()
+        {
+            Results.DoAllTests = true;
             for(CoreTestGroup::value_type OneTest : TestInstances)
-                { if(OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
+                { ScheduleTest(OneTest); }
         };
 
-        CallingTable[InteractiveToken] = [&Results, &TestInstances]()
+        CallingTable[DefaultToken] = [&Results, &TestInstances, &ScheduleTest]()
         {
+            Results.DoDefaultTests = true;
             for(CoreTestGroup::value_type OneTest : TestInstances)
-                { if(!OneTest.second->ShouldRunAutomatically()) {Results.TestsToRun.push_back(OneTest.second);} }
+            {
+                if(OneTest.second->ShouldRunAutomatically() && !OneTest.second->IsBenchmark())
+                    { ScheduleTest(OneTest); }
+            }
+        };
+
+        CallingTable[AutomaticToken] = [&Results, &TestInstances, &ScheduleTest]()
+        {
+            Results.DoAutomaticTests = true;
+            for(CoreTestGroup::value_type OneTest : TestInstances)
+            {
+                if(OneTest.second->ShouldRunAutomatically())
+                    { ScheduleTest(OneTest); }
+            }
+        };
+
+        CallingTable[InteractiveToken] = [&Results, &TestInstances, &ScheduleTest]()
+        {
+            Results.DoInteracticeTests = true;
+            for(CoreTestGroup::value_type OneTest : TestInstances)
+            {
+                if(!OneTest.second->ShouldRunAutomatically())
+                    { ScheduleTest(OneTest); }
+            }
+        };
+
+        CallingTable[DoBenchmarkToken] = [&Results, &TestInstances, &ScheduleTest]()
+        {
+            Results.DoBenchmarkTests = true;
+            for(CoreTestGroup::value_type OneTest : TestInstances)
+            {
+                if(OneTest.second->IsBenchmark())
+                    { ScheduleTest(OneTest); }
+            }
         };
 
         CallingTable[SkipSummaryToken] = [&Results]() noexcept { Results.SkipSummary = true; };
         CallingTable[SkipFileToken] = [&Results]() noexcept { Results.SkipFile = true; };
-        CallingTable[DoBenchmarkToken] = [&Results]() noexcept { Results.DoBenchmark = true; };
 
         return CallingTable;
     }
@@ -145,21 +192,10 @@ namespace Mezzanine
             for (int c=1; c<argc; ++c)
             {
                 if(EXIT_SUCCESS != Results.ExitWithError) { break; } // Something bogus bail
+
                 const Mezzanine::String ThisArg(AllLower(argv[c]));           // Insure case insensitivity
                 if(CallingTable.count(ThisArg))                               // check for keywords that aren't tests.
                     { CallingTable[ThisArg](); }
-                else if(TestInstances.count(ThisArg)) // Wasn't a keyword, could it be a test?
-                    { Results.TestsToRun.push_back(TestInstances.at(ThisArg)); }
-                else if(ThisArg.size()>SkipTestToken.size() &&
-                        TestInstances.count(ThisArg.substr(SkipTestToken.size())))
-                {
-                    auto FilterTestByName =
-                        [&](UnitTestGroup* T){ return ThisArg.substr(SkipTestToken.size()) == AllLower(T->Name()); };
-                    Results.TestsToRun.erase(
-                        std::remove_if(Results.TestsToRun.begin(), Results.TestsToRun.end(), FilterTestByName),
-                        Results.TestsToRun.end()
-                    );
-                }
                 else
                 {
                     std::cerr << ThisArg.substr(SkipTestToken.size()) << std::endl
@@ -168,8 +204,8 @@ namespace Mezzanine
                 }
             }
 
-            if(0==Results.TestsToRun.size())
-                { CallingTable[AllToken](); }
+            if(Results.DoDefaultTests)
+                { CallingTable[DefaultToken](); }
 
             if(EXIT_SUCCESS != Results.ExitWithError) { Usage(Results.CommandName, TestInstances); }
             return Results;
@@ -233,19 +269,21 @@ namespace Mezzanine
             }
         }
 
-        void RunParallelThreads(const ParsedCommandLineArgs& Options,
+        void RunParallelThreads(const CoreTestGroup& TestInstances,
+                                const ParsedCommandLineArgs& Options,
                                 UnitTestGroup::TestDataStorageType& AllResults,
                                 std::vector<NamedDuration>& TestTimings)
         {
             std::mutex ResultsMutex;
             std::vector<std::thread> TestThreads;
 
-            for(UnitTestGroup* OneTestGroup : Options.TestsToRun)
+            for(const CoreTestGroup::value_type& OneTestGroup : TestInstances)
             {
-                UnitTestGroup& TestGroupForThread = *(OneTestGroup);
+                UnitTestGroup& TestGroupForThread = *(OneTestGroup.second);
 
                 // Skip the ones that cannot be run here. Run only the tests that love massive parallelism.
                 if(TestGroupForThread.MustBeSerialized()) { continue; }
+                if(!TestGroupForThread.ShouldRun()) { continue; }
 
                 // Store the test and any synchronization inside it.
                 auto DoAndTimeThisTest = [&]()
@@ -277,27 +315,28 @@ namespace Mezzanine
             for(std::thread& OneTestThread : TestThreads) { OneTestThread.join(); }
         }
 
-        void RunSerializedTests(const ParsedCommandLineArgs& Options,
+        void RunSerializedTests(const CoreTestGroup& TestInstances,
+                                const ParsedCommandLineArgs& Options,
                                 UnitTestGroup::TestDataStorageType& AllResults,
                                 std::vector<NamedDuration>& TestTimings)
         {
-            for(UnitTestGroup* OneTestGroup : Options.TestsToRun)
+            for(const CoreTestGroup::value_type& OneTestGroup : TestInstances)
             {
-                UnitTestGroup& TestGroupForThread = *(OneTestGroup);
+                UnitTestGroup& TestGroupForThread = *(OneTestGroup.second);
 
                 // Skip the ones that cannot be run here because they can't stand parrellelism.
                 if(TestGroupForThread.CanBeParallel()) { continue; }
+                if(!TestGroupForThread.ShouldRun()) { continue; }
 
                 // Run all of the rest tests right here.
                 TestTimer SingleThreadTimer;
 
+                // Force into a process or not.
                 if(TestGroupForThread.IsMultiProcessSafe())
                 {
                     RunSubProcessTest(Options, TestGroupForThread);
                 } else {
-                    // @todo expand the UnitTestGroup class to make this more specific
-                    if(Options.DoBenchmark)
-                        { TestGroupForThread.operator()(); }
+                    TestGroupForThread.operator()();
                 }
 
                 // Synchronize with single threaded part.
@@ -350,12 +389,13 @@ namespace Mezzanine
             JunitCompatibleXML << XmlContents.str() << std::endl;
         }
 
-        UnitTestGroup::TestDataStorageType RunTests(const ParsedCommandLineArgs& Options,
+        UnitTestGroup::TestDataStorageType RunTests(const CoreTestGroup& TestInstances,
+                                                    const ParsedCommandLineArgs& Options,
                                                     std::vector<NamedDuration>& TestTimings)
         {
             UnitTestGroup::TestDataStorageType AllResults;
-            RunParallelThreads(Options, AllResults, TestTimings);
-            RunSerializedTests(Options, AllResults, TestTimings);
+            RunParallelThreads(TestInstances, Options, AllResults, TestTimings);
+            RunSerializedTests(TestInstances, Options, AllResults, TestTimings);
             if(Options.EmitJunitXml)
                 { EmitJunitResults(AllResults); }
             return AllResults;
@@ -388,7 +428,7 @@ namespace Mezzanine
 
                 // Run the tests that need to be run.
                 TestTimer TestExecutionTimer;
-                UnitTestGroup::TestDataStorageType AllResults = RunTests(Options, VariousTimings);
+                UnitTestGroup::TestDataStorageType AllResults = RunTests(TestInstances, Options, VariousTimings);
                 VariousTimings.emplace_back(TestExecutionTimer.GetNameDuration("Test Execution Time"));
 
                 TestResult Worst;
