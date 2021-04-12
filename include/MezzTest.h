@@ -143,7 +143,18 @@ namespace Mezzanine
                                          UnitTestGroup::TestDataStorageType& AllResults,
                                          std::vector<NamedDuration>& TestTimings);
 
-        void MEZZ_LIB EmitJunitResults(const UnitTestGroup::TestDataStorageType& AllResults);
+        /// @brief Writes the XML results to a default file.
+        /// @detail Writes Junit formatted XML to Mezz_Test_Results.xml, using the specification found at
+        /// https://llg.cubic.org/docs/junit/
+        /// @param AllResults The rest results to write.
+        void MEZZ_LIB EmitJunitResultsToFile(const UnitTestGroup::TestDataStorageType& AllResults);
+
+        /// @brief Writes the XML results to the passed stream.
+        /// @detail Writes Junit formatted XML to Mezz_Test_Results.xml, using the specification found at
+        /// https://llg.cubic.org/docs/junit/
+        /// @param Output The place to write the XML results.
+        /// @param AllResults The rest results to write.
+        void MEZZ_LIB EmitJunitResults(std::ostream& Output, const UnitTestGroup::TestDataStorageType& AllResults);
 
         /// @brief Run all the tests per their normal execution policies.
         /// @param Options The options about what tests to run.

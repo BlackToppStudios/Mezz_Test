@@ -309,24 +309,51 @@ namespace Mezzanine
         }
 
 
-        void EmitJunitResults(const UnitTestGroup::TestDataStorageType& AllResults)
+        void EmitJunitResultsToFile(const UnitTestGroup::TestDataStorageType& AllResults)
         {
-            std::stringstream XmlContents;
-            XmlContents << "<testsuite tests=\"" << AllResults.size() << "\">\n";
+            std::ofstream JunitCompatibleXMLFile("Mezz_Test_Results.xml");
+            EmitJunitResults(JunitCompatibleXMLFile, AllResults);
+            JunitCompatibleXMLFile << std::endl;
+        }
+
+        void EmitJunitResults(std::ostream& Output, const UnitTestGroup::TestDataStorageType& AllResults)
+        {
+            //std::stringstream XmlContents;
+            using Count = UnitTestGroup::TestDataStorageType::size_type;
+            Count FailureCount{0};
+            Count TestCount{AllResults.size()};
+            Count SkippedCount{0};
+
             for(UnitTestGroup::TestDataStorageType::value_type OneResult : AllResults)
             {
+                if(TestResult::Warning <= OneResult.Results)
+                    { FailureCount++; }
+                if(TestResult::Skipped == OneResult.Results)
+                    { SkippedCount++; }
+            }
+
+            Output << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                   << "  <testsuite "
+                        << "tests=\"" << TestCount << "\" "
+                        << "failures=\"" << FailureCount << "\" "
+                        << "skipped=\"" << FailureCount << "\" "
+                        << ">\n";
+            for(UnitTestGroup::TestDataStorageType::value_type OneResult : AllResults)
+            {
+                String TestName{SanitizeTestNameForJunit(OneResult.TestName)};
                 switch(OneResult.Results)
                 {
                     case TestResult::Success:
-                        XmlContents << "    <testcase classname=\"" << OneResult.FileName<< "\" name=\""
-                                        << SanitizeTestNameForJunit(OneResult.TestName) << "\" />\n";
+                    case TestResult::NonPerformant:
+                        Output << "    <testcase classname=\"" << OneResult.FileName
+                                    << "\" name=\"" << TestName << "\" />\n";
                         break;
 
                     case TestResult::Skipped:
-                        XmlContents << "    <testcase classname=\"" << OneResult.FileName<< "\" name=\""
-                                        << SanitizeTestNameForJunit(OneResult.TestName) << "\">\n"
-                                    << "        <skipped />\n"
-                                    << "    </testcase>\n";
+                        Output << "    <testcase classname=\"" << OneResult.FileName
+                                    << "\" name=\""<< TestName << "\">\n"
+                                << "        <skipped />\n"
+                                << "    </testcase>\n";
                         break;
 
                     case TestResult::Cancelled:
@@ -335,19 +362,16 @@ namespace Mezzanine
                     case TestResult::NotApplicable:
                     case TestResult::Unknown:
                     case TestResult::Warning:
-                    case TestResult::NonPerformant:
-                        XmlContents << "    <testcase classname=\"" << OneResult.FileName<< "\" name=\""
-                                        << SanitizeTestNameForJunit(OneResult.TestName) << "\">\n"
-                                    << "        <failure type=\"" << OneResult.Results << "\">\n"
-                                    << "            " << OneResult
-                                    << "        </failure>\n"
-                                    << "    </testcase>\n";
+                        Output << "    <testcase classname=\"" << OneResult.FileName
+                                    << "\" name=\"" << TestName << "\">\n"
+                                << "        <failure type=\"" << OneResult.Results << "\">\n"
+                                << "            " << OneResult
+                                << "        </failure>\n"
+                                << "    </testcase>\n";
+
                 }
             }
-            XmlContents << "</testsuite>";
-
-            std::ofstream JunitCompatibleXML("Mezz_Test_Results.xml");
-            JunitCompatibleXML << XmlContents.str() << std::endl;
+            Output << "  </testsuite>";
         }
 
         UnitTestGroup::TestDataStorageType RunTests(const ParsedCommandLineArgs& Options,
@@ -357,7 +381,7 @@ namespace Mezzanine
             RunParallelThreads(Options, AllResults, TestTimings);
             RunSerializedTests(Options, AllResults, TestTimings);
             if(Options.EmitJunitXml)
-                { EmitJunitResults(AllResults); }
+                { EmitJunitResultsToFile(AllResults); }
             return AllResults;
         }
 
