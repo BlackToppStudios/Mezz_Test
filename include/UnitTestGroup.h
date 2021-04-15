@@ -46,25 +46,12 @@
 
 #include "TestData.h"
 #include "TestEnumerations.h"
-
-#include <vector>
-#include <chrono>
-#include <functional>
-#include <type_traits>
+#include "DataTypes.h"
 
 namespace Mezzanine
 {
     namespace Testing
     {
-        //SAVE_WARNING_STATE
-        //SUPPRESS_CLANG_WARNING("-Wpadded")
-        //RESTORE_WARNING_STATE
-
-        // @brief Print all the groups that exist in a given CoreTestGroup
-        // @param TestGroups The group whose constents names with be printed
-        // @return ExitSuccess on success.
-        //int PrintList(CoreTestGroup &TestGroups);
-
         SAVE_WARNING_STATE
         SUPPRESS_GCC_WARNING("-Wpadded")
         SUPPRESS_CLANG_WARNING("-Wpadded") // Testing code is not performce sensitive enough to care about a few bytes

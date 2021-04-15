@@ -42,6 +42,8 @@
 #include "TestData.h"
 
 #include "DataTypes.h"
+#include "Trace.h"
+
 
 #include <cstdlib>
 #include <iostream>
@@ -80,15 +82,19 @@ namespace
     // arguments when it becomes convenient to do so.
     CallingTableType CreateMainArgsCallingTable(const CoreTestGroup& TestInstances, ParsedCommandLineArgs& Results)
     {
+        MEZZ_TRACE("Constructing command delegation table.")
         CallingTableType CallingTable;
 
+        MEZZ_TRACE("Adding simple flags to delegation table.")
         CallingTable[HelpToken] = [&Results]() noexcept { Results.ExitWithError = EXIT_FAILURE; };
         CallingTable[RunInThisProcessToken] = [&Results]() noexcept { Results.InSubProcess = true; };
         CallingTable[NoThreads] = [&Results]() noexcept { Results.ForceSingleThread = true; };
         CallingTable[JunitXMLAToken] = [&Results]() noexcept { Results.EmitJunitXml = true; };
         CallingTable[JunitXMLBToken] = [&Results]() noexcept { Results.EmitJunitXml = true; };
+        CallingTable[SkipSummaryToken] = [&Results]() noexcept { Results.SkipSummary = true; };
+        CallingTable[SkipFileToken] = [&Results]() noexcept { Results.SkipFile = true; };
 
-        // Debug does both Single thread and Single process.
+        MEZZ_TRACE("Adding debug options to delegation table.")
         auto RunHere = [&Results]() noexcept { Results.InSubProcess = true; Results.ForceSingleThread = true; };
         CallingTable[DebugAToken] = RunHere;
         CallingTable[DebugBToken] = RunHere;
@@ -96,10 +102,18 @@ namespace
         // A little lambda, so it is just a little harder to forget to disable the default flag.
         auto ScheduleTest = [&Results](const CoreTestGroup::value_type& OneTest)
         {
+            MEZZ_TRACE("Requesting test to be run: " + OneTest.second->Name())
             OneTest.second->SetScheduledToRun();
             Results.DoDefaultTests = false;
         };
 
+        auto SkipTest = [](const CoreTestGroup::value_type& OneTest)
+        {
+            MEZZ_TRACE("Demanding test to be skipped: " + OneTest.second->Name())
+            OneTest.second->SetForceSkip();
+        };
+
+        MEZZ_TRACE("Adding switches to request tests and skip tets to delegation table.")
         for(const CoreTestGroup::value_type& OneTest : TestInstances)
         {
             // Insert flag adjustments that request tests to run into calling table
@@ -107,10 +121,11 @@ namespace
                 { ScheduleTest(OneTest); };
 
             // Insert flag adjustments that force a test to be skipped.
-            CallingTable[SkipTestToken+OneTest.first] = [&OneTest]()
-                { OneTest.second->SetForceSkip(); };
+            CallingTable[SkipTestToken+OneTest.first] = [&OneTest, &SkipTest]()
+                { SkipTest(OneTest); };
         }
 
+        MEZZ_TRACE("Adding all test switch to delegation table.")
         CallingTable[AllToken] = [&Results, &TestInstances, &ScheduleTest]()
         {
             Results.DoAllTests = true;
@@ -118,6 +133,7 @@ namespace
                 { ScheduleTest(OneTest); }
         };
 
+        MEZZ_TRACE("Adding default test switch to delegation table.")
         CallingTable[DefaultToken] = [&Results, &TestInstances, &ScheduleTest]()
         {
             Results.DoDefaultTests = true;
@@ -128,6 +144,7 @@ namespace
             }
         };
 
+        MEZZ_TRACE("Adding automatic test switch to delegation table.")
         CallingTable[AutomaticToken] = [&Results, &TestInstances, &ScheduleTest]()
         {
             Results.DoAutomaticTests = true;
@@ -138,6 +155,7 @@ namespace
             }
         };
 
+        MEZZ_TRACE("Adding interactive test switch to delegation table.")
         CallingTable[InteractiveToken] = [&Results, &TestInstances, &ScheduleTest]()
         {
             Results.DoInteracticeTests = true;
@@ -148,6 +166,7 @@ namespace
             }
         };
 
+        MEZZ_TRACE("Adding benchmark test switch to delegation table.")
         CallingTable[DoBenchmarkToken] = [&Results, &TestInstances, &ScheduleTest]()
         {
             Results.DoBenchmarkTests = true;
@@ -157,9 +176,6 @@ namespace
                     { ScheduleTest(OneTest); }
             }
         };
-
-        CallingTable[SkipSummaryToken] = [&Results]() noexcept { Results.SkipSummary = true; };
-        CallingTable[SkipFileToken] = [&Results]() noexcept { Results.SkipFile = true; };
 
         return CallingTable;
     }
@@ -180,6 +196,7 @@ namespace Mezzanine
         {
             ParsedCommandLineArgs Results;
 
+            MEZZ_TRACE("Counting command line arguments.")
             if (argc > 0) //Not really sure how this would happen, but I would rather test and not have silent failures.
                 { Results.CommandName = argv[0]; }
             else
@@ -188,12 +205,14 @@ namespace Mezzanine
             // Construct a delegation table that can take a huge variety of actions based on strings.
             CallingTableType CallingTable = CreateMainArgsCallingTable(TestInstances, Results);
 
+
             // Loop over the argv and make a decision for each arg.
             for (int c=1; c<argc; ++c)
             {
                 if(EXIT_SUCCESS != Results.ExitWithError) { break; } // Something bogus bail
 
                 const Mezzanine::String ThisArg(AllLower(argv[c]));           // Insure case insensitivity
+                MEZZ_TRACE("Processing argument: " + ThisArg)
                 if(CallingTable.count(ThisArg))                               // check for keywords that aren't tests.
                     { CallingTable[ThisArg](); }
                 else
@@ -205,7 +224,10 @@ namespace Mezzanine
             }
 
             if(Results.DoDefaultTests)
-                { CallingTable[DefaultToken](); }
+            {
+                MEZZ_TRACE("No tests requested, using default tests.")
+                CallingTable[DefaultToken]();
+            }
 
             if(EXIT_SUCCESS != Results.ExitWithError) { Usage(Results.CommandName, TestInstances); }
             return Results;
@@ -350,7 +372,9 @@ namespace Mezzanine
 
         void EmitJunitResults(const UnitTestGroup::TestDataStorageType& AllResults)
         {
+            MEZZ_TRACE("Preparing JUnit compatible XML.")
             std::stringstream XmlContents;
+
             XmlContents << "<testsuite tests=\"" << AllResults.size() << "\">\n";
             for(UnitTestGroup::TestDataStorageType::value_type OneResult : AllResults)
             {
@@ -385,74 +409,83 @@ namespace Mezzanine
             }
             XmlContents << "</testsuite>";
 
+            MEZZ_TRACE("Emitting JUnit compatible XML.")
             std::ofstream JunitCompatibleXML("Mezz_Test_Results.xml");
             JunitCompatibleXML << XmlContents.str() << std::endl;
+            MEZZ_TRACE("Closing JUnit compatible XML.")
         }
 
         UnitTestGroup::TestDataStorageType RunTests(const CoreTestGroup& TestInstances,
                                                     const ParsedCommandLineArgs& Options,
                                                     std::vector<NamedDuration>& TestTimings)
         {
+            MEZZ_TRACE("Preparing storage of test results.")
             UnitTestGroup::TestDataStorageType AllResults;
+
+            MEZZ_TRACE("Running all parallel tests.")
             RunParallelThreads(TestInstances, Options, AllResults, TestTimings);
+
+            MEZZ_TRACE("Running all single threaded tests.")
             RunSerializedTests(TestInstances, Options, AllResults, TestTimings);
+
             if(Options.EmitJunitXml)
                 { EmitJunitResults(AllResults); }
+
             return AllResults;
         }
 
         ExitCode MainImplementation(int argc, char** argv, const CoreTestGroup& TestInstances)
         {
+            MEZZ_TRACE("Done with Autogenerate test instantiation. Entering Test Suite Main.")
             try
             {
                 // Start by timing everything, because somehow that is important.
+                MEZZ_TRACE("Starting TotalTimer.")
                 TestTimer TotalTimer;
 
-                // If a shell is not supported, then using system() to run this task in a new process won't work.
-                if( !system(nullptr) )
-                {
-                    std::cerr << "system() call not supported, missing command processor." << std::endl;
-                    return EXIT_FAILURE;
-                }
-
                 // Handle the command line arguments.
+                MEZZ_TRACE("Handling command line arguments.")
                 ParsedCommandLineArgs Options = DealWithdCommandLineArgs(argc, argv, TestInstances);
                 if(EXIT_SUCCESS != Options.ExitWithError)
                     { return Options.ExitWithError; }
 
                 // Reserve a fairly arbitrary amount of space for storing the timings of the work to be done, make sure
                 // it is a power of two for maximum legitimacy.
+                MEZZ_TRACE("Preparing storage for timings.")
                 std::vector<NamedDuration> VariousTimings;
                 VariousTimings.reserve(32);
                 VariousTimings.push_back(TotalTimer.GetNameDuration("Initial Setup"));
 
                 // Run the tests that need to be run.
+                MEZZ_TRACE("Starting TestExecutionTimer.")
                 TestTimer TestExecutionTimer;
                 UnitTestGroup::TestDataStorageType AllResults = RunTests(TestInstances, Options, VariousTimings);
                 VariousTimings.emplace_back(TestExecutionTimer.GetNameDuration("Test Execution Time"));
 
+                MEZZ_TRACE("Rendering final.")
                 TestResult Worst;
                 if(!Options.SkipSummary)
                 {
-                    // Handle formatting test results.
+                    MEZZ_TRACE("Formatting test results.")
                     TestTimer SummaryTimer;
                     std::stringstream SummaryStream;
                     Worst = RenderTestResultSummary(AllResults, SummaryStream);
                     VariousTimings.push_back(SummaryTimer.GetNameDuration("Summary Reporting Time"));
 
-                    // Handle Formatting Times.
+                    MEZZ_TRACE("Formatting Times.")
                     TestTimer TimingsTimer;
                     std::stringstream TimingsStream;
                     RenderTimingsSummary(VariousTimings, TimingsStream);
                     NamedDuration TimeTime = TimingsTimer.GetNameDuration(" + Time Spent Reporting Time");
 
-                    // Actually display it all.
+                    MEZZ_TRACE("Displaying results")
                     NamedDuration TotalTime = TotalTimer.GetNameDuration(" ≈ Total Run Time");
                     std::cout << "\n\n" << TimingsStream.str() << TimeTime << "\n "
                             << Mezzanine::String(78, '_') << "\n  "
                             << TotalTime << "\n\n"
                             << SummaryStream.str() << std::endl;
                 } else {
+                    MEZZ_TRACE("Skipping result summary display")
                     Worst = GetWorstResults(AllResults);
                 }
 
