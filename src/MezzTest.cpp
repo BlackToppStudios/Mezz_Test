@@ -57,7 +57,7 @@ namespace
     using namespace Mezzanine::Testing;
 
     /// @brief Create a type for delegating work to something dynamic based on a string based lookup.
-    typedef std::map<Mezzanine::String, std::function<void()>> CallingTableType;
+    typedef std::map<Mezzanine::String, std::function<void(ParsedCommandLineArgs&)>> CallingTableType;
 
     Mezzanine::String SanitizeTestNameForJunit(const Mezzanine::String& ToSanitize)
     {
@@ -80,31 +80,32 @@ namespace
 
     // This creates a collection of functions to execute later that can modify the Post Processing Command Line
     // arguments when it becomes convenient to do so.
-    CallingTableType CreateMainArgsCallingTable(const CoreTestGroup& TestInstances, ParsedCommandLineArgs& Results)
+    CallingTableType CreateMainArgsCallingTable(const CoreTestGroup& TestInstances)
     {
         MEZZ_TRACE("Constructing command delegation table.")
         CallingTableType CallingTable;
 
         MEZZ_TRACE("Adding simple flags to delegation table.")
-        CallingTable[HelpToken] = [&Results]() noexcept { Results.ExitWithError = EXIT_FAILURE; };
-        CallingTable[RunInThisProcessToken] = [&Results]() noexcept { Results.InSubProcess = true; };
-        CallingTable[NoThreads] = [&Results]() noexcept { Results.ForceSingleThread = true; };
-        CallingTable[JunitXMLAToken] = [&Results]() noexcept { Results.EmitJunitXml = true; };
-        CallingTable[JunitXMLBToken] = [&Results]() noexcept { Results.EmitJunitXml = true; };
-        CallingTable[SkipSummaryToken] = [&Results]() noexcept { Results.SkipSummary = true; };
-        CallingTable[SkipFileToken] = [&Results]() noexcept { Results.SkipFile = true; };
+        CallingTable[HelpToken] = [](ParsedCommandLineArgs& Args) noexcept { Args.ExitWithError = EXIT_FAILURE; };
+        CallingTable[RunInThisProcessToken] = [](ParsedCommandLineArgs& Args) noexcept { Args.InSubProcess = true; };
+        CallingTable[NoThreads] = [](ParsedCommandLineArgs& Args) noexcept { Args.ForceSingleThread = true; };
+        CallingTable[JunitXMLAToken] = [](ParsedCommandLineArgs& Args) noexcept { Args.EmitJunitXml = true; };
+        CallingTable[JunitXMLBToken] = [](ParsedCommandLineArgs& Args) noexcept { Args.EmitJunitXml = true; };
+        CallingTable[SkipSummaryToken] = [](ParsedCommandLineArgs& Args) noexcept { Args.SkipSummary = true; };
+        CallingTable[SkipFileToken] = [](ParsedCommandLineArgs& Args) noexcept { Args.SkipFile = true; };
 
         MEZZ_TRACE("Adding debug options to delegation table.")
-        auto RunHere = [&Results]() noexcept { Results.InSubProcess = true; Results.ForceSingleThread = true; };
+        auto RunHere = [](ParsedCommandLineArgs& Args) noexcept
+            { Args.InSubProcess = true; Args.ForceSingleThread = true; };
         CallingTable[DebugAToken] = RunHere;
         CallingTable[DebugBToken] = RunHere;
 
         // A little lambda, so it is just a little harder to forget to disable the default flag.
-        auto ScheduleTest = [&Results](const CoreTestGroup::value_type& OneTest)
+        auto ScheduleTest = [](const CoreTestGroup::value_type& OneTest, ParsedCommandLineArgs& Args)
         {
             MEZZ_TRACE("Requesting test to be run: " + OneTest.second->Name())
             OneTest.second->SetScheduledToRun();
-            Results.DoDefaultTests = false;
+            Args.DoDefaultTests = false;
         };
 
         auto SkipTest = [](const CoreTestGroup::value_type& OneTest)
@@ -117,63 +118,63 @@ namespace
         for(const CoreTestGroup::value_type& OneTest : TestInstances)
         {
             // Insert flag adjustments that request tests to run into calling table
-            CallingTable[OneTest.first] = [&OneTest, &ScheduleTest]()
-                { ScheduleTest(OneTest); };
+            CallingTable[OneTest.first] = [&OneTest, &ScheduleTest](ParsedCommandLineArgs& Args)
+                { ScheduleTest(OneTest, Args); };
 
             // Insert flag adjustments that force a test to be skipped.
-            CallingTable[SkipTestToken+OneTest.first] = [&OneTest, &SkipTest]()
+            CallingTable[SkipTestToken+OneTest.first] = [&OneTest, &SkipTest](ParsedCommandLineArgs& )
                 { SkipTest(OneTest); };
         }
 
         MEZZ_TRACE("Adding all test switch to delegation table.")
-        CallingTable[AllToken] = [&Results, &TestInstances, &ScheduleTest]()
+        CallingTable[AllToken] = [&TestInstances, &ScheduleTest](ParsedCommandLineArgs& Args)
         {
-            Results.DoAllTests = true;
+            Args.DoAllTests = true;
             for(CoreTestGroup::value_type OneTest : TestInstances)
-                { ScheduleTest(OneTest); }
+                { ScheduleTest(OneTest, Args); }
         };
 
         MEZZ_TRACE("Adding default test switch to delegation table.")
-        CallingTable[DefaultToken] = [&Results, &TestInstances, &ScheduleTest]()
+        CallingTable[DefaultToken] = [&TestInstances, &ScheduleTest](ParsedCommandLineArgs& Args)
         {
-            Results.DoDefaultTests = true;
+            Args.DoDefaultTests = true;
             for(CoreTestGroup::value_type OneTest : TestInstances)
             {
                 if(OneTest.second->ShouldRunAutomatically() && !OneTest.second->IsBenchmark())
-                    { ScheduleTest(OneTest); }
+                    { ScheduleTest(OneTest, Args); }
             }
         };
 
         MEZZ_TRACE("Adding automatic test switch to delegation table.")
-        CallingTable[AutomaticToken] = [&Results, &TestInstances, &ScheduleTest]()
+        CallingTable[AutomaticToken] = [&TestInstances, &ScheduleTest](ParsedCommandLineArgs& Args)
         {
-            Results.DoAutomaticTests = true;
+            Args.DoAutomaticTests = true;
             for(CoreTestGroup::value_type OneTest : TestInstances)
             {
                 if(OneTest.second->ShouldRunAutomatically())
-                    { ScheduleTest(OneTest); }
+                    { ScheduleTest(OneTest, Args); }
             }
         };
 
         MEZZ_TRACE("Adding interactive test switch to delegation table.")
-        CallingTable[InteractiveToken] = [&Results, &TestInstances, &ScheduleTest]()
+        CallingTable[InteractiveToken] = [&TestInstances, &ScheduleTest](ParsedCommandLineArgs& Args)
         {
-            Results.DoInteracticeTests = true;
+            Args.DoInteracticeTests = true;
             for(CoreTestGroup::value_type OneTest : TestInstances)
             {
                 if(!OneTest.second->ShouldRunAutomatically())
-                    { ScheduleTest(OneTest); }
+                    { ScheduleTest(OneTest, Args); }
             }
         };
 
         MEZZ_TRACE("Adding benchmark test switch to delegation table.")
-        CallingTable[DoBenchmarkToken] = [&Results, &TestInstances, &ScheduleTest]()
+        CallingTable[DoBenchmarkToken] = [&TestInstances, &ScheduleTest](ParsedCommandLineArgs& Args)
         {
-            Results.DoBenchmarkTests = true;
+            Args.DoBenchmarkTests = true;
             for(CoreTestGroup::value_type OneTest : TestInstances)
             {
                 if(OneTest.second->IsBenchmark())
-                    { ScheduleTest(OneTest); }
+                    { ScheduleTest(OneTest, Args); }
             }
         };
 
@@ -203,7 +204,7 @@ namespace Mezzanine
                 { Results.ExitWithError = EXIT_FAILURE; }
 
             // Construct a delegation table that can take a huge variety of actions based on strings.
-            CallingTableType CallingTable = CreateMainArgsCallingTable(TestInstances, Results);
+            CallingTableType CallingTable = CreateMainArgsCallingTable(TestInstances);
 
 
             // Loop over the argv and make a decision for each arg.
@@ -214,7 +215,7 @@ namespace Mezzanine
                 const Mezzanine::String ThisArg(AllLower(argv[c]));           // Insure case insensitivity
                 MEZZ_TRACE("Processing argument: " + ThisArg)
                 if(CallingTable.count(ThisArg))                               // check for keywords that aren't tests.
-                    { CallingTable[ThisArg](); }
+                    { CallingTable[ThisArg](Results); }
                 else
                 {
                     std::cerr << ThisArg.substr(SkipTestToken.size()) << std::endl
@@ -226,7 +227,7 @@ namespace Mezzanine
             if(Results.DoDefaultTests)
             {
                 MEZZ_TRACE("No tests requested, using default tests.")
-                CallingTable[DefaultToken]();
+                CallingTable[DefaultToken](Results);
             }
 
             if(EXIT_SUCCESS != Results.ExitWithError) { Usage(Results.CommandName, TestInstances); }
