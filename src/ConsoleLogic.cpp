@@ -49,6 +49,7 @@
 SAVE_WARNING_STATE
 SUPPRESS_VC_WARNING(4668) // A Prprocessor macro was used and never defined, because the VS Headers are poorly written.
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <sstream>
@@ -104,13 +105,9 @@ namespace Mezzanine
         {
             std::stringstream Assembler;
 
-            // Replace with std::max_element once we get C++17
-            Mezzanine::String::size_type LongestName = 0;
-            for(const auto& Entry: TestGroups)
-            {
-                if(Entry.first.size()>LongestName)
-                    { LongestName=Entry.first.size(); }
-            }
+            Mezzanine::String::size_type LongestName = std::max_element(TestGroups.cbegin(),TestGroups.cend(),
+                [](const auto& Left, const auto& Right){ return Left.first.size() < Right.first.size(); }
+                )->first.size();
 
             Mezzanine::String::size_type ColumnWidth = LongestName+1;
             Mezzanine::String::size_type Column = 0;

@@ -45,6 +45,7 @@
 #include "MezzTest.h"
 #include "TimingTools.h"
 
+#include <algorithm>
 #include <vector>
 #include <iostream>
 
@@ -217,16 +218,10 @@ namespace Mezzanine
 
         TestResult GetWorstResults(const UnitTestGroup::TestDataStorageType& ToSearch)
         {
-            TestResult Highest = TestResult::Success;
-            for(const TestData& OneTestData : ToSearch)
-            {
-                if(OneTestData.Results > Highest)
-                    { Highest = OneTestData.Results; }
-            }
-            return Highest;
+            return std::max_element(ToSearch.cbegin(), ToSearch.cend(),
+                [](const auto& Left, const auto& Right) { return Left.Results < Right.Results; }
+                )->Results;
         }
-
-
 
     }// Testing
 }// Mezzanine

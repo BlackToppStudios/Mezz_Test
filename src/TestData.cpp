@@ -171,11 +171,11 @@ namespace Mezzanine
             Results.reserve(MungedName.size());
             for(Mezzanine::String::const_iterator IterOneLetter = MungedName.cbegin();
                 MungedName.cend() != IterOneLetter;
-                IterOneLetter++)
+                ++IterOneLetter)
             {
                 if('\\' == *IterOneLetter)
                 {
-                    IterOneLetter++;
+                    ++IterOneLetter;
                     switch(*IterOneLetter)
                     {
                         case 'n':
