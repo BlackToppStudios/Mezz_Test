@@ -78,7 +78,7 @@ namespace Mezzanine
                 Boole ForceSkip = false;
 
                 /// @brief Set if this test test is specifically set to run.
-                Boole ShouldExecute = false;
+                mutable Boole ShouldExecute = false;
             };
 
             /// @brief All the execution policy bits aligned (padded really) in a way trades space for warning fixes.
