@@ -105,9 +105,11 @@ namespace Mezzanine
         {
             std::stringstream Assembler;
 
-            Mezzanine::String::size_type LongestName = std::max_element(TestGroups.cbegin(),TestGroups.cend(),
-                [](const auto& Left, const auto& Right){ return Left.first.size() < Right.first.size(); }
-                )->first.size();
+            Mezzanine::String::size_type LongestName = std::max_element(
+                TestGroups.cbegin(),TestGroups.cend(),
+                [](const auto& Left, const auto& Right)
+                    { return Left.first.size() < Right.first.size(); }
+            )->first.size();
 
             Mezzanine::String::size_type ColumnWidth = LongestName+1;
             Mezzanine::String::size_type Column = 0;

@@ -44,6 +44,8 @@
 #include "TestEnumerations.h"
 #include "StringManipulation.h"
 
+#include "Trace.h"
+
 #include <algorithm>
 
 namespace Mezzanine
@@ -66,13 +68,16 @@ namespace Mezzanine
 
         Mezzanine::String AllLower(const Mezzanine::StringView StringToConvert)
         {
-            using ViewChar = Mezzanine::StringView::value_type;
             using StringChar = Mezzanine::String::value_type;
 
-            Mezzanine::String Results(StringToConvert);
-            std::transform(StringToConvert.begin(), StringToConvert.end(), Results.begin(),
-                           [](ViewChar Letter) -> StringChar { return static_cast<StringChar>(tolower(Letter)); }
-                           );
+            Mezzanine::String Results;
+            Results.reserve(StringToConvert.size());
+
+            std::for_each(
+                StringToConvert.begin(), StringToConvert.end(),
+                [&Results](StringChar Letter)
+                    { Results.push_back( static_cast<StringChar>(tolower(Letter)) ); }
+            );
 
             return Results;
         }

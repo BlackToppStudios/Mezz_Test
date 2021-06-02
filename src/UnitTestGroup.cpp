@@ -218,9 +218,11 @@ namespace Mezzanine
 
         TestResult GetWorstResults(const UnitTestGroup::TestDataStorageType& ToSearch)
         {
-            return std::max_element(ToSearch.cbegin(), ToSearch.cend(),
-                [](const auto& Left, const auto& Right) { return Left.Results < Right.Results; }
-                )->Results;
+            return std::max_element(
+                ToSearch.cbegin(), ToSearch.cend(),
+                [](const auto& Left, const auto& Right)
+                    { return Left.Results < Right.Results; }
+            )->Results;
         }
 
     }// Testing
