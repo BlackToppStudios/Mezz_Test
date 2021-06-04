@@ -101,6 +101,7 @@ namespace Mezzanine
             Duration = TruncateUnit<milliseconds>(Duration, "ms", PrettyTimeAssembler);
             Duration = TruncateUnit<microseconds>(Duration, "μs", PrettyTimeAssembler);
             Duration = TruncateUnit<nanoseconds>(Duration, "ns", PrettyTimeAssembler);
+            (void)Duration;
 
             return PrettyTimeAssembler.str();
         }

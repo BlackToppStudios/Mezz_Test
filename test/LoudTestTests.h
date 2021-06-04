@@ -89,7 +89,7 @@ AUTOMATIC_TEST_GROUP(NegativeLoudTestTests, LoudFailTests)
 }
 
 /// @brief This is the actual Test class. This tests our Test Macros that are time sensitive.
-BENCHMARK_THREAD_TEST_GROUP(LoudTestTests, LoudTests)
+ISOLATED_THREAD_TEST_GROUP(LoudTestTests, LoudTests)
 {
     TestLog << "--=================-- --=================--\nNow some tests that print failure messages in Success\n";
 

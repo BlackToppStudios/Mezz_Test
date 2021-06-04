@@ -45,6 +45,7 @@
 #include "MezzTest.h"
 #include "TimingTools.h"
 
+#include <algorithm>
 #include <vector>
 #include <iostream>
 
@@ -69,14 +70,26 @@ namespace Mezzanine
         Boole UnitTestGroup::ShouldRunAutomatically() const
             { return true; }
 
-        //////////////////////////////////////////////////////
-        // MetaPolicy methods, don't override these, they use the policy methods.
+        Boole UnitTestGroup::IsBenchmark() const
+            { return false; }
+
+//////////////////////////////////////////////////////
+// MetaPolicy methods, don't override these, they use the policy methods for overidable behavior.
 
         Boole UnitTestGroup::MustBeSerialized() const
             { return !IsMultiThreadSafe() && !IsMultiProcessSafe(); }
 
         Boole UnitTestGroup::CanBeParallel() const
             { return IsMultiThreadSafe() || IsMultiProcessSafe(); }
+
+        void UnitTestGroup::SetForceSkip()
+            { ExecutionBits.ForceSkip = true; }
+
+        void UnitTestGroup::SetScheduledToRun()
+            { ExecutionBits.ShouldExecute = true; }
+
+        Boole UnitTestGroup::ShouldRun() const
+            { return ExecutionBits.ShouldExecute && !ExecutionBits.ForceSkip; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Make all UnitTestGroups look like a container of TestDatas
@@ -205,16 +218,12 @@ namespace Mezzanine
 
         TestResult GetWorstResults(const UnitTestGroup::TestDataStorageType& ToSearch)
         {
-            TestResult Highest = TestResult::Success;
-            for(const TestData& OneTestData : ToSearch)
-            {
-                if(OneTestData.Results > Highest)
-                    { Highest = OneTestData.Results; }
-            }
-            return Highest;
+            return std::max_element(
+                ToSearch.cbegin(), ToSearch.cend(),
+                [](const auto& Left, const auto& Right)
+                    { return Left.Results < Right.Results; }
+            )->Results;
         }
-
-
 
     }// Testing
 }// Mezzanine

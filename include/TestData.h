@@ -47,8 +47,6 @@
 
 #include "TestEnumerations.h"
 
-#include <iostream>
-
 namespace Mezzanine
 {
     /// @namespace Mezzanine::Testing

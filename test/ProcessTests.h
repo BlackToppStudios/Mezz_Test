@@ -48,7 +48,7 @@
 #include <fstream>
 
 /// @brief Tests for the class to store test data results.
-BENCHMARK_TEST_GROUP(ProcessTests, Process)
+DEFAULT_TEST_GROUP(ProcessTests, Process)
 {
     using namespace Mezzanine;
 

@@ -37,14 +37,13 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_BenchmarkTestGroup_h
-#define Mezz_Test_BenchmarkTestGroup_h
+#ifndef Mezz_Test_IsolatedThreadTestGroup_h
+#define Mezz_Test_IsolatedThreadTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that is duration sensitive and process isoloated.
+/// @brief The declaration of the a group of tests that is performance sensitive and single thread isoloated.
 
 #include "UnitTestGroup.h"
-#include "IsolatedTestGroup.h"
 
 namespace Mezzanine
 {
@@ -55,17 +54,15 @@ namespace Mezzanine
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Benchmarks are performance sensitive, and require special attention.
-        /// @details Because the smallest load can affect performance, this inherits from @ref IsolatedTestGroup to
-        /// insure as few things as possible interfere with tests.
-        /// test group finishes.
-        class MEZZ_LIB BenchmarkTestGroup : public Mezzanine::Testing::IsolatedTestGroup
+        /// @details Much like the @ref BenchmarkTestGroup but in the same process, just a seperate single thread.
+        class MEZZ_LIB IsolatedThreadTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism.
-            virtual ~BenchmarkTestGroup() override = default;
+            virtual ~IsolatedThreadTestGroup() override = default;
 
-            Boole IsBenchmark() const override;
-
+            Boole IsMultiThreadSafe() const override;
+            Boole IsMultiProcessSafe() const override;
         };
         RESTORE_WARNING_STATE
     }// Testing

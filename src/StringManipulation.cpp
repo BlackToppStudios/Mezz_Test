@@ -44,6 +44,10 @@
 #include "TestEnumerations.h"
 #include "StringManipulation.h"
 
+#include "Trace.h"
+
+#include <algorithm>
+
 namespace Mezzanine
 {
     namespace Testing
@@ -64,10 +68,17 @@ namespace Mezzanine
 
         Mezzanine::String AllLower(const Mezzanine::StringView StringToConvert)
         {
+            using StringChar = Mezzanine::String::value_type;
+
             Mezzanine::String Results;
             Results.reserve(StringToConvert.size());
-            for(const Mezzanine::StringView::value_type& Letter : StringToConvert)
-                { Results.push_back( static_cast<Mezzanine::String::value_type>(tolower(Letter)) ); }
+
+            std::for_each(
+                StringToConvert.begin(), StringToConvert.end(),
+                [&Results](StringChar Letter)
+                    { Results.push_back( static_cast<StringChar>(tolower(Letter)) ); }
+            );
+
             return Results;
         }
 

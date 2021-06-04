@@ -46,6 +46,8 @@
 // Add other headers you need here
 #include "MezzTest.h"
 
+#include <iostream>
+
 using Mezzanine::String;
 using Mezzanine::Testing::TestResult;
 using Mezzanine::Testing::Char8ToTestResults;

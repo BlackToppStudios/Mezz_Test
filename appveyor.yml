@@ -21,7 +21,7 @@ before_build:
   - mkdir JagatiPackages
   - set JAGATI_DIR=C:\projects\Mezz_Test\build\JagatiPackages
   - echo "Current Configuration is '%CONFIGURATION%'"
-  - cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=%CONFIGURATION% .. -DMEZZ_BuildDoxygen=OFF
+  - cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=%CONFIGURATION% .. -DMEZZ_BuildDoxygen=OFF -DMEZZ_Trace=ON
 
 build_script:
   - cmake --build . --config %CONFIGURATION%
