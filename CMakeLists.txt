@@ -38,7 +38,7 @@
 #   John Blackwood - makoenergy02@gmail.com
 
 ########################################################################################################################
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
