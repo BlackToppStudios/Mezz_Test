@@ -80,6 +80,16 @@ RESTORE_WARNING_STATE
 namespace {
     using namespace Mezzanine;
 #ifdef MEZZ_Windows
+    /// @brief Convenience type because Windows likes fatty Strings.
+    using WideString = std::wstring;
+
+    /// @brief Enum for storing the relevant buffer sizes to use when converting strings.
+    enum BufferSizes
+    {
+        //EnvVar = 32767 // The actual maximum size supported by ExpandEnvironmentStrings
+        EnvVar = 4096
+    };
+
     /// @brief A struct with basic info that can be returned from attempting to launch a process.
     struct MEZZ_LIB ProcessInfo
     {
@@ -92,9 +102,6 @@ namespace {
         /// @brief The error string given if the process failed to launch.
         String ErrorStr;
     };//ProcessInfo
-
-    /// @brief Convenience type because Windows likes fatty Strings.
-    using WideString = std::wstring;
 
     /// @brief Demotes a size_t to an int, which is required by the Win API.
     /// @brief ToDemote The large integral type to be demoted.
@@ -118,7 +125,6 @@ namespace {
             Ret.resize(WideLength,L'\0');
             ::MultiByteToWideChar(CP_UTF8,0,Thin.data(),IntDemote(ThinSize),&Ret[0],IntDemote(WideLength));
         }
-        return Ret;
     }
 
     /// @brief Converts a wide (16-bit) String to a narrow (8-bit) String.
@@ -145,13 +151,25 @@ namespace {
     Boole CanTrimBack(const String& ToCheck)
         { return !ToCheck.empty() && ( ToCheck.back() == '\n' || ToCheck.back() == '\r' ); }
 
+    /// @brief Wraps a command in such a way to guarantee it'll be invoked from a shell.
+    /// @param Command The original command to be wrapped/invoked from the system shell.
+    /// @return Returns a String suitable for invoking the system shell with the given command.
+    [[nodiscard]]
+    WideString CreateShellCommand(const StringView Command)
+    {
+        WideString WideCommand = ConvertToWideString(Command);
+        WCHAR ExpandedCommand[BufferSizes::EnvVar] = {0};
+        size_t BytesWritten = ExpandEnvironmentStringsW(WideCommand.data(),ExpandedCommand,BufferSizes:EnvVar);
+        return WideString{L"cmd.exe /c \""}.append(Command,BytesWritten).append(L"\"");
+    }
+
     /// @brief Creates and launches a new process.
     /// @param ExePathName Specifies the exe that will be launched. Can be empty.
     /// @param Arguments The space separated arguments given to the exe being launched. This MUST include
     /// the path the executable as the first argument.
     /// @return Returns a ProcessInfo struct containing information about the launched process or it's failure.
     [[nodiscard]]
-    ProcessInfo CreateCommandProcess(StringView ExePathName, const StringView Arguments)
+    ProcessInfo CreateCommandProcess(const WideString& ExePathName, const WideString& Arguments)
     {
         HANDLE Child_STDOUT_Read = NULL;
         HANDLE Child_STDOUT_Write = NULL;
@@ -183,12 +201,9 @@ namespace {
         ProcessStartUp.hStdOutput = Child_STDOUT_Write;
         ProcessStartUp.dwFlags |= STARTF_USESTDHANDLES;
 
-        WideString WideExePathName = ConvertToWideString(ExePathName);
-        WideString WideArguments = ConvertToWideString(Arguments);
-
         BOOL ChildLaunch = ::CreateProcessW(
-            WideExePathName.empty() ? nullptr : WideExePathName.data(),
-            WideArguments.empty() ? nullptr : WideArguments.data(),
+            ExePathName.empty() ? nullptr : ExePathName.data(),
+            Arguments.empty() ? nullptr : Arguments.data(),
             nullptr,
             nullptr,
             TRUE,
@@ -232,6 +247,13 @@ namespace {
     [[nodiscard]]
     Boole CanTrimBack(const String& ToCheck)
         { return ( !ToCheck.empty() && ToCheck.back() == '\n' ); }
+
+    /// @brief Wraps a command in such a way to guarantee it'll be invoked from a shell.
+    /// @param Command The original command to be wrapped/invoked from the system shell.
+    /// @return Returns a String suitable for invoking the system shell with the given command.
+    [[nodiscard]]
+    String CreateShellCommand(const StringView Command)
+        { return String{"sh -c \""}.append(Command).append("\""); }
 
     // Move this out of the if/else should windows actually need it.
     /// @brief Extracts just the file system path to the executable from a complete command.
@@ -375,8 +397,8 @@ namespace Testing {
 
     CommandResult RunCommand(const StringView ExePathName, const StringView Command)
     {
-        const Mezzanine::String SafePathName( SanitizeProcessCommand(ExePathName) );
-        const Mezzanine::String SafeCommand( SanitizeProcessCommand(Command) );
+        const String SafePathName( SanitizeProcessCommand(ExePathName) );
+        const String SafeCommand( SanitizeProcessCommand(Command) );
         if( SafeCommand != Command )
             { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
         return RunCommandImpl(SafePathName,SafeCommand);
@@ -390,8 +412,34 @@ namespace Testing {
         return RunCommand(Empty,Command);
 #else // Mezz_Windows
         // Posix is NOT happy to do the same.  The strings must be separate.
-        const Mezzanine::String ExecPath{ ExtractExecPath(Command) };
+        const String ExecPath{ ExtractExecPath(Command) };
         return RunCommand(ExecPath,Command);
+#endif // MEZZ_Windows
+    }
+
+    CommandResult RunCommandInShell(const StringView ExePathName, const StringView Command)
+    {
+#ifdef MEZZ_Windows
+        const String ShellCmd{ CreateShellCommand(Command) };
+        return RunCommand(ExePathName,ShellCmd);
+#else // Mezz_Windows
+        const String ShellCmd{ CreateShellCommand(Command) };
+        return RunCommand(ExePathName,ShellCmd);
+#endif // MEZZ_Windows
+    }
+
+    CommandResult RunCommandInShell(const StringView Command)
+    {
+#ifdef MEZZ_Windows
+        // Windows is happy to parse just a single string for everything.
+        const StringView Empty;
+        const String ShellCmd{ CreateShellCommand(Command) };
+        return RunCommand(Empty,Command);
+#else // Mezz_Windows
+        // Posix is NOT happy to do the same.  The strings must be separate.
+        const String ExecPath{ ExtractExecPath(Command) };
+        const String ShellCmd{ CreateShellCommand(Command) };
+        return RunCommand(ExecPath,ShellCmd);
 #endif // MEZZ_Windows
     }
 }// Testing

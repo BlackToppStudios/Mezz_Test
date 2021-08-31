@@ -85,6 +85,23 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
     {//RunCommand w/ ExecutablePath
         // No good way to test this.
     }//RunCommand w/ ExecutablePath
+
+    {//RunCommandInShell
+    #ifdef MEZZ_Windows
+        Testing::CommandResult SystemResult = Testing::RunCommandInShell("echo %SYSTEMROOT%");
+        TEST_EQUAL("RunCommandInShell(const_StringView)-System-ExitCode",
+                   Integer(0),
+                   SystemResult.ExitCode)
+        TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-System-Output",
+                             String("Windows"),
+                             SystemResult.ConsoleOutput)
+    #else // MEZZ_Windows
+    #endif // MEZZ_Windows
+    }//RunCommandInShell
+
+    {//RunCommandInShell w/ ExecutablePath
+        // No good way to test this.
+    }//RunCommandInShell w/ ExecutablePath
 }
 
 #endif
