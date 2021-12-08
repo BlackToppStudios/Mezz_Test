@@ -452,7 +452,7 @@ namespace Testing {
         (void)ExePathName;
         const String ExecPath{ "sh" };
         const String ShellCommand{ CreateShellCommand(Command) };
-        return RunCommandImpl(ExePath,ShellCommand);
+        return RunCommandImpl(ExecPath,ShellCommand);
 #endif // MEZZ_Windows
     }
 
