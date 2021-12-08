@@ -37,11 +37,11 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_AutomaticTestGroup_h
-#define Mezz_Test_AutomaticTestGroup_h
+#ifndef Mezz_Test_IsolatedTestGroup_h
+#define Mezz_Test_IsolatedTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that need no human intervention.
+/// @brief The declaration of the a group of tests that is performance sensitive and process isoloated.
 
 #include "UnitTestGroup.h"
 
@@ -53,18 +53,23 @@ namespace Mezzanine
         SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
 
         ///////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief A single group of tests that all run entirely automatically using most default settings.
-        /// @details Your test group can inherit from this to get default test group behavior. It will run in the main
-        /// process, but get its own thread, so that it can run alongside many other tests. This is ideal for most tests
-        /// of simple functionality, things like calling pure functions (functions that don't manipulate outside state)
-        /// or constructing classes that manage their own state. Things that might call out to the network, render
-        /// directly to the screen, write to a database, modify singletons or otherwise interfere with other tests should
-        /// either be "mocked out" so they don't interfere or use some other test groups rules.
-        class MEZZ_LIB AutomaticTestGroup : public Mezzanine::Testing::UnitTestGroup
+        /// @brief Useful for any time sensitive test that requires special attention.
+        /// @details Because the smallest load can affect performance, nothing else should running while a
+        /// isolated test runs. Many benchmarks are care about the amount of time a thing takes or need to know that the
+        /// system scheduler isn't being strained (simulating race conditions).  Each test inheriting from this test
+        /// group will get several safeguards. Inheritoring tests will be run in their own process to guarantee
+        /// isolation. No other threads or processes will be run by the Mezz_Test suite while this test group runs. This
+        /// cannot handle every situation, other processes on the system will continue running normally and the main
+        /// Mezz_Test process will still be alive, but in a waiting state until this test group finishes.
+        class MEZZ_LIB IsolatedTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism.
-            virtual ~AutomaticTestGroup() override = default;
+            virtual ~IsolatedTestGroup() override = default;
+
+            Boole IsMultiThreadSafe() const override;
+            Boole IsMultiProcessSafe() const override;
+
         };
         RESTORE_WARNING_STATE
     }// Testing

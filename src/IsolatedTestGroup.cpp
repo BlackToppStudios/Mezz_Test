@@ -37,37 +37,21 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_AutomaticTestGroup_h
-#define Mezz_Test_AutomaticTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that need no human intervention.
+/// @brief The definition of the a group of tests that is performance sensitive and process isoloated.
 
-#include "UnitTestGroup.h"
+#include "IsolatedTestGroup.h"
 
 namespace Mezzanine
 {
     namespace Testing
     {
-        SAVE_WARNING_STATE
-        SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
+        Boole IsolatedTestGroup::IsMultiThreadSafe() const
+            { return false; }
 
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief A single group of tests that all run entirely automatically using most default settings.
-        /// @details Your test group can inherit from this to get default test group behavior. It will run in the main
-        /// process, but get its own thread, so that it can run alongside many other tests. This is ideal for most tests
-        /// of simple functionality, things like calling pure functions (functions that don't manipulate outside state)
-        /// or constructing classes that manage their own state. Things that might call out to the network, render
-        /// directly to the screen, write to a database, modify singletons or otherwise interfere with other tests should
-        /// either be "mocked out" so they don't interfere or use some other test groups rules.
-        class MEZZ_LIB AutomaticTestGroup : public Mezzanine::Testing::UnitTestGroup
-        {
-        public:
-            /// @brief Default virtual deconstructor to allow for polymorphism.
-            virtual ~AutomaticTestGroup() override = default;
-        };
-        RESTORE_WARNING_STATE
+        Boole IsolatedTestGroup::IsMultiProcessSafe() const
+            { return false; }
+
     }// Testing
 }// Mezzanine
-
-#endif

@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2020 BlackTopp Studios Inc.
+// © Copyright 2010 - 2021 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -101,6 +101,7 @@ namespace Mezzanine
             Duration = TruncateUnit<milliseconds>(Duration, "ms", PrettyTimeAssembler);
             Duration = TruncateUnit<microseconds>(Duration, "μs", PrettyTimeAssembler);
             Duration = TruncateUnit<nanoseconds>(Duration, "ns", PrettyTimeAssembler);
+            (void)Duration;
 
             return PrettyTimeAssembler.str();
         }

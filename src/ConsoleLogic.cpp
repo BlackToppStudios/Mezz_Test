@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2020 BlackTopp Studios Inc.
+// © Copyright 2010 - 2021 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -49,6 +49,8 @@
 SAVE_WARNING_STATE
 SUPPRESS_VC_WARNING(4668) // A Prprocessor macro was used and never defined, because the VS Headers are poorly written.
 
+#include <algorithm>
+#include <iostream>
 #include <vector>
 #include <sstream>
 
@@ -83,8 +85,9 @@ namespace Mezzanine
                     "<Test Name>      Add this test to the list of tests to run.\n"
                     "Skip-<Test Name> Remove this from the list of tests to run.\n\n"
                     "All:             All test groups will be run.\n"
-                    "Interactive:     Only interactive tests will be performed on specified test groups.\n"
-                    "Automatic:       Only automated tests will be performed on specified test groups.\n"
+                    "Interactive:     Run tests that expect human interaction.\n"
+                    "Automatic:       Run automated tests on specified test groups, excluding slow benchmarks.\n"
+                    "Benchmark:       Run potentially long running benchmarks.\n"
                     "Summary:         Display a count of failures and successes.\n"
                     "SkipFile:        Do not store a copy of the results in TestResults.txt.\n"
                     "DebugTests:      Run tests in the current process in single thread. Skips crash protection,\n"
@@ -102,13 +105,11 @@ namespace Mezzanine
         {
             std::stringstream Assembler;
 
-            // Replace with std::max_element once we get C++17
-            Mezzanine::String::size_type LongestName = 0;
-            for(const auto& Entry: TestGroups)
-            {
-                if(Entry.first.size()>LongestName)
-                    { LongestName=Entry.first.size(); }
-            }
+            Mezzanine::String::size_type LongestName = std::max_element(
+                TestGroups.cbegin(),TestGroups.cend(),
+                [](const auto& Left, const auto& Right)
+                    { return Left.first.size() < Right.first.size(); }
+            )->first.size();
 
             Mezzanine::String::size_type ColumnWidth = LongestName+1;
             Mezzanine::String::size_type Column = 0;

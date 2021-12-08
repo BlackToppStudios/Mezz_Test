@@ -37,11 +37,11 @@
    Joseph Toppi - toppij@gmail.com
    John Blackwood - makoenergy02@gmail.com
 */
-#ifndef Mezz_Test_AutomaticTestGroup_h
-#define Mezz_Test_AutomaticTestGroup_h
+#ifndef Mezz_Test_IsolatedThreadTestGroup_h
+#define Mezz_Test_IsolatedThreadTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that need no human intervention.
+/// @brief The declaration of the a group of tests that is performance sensitive and single thread isoloated.
 
 #include "UnitTestGroup.h"
 
@@ -53,18 +53,16 @@ namespace Mezzanine
         SUPPRESS_VC_WARNING(4625) // BS about implicit copy constructors, despite explicit deletion in parent class.
 
         ///////////////////////////////////////////////////////////////////////////////////////////
-        /// @brief A single group of tests that all run entirely automatically using most default settings.
-        /// @details Your test group can inherit from this to get default test group behavior. It will run in the main
-        /// process, but get its own thread, so that it can run alongside many other tests. This is ideal for most tests
-        /// of simple functionality, things like calling pure functions (functions that don't manipulate outside state)
-        /// or constructing classes that manage their own state. Things that might call out to the network, render
-        /// directly to the screen, write to a database, modify singletons or otherwise interfere with other tests should
-        /// either be "mocked out" so they don't interfere or use some other test groups rules.
-        class MEZZ_LIB AutomaticTestGroup : public Mezzanine::Testing::UnitTestGroup
+        /// @brief Benchmarks are performance sensitive, and require special attention.
+        /// @details Much like the @ref BenchmarkTestGroup but in the same process, just a seperate single thread.
+        class MEZZ_LIB IsolatedThreadTestGroup : public Mezzanine::Testing::UnitTestGroup
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism.
-            virtual ~AutomaticTestGroup() override = default;
+            virtual ~IsolatedThreadTestGroup() override = default;
+
+            Boole IsMultiThreadSafe() const override;
+            Boole IsMultiProcessSafe() const override;
         };
         RESTORE_WARNING_STATE
     }// Testing

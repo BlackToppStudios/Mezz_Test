@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2020 BlackTopp Studios Inc.
+// © Copyright 2010 - 2021 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -41,10 +41,11 @@
 #define Mezz_Test_BenchmarkThreadTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that is performance sensitive, but not so sensitive as to require a
-/// whole process.
+/// @brief The declaration of the a group of tests that is duration sensitive and thread isoloated.
+
 
 #include "UnitTestGroup.h"
+#include "IsolatedThreadTestGroup.h"
 
 namespace Mezzanine
 {
@@ -55,15 +56,14 @@ namespace Mezzanine
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Benchmarks are performance sensitive, and require special attention.
-        /// @details Much like the @ref BenchmarkTestGroup but in the same thread.
-        class MEZZ_LIB BenchmarkThreadTestGroup : public Mezzanine::Testing::UnitTestGroup
+        /// @details Much like the @ref BenchmarkTestGroup but in the same process.
+        class MEZZ_LIB BenchmarkThreadTestGroup : public Mezzanine::Testing::IsolatedThreadTestGroup
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism.
             virtual ~BenchmarkThreadTestGroup() override = default;
 
-            Boole IsMultiThreadSafe() const override;
-            Boole IsMultiProcessSafe() const override;
+            Boole IsBenchmark() const override;
         };
         RESTORE_WARNING_STATE
     }// Testing

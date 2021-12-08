@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2020 BlackTopp Studios Inc.
+// © Copyright 2010 - 2021 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -46,8 +46,6 @@
 #include "DataTypes.h"
 
 #include "TestEnumerations.h"
-
-#include <iostream>
 
 namespace Mezzanine
 {

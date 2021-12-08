@@ -1,4 +1,4 @@
-# © Copyright 2010 - 2020 BlackTopp Studios Inc.
+# © Copyright 2010 - 2021 BlackTopp Studios Inc.
 # This file is part of The Mezzanine Engine.
 #
 #    The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@
 #   John Blackwood - makoenergy02@gmail.com
 
 ########################################################################################################################
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.13)
 project(Test)
 message(STATUS "${PROJECT_NAME} - Starting Configuration.")
 
@@ -52,10 +52,10 @@ if(NOT JAGATI_Download)
     option(JAGATI_Download "Should the Jagati be downloaded automatically" ON)
 endif(NOT JAGATI_Download)
 if(JAGATI_Download)
-    set(JAGATI_Checksum "6aa2eb83eca66c9a06519a1138e4d72b7a6243da13026020eb0\
-644ffd4c89e566e9716cc16a9fcee15651b65a517fbc61d4002b2f9e0883143a54c6684aabcb4"
+    set(JAGATI_Checksum "a22b85ce3c85a2e030a43c57970164df5ca1f8f9d91a568d5d6\
+2c0ff81cbb9cec3666e562c7afc0ab170994810c97614153e934ca9fd8c79101c675a7f55ae3f"
         CACHE STRING "Check that when the Jagati is downloaded the right one is used (for consistency and security).")
-    set(JAGATI_Url "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.30.2/Jagati.cmake"
+    set(JAGATI_Url "https://raw.githubusercontent.com/BlackToppStudios/Jagati/0.31.0/Jagati.cmake"
         CACHE STRING "Where to download the Jagati from.")
     file(DOWNLOAD "${JAGATI_Url}" "${JAGATI_File}" EXPECTED_HASH SHA512=${JAGATI_Checksum})
 endif(JAGATI_Download)
@@ -76,6 +76,8 @@ AddHeaderFile("BenchmarkTestGroup.h")
 AddHeaderFile("BenchmarkThreadTestGroup.h")
 AddHeaderFile("ConsoleLogic.h")
 AddHeaderFile("InteractiveTestGroup.h")
+AddHeaderFile("IsolatedTestGroup.h")
+AddHeaderFile("IsolatedThreadTestGroup.h")
 AddHeaderFile("MezzTest.h")
 AddHeaderFile("OutputBufferGuard.h")
 AddHeaderFile("ProcessTools.h")
@@ -92,6 +94,8 @@ AddSourceFile("BenchmarkTestGroup.cpp")
 AddSourceFile("BenchmarkThreadTestGroup.cpp")
 AddSourceFile("ConsoleLogic.cpp")
 AddSourceFile("InteractiveTestGroup.cpp")
+AddSourceFile("IsolatedTestGroup.cpp")
+AddSourceFile("IsolatedThreadTestGroup.cpp")
 AddSourceFile("MezzTest.cpp")
 AddSourceFile("OutputBufferGuard.cpp")
 AddSourceFile("ProcessTools.cpp")

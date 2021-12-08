@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2020 BlackTopp Studios Inc.
+// © Copyright 2010 - 2021 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -63,162 +63,196 @@
 
 namespace Mezzanine
 {
-    namespace Testing
-    {
-        SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wpadded")
-            /// @brief A struct storing everything that might be passed in on the command line.
-            struct MEZZ_LIB ParsedCommandLineArgs
-            {
-                /// @brief The list of tests to run.
-                std::vector<UnitTestGroup*> TestsToRun;
+namespace Testing
+{
+    SAVE_WARNING_STATE
+    SUPPRESS_CLANG_WARNING("-Wpadded")
+        /// @brief A struct storing everything that might be passed in on the command line.
+        struct MEZZ_LIB ParsedCommandLineArgs
+        {
+            ParsedCommandLineArgs(const CoreTestGroup& TestInstances);
+            ParsedCommandLineArgs(ParsedCommandLineArgs&&) = default;
+            ParsedCommandLineArgs(const ParsedCommandLineArgs&) = default;
+            virtual ~ParsedCommandLineArgs() = default;
 
-                /// @brief This will store the name of the command that launched this executable at run time.
-                Mezzanine::String CommandName = "Mezz_Tester";
+            /// @brief Create a type for delegating work to something dynamic based on a string based lookup.
+            typedef std::map<Mezzanine::String, std::function<void()>> CallingTableType;
 
-                /// @brief If not ExitCode::ExitSuccess then the caller should exit immediately.
-                ExitCode ExitWithError = EXIT_SUCCESS;
+            /// @brief A series of functions paired with command line arguments.
+            CallingTableType CallingTable;
 
-                /// @brief The current process depth as interpreted by Main.
-                Boole InSubProcess = false ;
+            /// @brief This will store the name of the command that launched this executable at run time.
+            Mezzanine::String CommandName = "Mezz_Tester";
 
-                /// @brief Force single threaded to help troubleshoot.
-                Boole ForceSingleThread = false;
+            /// @brief If not ExitCode::ExitSuccess then the caller should exit immediately.
+            ExitCode ExitWithError = EXIT_SUCCESS;
 
-                /// @brief Skip writing the log file.
-                Boole SkipFile = false;
+            /// @brief The current process depth as interpreted by Main.
+            Boole InSubProcess = false ;
+            /// @brief Force single threaded to help troubleshoot.
+            Boole ForceSingleThread = false;
+            /// @brief Skip writing the log file.
+            Boole SkipFile = false;
+            /// @brief Skip writing the summary at the end.
+            Boole SkipSummary = false;
+            /// @brief Create Junit Xml output files?
+            Boole EmitJunitXml = false;
 
-                /// @brief Skip writing the summary at the end.
-                Boole SkipSummary = false;
+            /// @brief User Requested benchmarks be run, defaults to false.
+            Boole DoBenchmarkTests = false;
+            /// @brief User requested all the tests, defaults to false.
+            Boole DoAllTests = false;
+            /// @brief User requested tests intended for automatic run, defaults to false.
+            Boole DoAutomaticTests = false;
+            /// @brief User requested tests that have interactive parts, defaults to false.
+            Boole DoInteracticeTests = false;
+            /// @brief Call the default tests when the user requested nothing else.
+            Boole DoDefaultTests = true;
 
-                /// @brief Create Junit Xml output files?
-                Boole EmitJunitXml = false;
+            private:
 
-                /// @brief Should the Benchmarks be run? Defaults to false.
-                Boole DoBenchmark = false;
+            /// @brief Used internally to schedule tests for later execution.
+            /// @param OneTest A single test to schedule.
+            void ScheduleTest(const CoreTestGroup::value_type& OneTest);
 
-            };// ParsedCommandLineArgs
-        RESTORE_WARNING_STATE
+            /// @brief Used internally to schedule tests for later execution.
+            /// @param OneTest A single test to force skip, even if scheduled.
+            void SkipTest(const CoreTestGroup::value_type& OneTest);
 
-        /// @brief Deal with all the fine detail of dealing with command like arguments.
-        /// @param argc Should be the argc passed in from the system.
-        /// @param argv Should be the argv passed in from the system.
-        /// @param TestInstances The complete set of tests.
-        /// @return A complete ParsedCommandLineArgs detailing every arg that this handles.
-        ParsedCommandLineArgs MEZZ_LIB DealWithdCommandLineArgs(int argc,
-                                                                char** argv,
-                                                                const CoreTestGroup& TestInstances);
-        /// @brief Print a report of the tests to a stream.
-        /// @param AllResults All of the results to appear in the summary.
-        /// @param SummaryStream Place to print the results.
-        /// @return The worst test result.
-        TestResult MEZZ_LIB RenderTestResultSummary(const UnitTestGroup::TestDataStorageType& AllResults,
-                                                    std::ostream& SummaryStream);
+        };// ParsedCommandLineArgs
+    RESTORE_WARNING_STATE
 
-        /// @brief Print a report of the timings to a stream.
-        /// @param AllTimings All of the timings to appear in the summary.
-        /// @param SummaryStream Place to print the timings.
-        void MEZZ_LIB RenderTimingsSummary(const std::vector<NamedDuration>& AllTimings,
-                                           std::ostream& SummaryStream);
+    /// @brief Deal with all the fine detail of dealing with command like arguments.
+    /// @param argc Should be the argc passed in from the system.
+    /// @param argv Should be the argv passed in from the system.
+    /// @param TestInstances The complete set of tests.
+    /// @return A complete ParsedCommandLineArgs detailing every arg that this handles.
+    ParsedCommandLineArgs MEZZ_LIB DealWithdCommandLineArgs(int argc,
+                                                            char** argv,
+                                                            const CoreTestGroup& TestInstances);
+    /// @brief Print a report of the tests to a stream.
+    /// @param AllResults All of the results to appear in the summary.
+    /// @param SummaryStream Place to print the results.
+    /// @return The worst test result.
+    TestResult MEZZ_LIB RenderTestResultSummary(const UnitTestGroup::TestDataStorageType& AllResults,
+                                                std::ostream& SummaryStream);
 
-        /// @brief Run a single test that requires a subProcess.
-        /// @param Options The parsed command line options.
-        /// @param OneTestGroup The test group to execute.
-        void MEZZ_LIB RunSubProcessTest(const ParsedCommandLineArgs& Options,
-                                        UnitTestGroup& OneTestGroup);
+    /// @brief Print a report of the timings to a stream.
+    /// @param AllTimings All of the timings to appear in the summary.
+    /// @param SummaryStream Place to print the timings.
+    void MEZZ_LIB RenderTimingsSummary(const std::vector<NamedDuration>& AllTimings,
+                                       std::ostream& SummaryStream);
 
-        /// @brief Run all the tests that run in other threads.
-        /// @param Options The options passed in by the user.
-        /// @param AllResults The place to store test results.
-        /// @param TestTimings The place to store all test timings.
-        void MEZZ_LIB RunParallelThreads(const ParsedCommandLineArgs& Options,
-                                         UnitTestGroup::TestDataStorageType& AllResults,
-                                         std::vector<NamedDuration>& TestTimings);
+    /// @brief Run a single test that requires a subProcess.
+    /// @param Options The parsed command line options.
+    /// @param OneTestGroup The test group to execute.
+    void MEZZ_LIB RunSubProcessTest(const ParsedCommandLineArgs& Options,
+                                    UnitTestGroup& OneTestGroup);
 
-        /// @brief Run all the tests that DON'T run in other threads.
-        /// @param Options The options passed in by the user.
-        /// @param AllResults The place to store test results.
-        /// @param TestTimings The place to store all test timings.
-        void MEZZ_LIB RunSerializedTests(const ParsedCommandLineArgs& Options,
-                                         UnitTestGroup::TestDataStorageType& AllResults,
-                                         std::vector<NamedDuration>& TestTimings);
+    /// @brief Run all the tests that run in other threads.
+    /// @param TestInstances The tests to iterate over and run thread-safe tests.
+    /// @param Options The options passed in by the user.
+    /// @param AllResults The place to store test results.
+    /// @param TestTimings The place to store all test timings.
+    void MEZZ_LIB RunParallelThreads(const CoreTestGroup& TestInstances,
+                                     const ParsedCommandLineArgs& Options,
+                                     UnitTestGroup::TestDataStorageType& AllResults,
+                                     std::vector<NamedDuration>& TestTimings);
 
-        void MEZZ_LIB EmitJunitResults(const UnitTestGroup::TestDataStorageType& AllResults);
+    /// @brief Run all the tests that DON'T run in other threads.
+    /// @param TestInstances The tests to iterate over and run all the tests that must no be parallelized.
+    /// @param Options The options passed in by the user.
+    /// @param AllResults The place to store test results.
+    /// @param TestTimings The place to store all test timings.
+    void MEZZ_LIB RunSerializedTests(const CoreTestGroup& TestInstances,
+                                     const ParsedCommandLineArgs& Options,
+                                     UnitTestGroup::TestDataStorageType& AllResults,
+                                     std::vector<NamedDuration>& TestTimings);
 
-        /// @brief Run all the tests per their normal execution policies.
-        /// @param Options The options about what tests to run.
-        /// @param TestTimings A collection of timings this will add to.
-        /// @return A collections of all the results.
-        UnitTestGroup::TestDataStorageType MEZZ_LIB RunTests(const ParsedCommandLineArgs& Options,
-                                                             std::vector<NamedDuration>& TestTimings);
+    /// @brief Write out results as an XML file that Jenkins and other Junit compatible tools can use.
+    /// @param AllResults The results to write.
+    void MEZZ_LIB EmitJunitResults(const UnitTestGroup::TestDataStorageType& AllResults);
 
-        /// @brief This is the entry point for the unit test executable.
-        /// @details This will construct an AllUnitTestGroups with the listing of unit tests available from cmake
-        /// generated source file. It will then interpret any command line arguments and direct the created
-        /// AllUnitTestGroups about which tests to run and how to run them. In addition to sending the results to the
-        /// standard output a copy of the test results will be written to TestResults.txt, if not configured not to.
-        /// @n @n
-        /// If no arguments are passed this will add all the tests to the AllUnitTestGroups
-        /// and execute all tests that are not interactive. Print out a default report of them.
-        /// @return This will return EXIT_SUCCESS if the tests ran, even if some or all failed,
-        /// even if a child process segfaulted, but will return other statuses only if the main
-        /// process fails. If the main process cannot create child processes it will return EXIT_FAILURE.
-        /// @param argc Is interpreted as the amount of passed arguments.
-        /// @param argv Is interpreted as the arguments passed in from the launching shell.
-        /// @param TestInstances A group of tests to be executed.
-        ExitCode MEZZ_LIB MainImplementation(int argc, char** argv, const CoreTestGroup& TestInstances);
+    /// @brief Run all the tests per their normal execution policies.
+    /// @param TestInstances The tests to iterate over run if appropriate.
+    /// @param Options The options about what tests to run.
+    /// @param TestTimings A collection of timings this will add to.
+    /// @return A collections of all the results.
+    UnitTestGroup::TestDataStorageType MEZZ_LIB RunTests(const CoreTestGroup& TestInstances,
+                                                         const ParsedCommandLineArgs& Options,
+                                                         std::vector<NamedDuration>& TestTimings);
 
-        /// @brief When display timings with fixed width columns, this is how wide the name column is.
-        static const Mezzanine::Whole TimingNameColumnWidth = 30;
+    /// @brief This is the entry point for the unit test executable.
+    /// @details This will construct an AllUnitTestGroups with the listing of unit tests available from cmake
+    /// generated source file. It will then interpret any command line arguments and direct the created
+    /// AllUnitTestGroups about which tests to run and how to run them. In addition to sending the results to the
+    /// standard output a copy of the test results will be written to TestResults.txt, if not configured not to.
+    /// @n @n
+    /// If no arguments are passed this will add all the tests to the AllUnitTestGroups
+    /// and execute all tests that are not interactive. Print out a default report of them.
+    /// @return This will return EXIT_SUCCESS if the tests ran, even if some or all failed,
+    /// even if a child process segfaulted, but will return other statuses only if the main
+    /// process fails. If the main process cannot create child processes it will return EXIT_FAILURE.
+    /// @param argc Is interpreted as the amount of passed arguments.
+    /// @param argv Is interpreted as the arguments passed in from the launching shell.
+    /// @param TestInstances A group of tests to be executed.
+    ExitCode MEZZ_LIB MainImplementation(int argc, char** argv, const CoreTestGroup& TestInstances);
 
-        /// @brief When display timings with fixed width columns, this is how wide the nanosecond column is.
-        static const Mezzanine::Whole TimingNsColumnWidth = 16;
+    /// @brief When display timings with fixed width columns, this is how wide the name column is.
+    static const Mezzanine::Whole TimingNameColumnWidth = 30;
 
-        SAVE_WARNING_STATE
-        SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
-        SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
+    /// @brief When display timings with fixed width columns, this is how wide the nanosecond column is.
+    static const Mezzanine::Whole TimingNsColumnWidth = 16;
 
-        /// @brief A string that if passed on the command tells the tests not to launch sub processes.
-        static const Mezzanine::String RunInThisProcessToken("thisprocess");
-        /// @copydoc RunInThisProcessToken
-        static const Mezzanine::String DebugAToken("debug");
-        /// @copydoc RunInThisProcessToken
-        static const Mezzanine::String DebugBToken("debugtests");
+    SAVE_WARNING_STATE
+    SUPPRESS_CLANG_WARNING("-Wexit-time-destructors")
+    SUPPRESS_CLANG_WARNING("-Wglobal-constructors")
 
-        /// @brief A string that if passed on the command tells this to emit Junit XML test results.
-        static const Mezzanine::String JunitXMLAToken("xml");
-        /// @brief Another string that if passed on the command tells this to emit Junit XML test results.
-        static const Mezzanine::String JunitXMLBToken("junit");
+    /// @brief A string that if passed on the command tells the tests not to launch sub processes.
+    static const Mezzanine::String RunInThisProcessToken("thisprocess");
+    /// @copydoc RunInThisProcessToken
+    static const Mezzanine::String DebugAToken("debug");
+    /// @copydoc RunInThisProcessToken
+    static const Mezzanine::String DebugBToken("debugtests");
 
-        /// @brief A string that if passed forces single threaded execution.
-        static const Mezzanine::String NoThreads("nothreads");
+    /// @brief A string that if passed on the command tells this to emit Junit XML test results.
+    static const Mezzanine::String JunitXMLAToken("xml");
+    /// @brief Another string that if passed on the command tells this to emit Junit XML test results.
+    static const Mezzanine::String JunitXMLBToken("junit");
 
-        /// @brief A string that if passed on the command tells this to show the usage.
-        static const Mezzanine::String HelpToken("help");
+    /// @brief A string that if passed forces single threaded execution.
+    static const Mezzanine::String NoThreads("nothreads");
 
-        /// @brief The token to pass on the command line to run all the tests.
-        static const Mezzanine::String AllToken("all");
+    /// @brief A string that if passed on the command tells this to show the usage.
+    static const Mezzanine::String HelpToken("help");
 
-        /// @brief The token to pass on the command line to run all tests intended for unattended execution.
-        static const Mezzanine::String AutomaticToken("automatic");
+    /// @brief The token to pass on the command line to run all the tests.
+    static const Mezzanine::String AllToken("all");
 
-        /// @brief The token to pass on the command line to run all tests NOT intended for unattended execution.
-        static const Mezzanine::String InteractiveToken("interactive");
 
-        /// @brief The token to pass on the command line to skip the summary.
-        static const Mezzanine::String SkipSummaryToken("skipsummary");
+    /// @brief The token to pass on the command line to run MOST tests intended unattended execution.
+    static const Mezzanine::String DefaultToken("default");
 
-        /// @brief The token to pass on the command line to not emit a log file.
-        static const Mezzanine::String SkipFileToken("skipfile");
+    /// @brief The token to pass on the command line to run ALL tests intended for unattended execution.
+    static const Mezzanine::String AutomaticToken("automatic");
 
-        /// @brief The token to pass on the command line to not emit a log file.
-        static const Mezzanine::String DoBenchmarkToken("dobenchmark");
+    /// @brief The token to pass on the command line to run ALL tests NOT intended for unattended execution.
+    static const Mezzanine::String InteractiveToken("interactive");
 
-        /// @brief The token to pass as a prefix to a test to skip it.
-        static const Mezzanine::String SkipTestToken("skip-");
+    /// @brief The token to pass on the command line to skip the summary.
+    static const Mezzanine::String SkipSummaryToken("skipsummary");
 
-        RESTORE_WARNING_STATE
-    }// Testing
+    /// @brief The token to pass on the command line to not emit a log file.
+    static const Mezzanine::String SkipFileToken("skipfile");
+
+    /// @brief The token to pass on the command line to not emit a log file.
+    static const Mezzanine::String DoBenchmarkToken("benchmark");
+
+    /// @brief The token to pass as a prefix to a test to skip it.
+    static const Mezzanine::String SkipTestToken("skip-");
+
+    RESTORE_WARNING_STATE
+}// Testing
 }// Mezzanine
 
 #endif

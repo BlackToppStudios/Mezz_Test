@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2020 BlackTopp Studios Inc.
+// © Copyright 2010 - 2021 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -43,6 +43,10 @@
 
 #include "TestEnumerations.h"
 #include "StringManipulation.h"
+
+#include "Trace.h"
+
+#include <algorithm>
 
 namespace {
     /// @brief Checks to see if a character is invalid to use in a file name.
@@ -103,10 +107,17 @@ namespace Mezzanine
 
         Mezzanine::String AllLower(const Mezzanine::StringView StringToConvert)
         {
+            using StringChar = Mezzanine::String::value_type;
+
             Mezzanine::String Results;
             Results.reserve(StringToConvert.size());
-            for(const Mezzanine::StringView::value_type& Letter : StringToConvert)
-                { Results.push_back( static_cast<Mezzanine::String::value_type>(tolower(Letter)) ); }
+
+            std::for_each(
+                StringToConvert.begin(), StringToConvert.end(),
+                [&Results](StringChar Letter)
+                    { Results.push_back( static_cast<StringChar>(tolower(Letter)) ); }
+            );
+
             return Results;
         }
 

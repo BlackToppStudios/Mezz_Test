@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2020 BlackTopp Studios Inc.
+// © Copyright 2010 - 2021 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -41,9 +41,10 @@
 #define Mezz_Test_BenchmarkTestGroup_h
 
 /// @file
-/// @brief The declaration of the a group of tests that is performance sensitive.
+/// @brief The declaration of the a group of tests that is duration sensitive and process isoloated.
 
 #include "UnitTestGroup.h"
+#include "IsolatedTestGroup.h"
 
 namespace Mezzanine
 {
@@ -54,20 +55,17 @@ namespace Mezzanine
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         /// @brief Benchmarks are performance sensitive, and require special attention.
-        /// @details Because the smallest load can affect performance, nothing else should running while a
-        /// benchmark runs. Since many benchmarks are sensitive to what was just run (pre-filled caches, extra
-        /// allocated memory, etc...) each test inheriting from this test group will get several safeguards. Inheritors
-        /// tests will be run in their own process to guarantee isolation. No other threads or processes will be run
-        /// while this test group runs, but the main process will still be alive, but in a waiting state until this
+        /// @details Because the smallest load can affect performance, this inherits from @ref IsolatedTestGroup to
+        /// insure as few things as possible interfere with tests.
         /// test group finishes.
-        class MEZZ_LIB BenchmarkTestGroup : public Mezzanine::Testing::UnitTestGroup
+        class MEZZ_LIB BenchmarkTestGroup : public Mezzanine::Testing::IsolatedTestGroup
         {
         public:
             /// @brief Default virtual deconstructor to allow for polymorphism.
             virtual ~BenchmarkTestGroup() override = default;
 
-            Boole IsMultiThreadSafe() const override;
-            Boole IsMultiProcessSafe() const override;
+            Boole IsBenchmark() const override;
+
         };
         RESTORE_WARNING_STATE
     }// Testing

@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2020 BlackTopp Studios Inc.
+// © Copyright 2010 - 2021 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -171,11 +171,11 @@ namespace Mezzanine
             Results.reserve(MungedName.size());
             for(Mezzanine::String::const_iterator IterOneLetter = MungedName.cbegin();
                 MungedName.cend() != IterOneLetter;
-                IterOneLetter++)
+                ++IterOneLetter)
             {
                 if('\\' == *IterOneLetter)
                 {
-                    IterOneLetter++;
+                    ++IterOneLetter;
                     switch(*IterOneLetter)
                     {
                         case 'n':

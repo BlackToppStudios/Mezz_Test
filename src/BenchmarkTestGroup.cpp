@@ -1,4 +1,4 @@
-// © Copyright 2010 - 2020 BlackTopp Studios Inc.
+// © Copyright 2010 - 2021 BlackTopp Studios Inc.
 /* This file is part of The Mezzanine Engine.
 
     The Mezzanine Engine is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 */
 
 /// @file
-/// @brief The definition of the a group that does performance sensitive things.
+/// @brief The definition of the a group of tests that is duration sensitive and process isoloated.
 
 #include "BenchmarkTestGroup.h"
 
@@ -47,11 +47,8 @@ namespace Mezzanine
 {
     namespace Testing
     {
-        Boole BenchmarkTestGroup::IsMultiThreadSafe() const
-            { return false; }
-
-        Boole BenchmarkTestGroup::IsMultiProcessSafe() const
-            { return false; }
+        Boole BenchmarkTestGroup::IsBenchmark() const
+            { return true; }
 
     }// Testing
 }// Mezzanine
