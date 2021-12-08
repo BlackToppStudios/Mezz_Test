@@ -86,7 +86,9 @@ RESTORE_WARNING_STATE
     /// @note ExecutableName cannot be empty on Posix systems or this function will fail.
     /// @remarks This function will pass the command on to the system shell for execution, and thus benefits
     /// from everything available in the system shell, enabling the use of some commands that the vanilla
-    /// @ref RunCommand function cannot successfully execute.
+    /// RunCommand function cannot successfully execute.
+    /// @note Due to some more explicit rules to how commands can be assembled, the ExePathName parameter
+    /// is entirely ignored on Posix.
     /// @param ExePathName The identifier for the executable to be launched. This can be an absolute path,
     /// relative path, or a just an executable that will be searched for in the system PATH.
     /// @param Command The command to attempt to run and direct its output.
