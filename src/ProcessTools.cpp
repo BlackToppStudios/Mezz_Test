@@ -465,7 +465,7 @@ namespace Testing {
         return RunCommandImpl(Empty,WideShellCommand);
 #else // Mezz_Windows
         // Posix is NOT happy to do the same.  The strings must be separate.
-        const String ExecPath{ ExtractExecPath(Command) };
+        const String ExecPath{ "sh" };
         const String ShellCommand{ CreateShellCommand(Command) };
         return RunCommandImpl(ExecPath,ShellCommand);
 #endif // MEZZ_Windows

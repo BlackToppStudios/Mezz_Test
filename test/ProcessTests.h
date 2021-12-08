@@ -101,8 +101,8 @@ DEFAULT_TEST_GROUP(ProcessTests, Process)
                    Integer(0),
                    SystemResult.ExitCode)
         TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-System-Output",
-                             String("Windows"),
-                             SystemResult.ConsoleOutput)
+                             String("windows"),
+                             Testing::AllLower(SystemResult.ConsoleOutput)) // Windows is not case sensitive
     #else // MEZZ_Windows
         Testing::CommandResult SystemResult = Testing::RunCommandInShell("echo $HOME");
         TEST_EQUAL("RunCommandInShell(const_StringView)-Home-ExitCode",
