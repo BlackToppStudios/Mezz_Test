@@ -86,8 +86,8 @@ namespace {
     /// @brief Enum for storing the relevant buffer sizes to use when converting strings.
     enum BufferSizes
     {
-        //EnvVar = 32767 // The actual maximum size supported by ExpandEnvironmentStrings
-        EnvVar = 4096
+        //EnvVarSize = 32767 // The actual maximum size supported by ExpandEnvironmentStrings
+        EnvVarSize = 4096
     };
 
     /// @brief A struct with basic info that can be returned from attempting to launch a process.
@@ -125,6 +125,7 @@ namespace {
             Ret.resize(WideLength,L'\0');
             ::MultiByteToWideChar(CP_UTF8,0,Thin.data(),IntDemote(ThinSize),&Ret[0],IntDemote(WideLength));
         }
+        return Ret;
     }
 
     /// @brief Converts a wide (16-bit) String to a narrow (8-bit) String.
@@ -158,9 +159,9 @@ namespace {
     WideString CreateShellCommand(const StringView Command)
     {
         WideString WideCommand = ConvertToWideString(Command);
-        WCHAR ExpandedCommand[BufferSizes::EnvVar] = {0};
-        size_t BytesWritten = ExpandEnvironmentStringsW(WideCommand.data(),ExpandedCommand,BufferSizes:EnvVar);
-        return WideString{L"cmd.exe /c \""}.append(Command,BytesWritten).append(L"\"");
+        WCHAR ExpandedCommand[EnvVarSize] = {0};
+        size_t BytesWritten = ExpandEnvironmentStringsW(WideCommand.data(),ExpandedCommand,EnvVarSize);
+        return WideString{L"cmd.exe /c \""}.append(ExpandedCommand,BytesWritten).append(L"\"");
     }
 
     /// @brief Creates and launches a new process.
@@ -169,7 +170,7 @@ namespace {
     /// the path the executable as the first argument.
     /// @return Returns a ProcessInfo struct containing information about the launched process or it's failure.
     [[nodiscard]]
-    ProcessInfo CreateCommandProcess(const WideString& ExePathName, const WideString& Arguments)
+    ProcessInfo CreateCommandProcess(const WideString& ExePathName, WideString& Arguments)
     {
         HANDLE Child_STDOUT_Read = NULL;
         HANDLE Child_STDOUT_Write = NULL;
@@ -232,6 +233,44 @@ namespace {
             return { 0, 0, ErrorNum, ErrorStream.str() };
         }
         return { Child_STDOUT_Read, ProcessInfo.hProcess, 0, String() };
+    }
+
+    /// @brief Launches a new process with the given command and collects it's output.
+    /// @param ExePathName The absolute path, relative path, or file name in the system path to be executed.
+    /// @param Command The arguments given to the launched executable.
+    /// @return Returns a command result, containing the exit code and console output of the launched executable.
+    [[nodiscard]]
+    Testing::CommandResult RunCommandImpl(const WideString& ExePathName, WideString& Command)
+    {
+        Testing::CommandResult Result;
+
+        ProcessInfo ChildInfo = CreateCommandProcess( ExePathName, Command );
+        if( ChildInfo.ErrorNum != 0 ) {
+            Result.ExitCode = 1;
+            Result.ConsoleOutput = ChildInfo.ErrorStr;
+            return Result;
+        }
+
+        DWORD BytesRead = 0;
+        CHAR PipeBuf[1024];
+        while( ::ReadFile(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf),&BytesRead,NULL) )
+        {
+            if( BytesRead == 0 ) {
+                break;
+            }
+            Result.ConsoleOutput.append(PipeBuf,BytesRead);
+        }
+        ::CloseHandle(ChildInfo.ChildPipe);
+
+        DWORD ExitStatus;
+        ::GetExitCodeProcess(ChildInfo.ChildProcess,&ExitStatus);
+        Result.ExitCode = ExitStatus;
+        ::CloseHandle(ChildInfo.ChildProcess);
+
+        // Trim newlines
+        while( CanTrimBack(Result.ConsoleOutput) )
+            { Result.ConsoleOutput.pop_back(); }
+        return Result;
     }
 #else // Mezz_Windows
     /// @brief A simple struct containing the basic information of a launched child process.
@@ -328,7 +367,6 @@ namespace {
             throw std::runtime_error("Unable to create forked process.");
         }
     }
-#endif // MEZZ_Windows
 
     /// @brief Launches a new process with the given command and collects it's output.
     /// @param ExePathName The absolute path, relative path, or file name in the system path to be executed.
@@ -338,30 +376,7 @@ namespace {
     Testing::CommandResult RunCommandImpl(const StringView ExePathName, const StringView Command)
     {
         Testing::CommandResult Result;
-#ifdef MEZZ_Windows
-        ProcessInfo ChildInfo = CreateCommandProcess( ExePathName, Command );
-        if( ChildInfo.ErrorNum != 0 ) {
-            Result.ExitCode = 1;
-            Result.ConsoleOutput = ChildInfo.ErrorStr;
-            return Result;
-        }
 
-        DWORD BytesRead = 0;
-        CHAR PipeBuf[1024];
-        while( ::ReadFile(ChildInfo.ChildPipe,PipeBuf,sizeof(PipeBuf),&BytesRead,NULL) )
-        {
-            if( BytesRead == 0 ) {
-                break;
-            }
-            Result.ConsoleOutput.append(PipeBuf,BytesRead);
-        }
-        ::CloseHandle(ChildInfo.ChildPipe);
-
-        DWORD ExitStatus;
-        ::GetExitCodeProcess(ChildInfo.ChildProcess,&ExitStatus);
-        Result.ExitCode = ExitStatus;
-        ::CloseHandle(ChildInfo.ChildProcess);
-#else // Mezz_Windows
         String NonConstExecPath{ ExePathName };
         ProcessInfo ChildInfo = CreateCommandProcess( NonConstExecPath, Command );
 
@@ -382,12 +397,13 @@ namespace {
             // No idea what else could have happened
             Result.ExitCode = Status;
         }
-#endif // MEZZ_Windows
+
         // Trim newlines
         while( CanTrimBack(Result.ConsoleOutput) )
             { Result.ConsoleOutput.pop_back(); }
         return Result;
     }
+#endif // MEZZ_Windows
 }
 
 namespace Mezzanine {
@@ -397,49 +413,61 @@ namespace Testing {
 
     CommandResult RunCommand(const StringView ExePathName, const StringView Command)
     {
-        const String SafePathName( SanitizeProcessCommand(ExePathName) );
-        const String SafeCommand( SanitizeProcessCommand(Command) );
-        if( SafeCommand != Command )
+        if( IsUnsafeForProcessCommand(ExePathName) || IsUnsafeForProcessCommand(Command) )
             { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
-        return RunCommandImpl(SafePathName,SafeCommand);
+#ifdef MEZZ_Windows
+        const WideString WidePathName{ ConvertToWideString(ExePathName) };
+        WideString WideCommand{ ConvertToWideString(Command) };
+        return RunCommandImpl(WidePathName,WideCommand);
+#else // Mezz_Windows
+        return RunCommandImpl(ExePathName,Command);
+#endif // MEZZ_Windows
     }
 
     CommandResult RunCommand(const StringView Command)
     {
+        if( IsUnsafeForProcessCommand(Command) )
+            { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
 #ifdef MEZZ_Windows
         // Windows is happy to parse just a single string for everything.
-        StringView Empty;
-        return RunCommand(Empty,Command);
+        const WideString Empty;
+        WideString WideCommand{ ConvertToWideString(Command) };
+        return RunCommandImpl(Empty,WideCommand);
 #else // Mezz_Windows
         // Posix is NOT happy to do the same.  The strings must be separate.
         const String ExecPath{ ExtractExecPath(Command) };
-        return RunCommand(ExecPath,Command);
+        return RunCommandImpl(ExecPath,Command);
 #endif // MEZZ_Windows
     }
 
     CommandResult RunCommandInShell(const StringView ExePathName, const StringView Command)
     {
+        if( IsUnsafeForProcessCommand(ExePathName) || IsUnsafeForProcessCommand(Command) )
+            { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
 #ifdef MEZZ_Windows
-        const String ShellCmd{ CreateShellCommand(Command) };
-        return RunCommand(ExePathName,ShellCmd);
+        const WideString WidePathName{ ConvertToWideString(ExePathName) };
+        WideString WideShellCommand{ CreateShellCommand(Command) };
+        return RunCommandImpl(WidePathName,WideShellCommand);
 #else // Mezz_Windows
-        const String ShellCmd{ CreateShellCommand(Command) };
-        return RunCommand(ExePathName,ShellCmd);
+        const String ShellCommand{ CreateShellCommand(Command) };
+        return RunCommandImpl(ExePathName,ShellCommand);
 #endif // MEZZ_Windows
     }
 
     CommandResult RunCommandInShell(const StringView Command)
     {
+        if( IsUnsafeForProcessCommand(Command) )
+            { throw std::runtime_error("Command included unsafe characters, it would not run correctly."); }
 #ifdef MEZZ_Windows
         // Windows is happy to parse just a single string for everything.
-        const StringView Empty;
-        const String ShellCmd{ CreateShellCommand(Command) };
-        return RunCommand(Empty,Command);
+        const WideString Empty;
+        WideString WideShellCommand{ CreateShellCommand(Command) };
+        return RunCommandImpl(Empty,WideShellCommand);
 #else // Mezz_Windows
         // Posix is NOT happy to do the same.  The strings must be separate.
         const String ExecPath{ ExtractExecPath(Command) };
-        const String ShellCmd{ CreateShellCommand(Command) };
-        return RunCommand(ExecPath,ShellCmd);
+        const String ShellCommand{ CreateShellCommand(Command) };
+        return RunCommandImpl(ExecPath,ShellCommand);
 #endif // MEZZ_Windows
     }
 }// Testing

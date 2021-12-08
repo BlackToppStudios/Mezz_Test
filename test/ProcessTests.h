@@ -48,7 +48,7 @@
 #include <fstream>
 
 /// @brief Tests for the class to store test data results.
-BENCHMARK_TEST_GROUP(ProcessTests, Process)
+AUTOMATIC_TEST_GROUP(ProcessTests, Process)
 {
     using namespace Mezzanine;
 
@@ -87,6 +87,14 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
     }//RunCommand w/ ExecutablePath
 
     {//RunCommandInShell
+        Testing::CommandResult HelloResult = Testing::RunCommandInShell("echo Hello");
+        TEST_EQUAL("RunCommandInShell(const_StringView)-Hello-ExitCode",
+                   Integer(0),
+                   HelloResult.ExitCode)
+        TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-Hello-Output",
+                             String("Hello"),
+                             HelloResult.ConsoleOutput)
+
     #ifdef MEZZ_Windows
         Testing::CommandResult SystemResult = Testing::RunCommandInShell("echo %SYSTEMROOT%");
         TEST_EQUAL("RunCommandInShell(const_StringView)-System-ExitCode",
@@ -96,7 +104,18 @@ BENCHMARK_TEST_GROUP(ProcessTests, Process)
                              String("Windows"),
                              SystemResult.ConsoleOutput)
     #else // MEZZ_Windows
+        Testing::CommandResult SystemResult = Testing::RunCommandInShell("echo $HOME");
+        TEST_EQUAL("RunCommandInShell(const_StringView)-Home-ExitCode",
+                   Integer(0),
+                   SystemResult.ExitCode)
+        TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-Home-Output",
+                             String("/home/"),
+                             SystemResult.ConsoleOutput)
     #endif // MEZZ_Windows
+
+        TEST_THROW("RunCommandInShell(const_StringView)-Throw-BadSymbol",
+                   std::runtime_error,
+                   []{ (void)Testing::RunCommandInShell("echo foo > somefile.txt"); })
     }//RunCommandInShell
 
     {//RunCommandInShell w/ ExecutablePath
