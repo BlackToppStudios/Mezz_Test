@@ -292,7 +292,7 @@ namespace {
     /// @return Returns a String suitable for invoking the system shell with the given command.
     [[nodiscard]]
     String CreateShellCommand(const StringView Command)
-        { return String{"sh -ic "}.append(Command); }
+        { return String{"sh -c "}.append(Command); }
 
     // Move this out of the if/else should windows actually need it.
     /// @brief Extracts just the file system path to the executable from a complete command.
