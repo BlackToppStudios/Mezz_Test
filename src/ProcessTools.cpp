@@ -280,6 +280,46 @@ namespace {
         int ChildPID = 0;
     };//ProcessInfo
 
+    /// @brief An internal only methods for tokenizing command line args and respecting quotes.
+    /// @arg Arguments A string of text to tokenize.
+    /// @return A vector of tokens splits on spaces and tabs, but not breaking items single or double quoted.
+    [[nodiscard]]
+    std::vector<Mezzanine::String> TokenizeProcessArguments(const StringView Arguments)
+    {
+        std::vector<Mezzanine::String> ArgVector;
+
+        String TempStr;
+        for( StringView::iterator StrIt = Arguments.begin() ; StrIt < Arguments.end() ; ++StrIt )
+        {
+            auto ConsumeQuote = [&](const Char8 Quote) {
+                if( (*StrIt) == Quote ) {
+                    ++StrIt;
+                    while( StrIt != Arguments.end() && (*StrIt) != Quote && (*(StrIt-1)) != '\\' ) {
+                        TempStr.push_back(*StrIt);
+                        ++StrIt;
+                    }
+                    ++StrIt;
+                }
+            };
+            ConsumeQuote('\'');
+            ConsumeQuote('"');
+
+            if( (*StrIt) == ' ' || (*StrIt) == '\t' ) {
+                if( !TempStr.empty() ) {
+                    ArgVector.push_back(TempStr);
+                    TempStr.clear();
+                }
+            }else{
+                TempStr.push_back(*StrIt);
+            }
+        }
+        if( !TempStr.empty() ) {
+            ArgVector.push_back(TempStr);
+        }
+
+        return ArgVector;
+    }
+
     /// @brief Gets whether or not the back of a String can be trimmed.
     /// @param ToCheck The String to check for trimming.
     /// @return Returns true if the back of the String can be trimmed/removed.
@@ -292,7 +332,7 @@ namespace {
     /// @return Returns a String suitable for invoking the system shell with the given command.
     [[nodiscard]]
     String CreateShellCommand(const StringView Command)
-        { return String{"sh -c "}.append(Command); }
+        { return String{"sh -c '"}.append(Command).append("'"); }
 
     // Move this out of the if/else should windows actually need it.
     /// @brief Extracts just the file system path to the executable from a complete command.
@@ -329,29 +369,14 @@ namespace {
             //::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
             ::close( Pipes[1] ); // Done mangling pipes.
 
-            std::vector<Mezzanine::String> ArgVector;
-            String TempStr;
-            for( StringView::iterator StrIt = Arguments.begin() ; StrIt != Arguments.end() ; ++StrIt )
-            {
-                if( (*StrIt) == ' ' || (*StrIt) == '\t' ) {
-                    if( !TempStr.empty() ) {
-                        ArgVector.push_back(TempStr);
-                        TempStr.clear();
-                    }
-                }else{
-                    TempStr.push_back(*StrIt);
-                }
-            }
-            if( !TempStr.empty() ) {
-                ArgVector.push_back(TempStr);
-            }
+            std::vector<Mezzanine::String> ArgVector = TokenizeProcessArguments(Arguments);
 
-            char** ArgV = new char*[ArgVector.size() + 1];// +1 for the nullptr at end.
+            std::vector<char*> ArgV(ArgVector.size() + 1); // +1 for the nullptr at end.
             for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )
-                { ArgV[Idx] = strdup( ArgVector[Idx].c_str() ); }
-            ArgV[ArgVector.size()] = nullptr;//*/
+                { ArgV[Idx] = ArgVector[Idx].data(); }
+            ArgV[ArgVector.size()] = nullptr;
 
-            if( execvp(ExePathName.data(),ArgV) < 0 ) {
+            if( execvp(ExePathName.data(), ArgV.data()) < 0 ) {
                 // Welp...it's been a good ride.
                 int ErrorNum = errno;
                 std::cout << "Process Error: " << ::strerror(ErrorNum);
