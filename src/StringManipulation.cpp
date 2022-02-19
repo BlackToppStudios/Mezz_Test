@@ -48,6 +48,45 @@
 
 #include <algorithm>
 
+namespace {
+    /// @brief Checks to see if a character is invalid to use in a file name.
+    /// @tparam CharType The type of character to be checked.
+    /// @param ToCheck The character to be checked.
+    /// @return Returns true if the provided character is unsafe for use in a file name, false otherwise.
+    template<typename CharType>
+    constexpr Mezzanine::Boole IsInvalidFileNameChar(const CharType ToCheck)
+    {
+        switch(ToCheck)
+        {
+            case '|': case '>': case '<': case '?': case ':': case '%': case '"': case '=':
+            case '+': case ',': case '!': case '@': case '[': case ']': case '*': case ';':
+                return true;
+                break;
+            default:
+                break;
+        }
+        return false;
+    }
+
+    /// @brief Checks to see if a character is invalid to use in a process command.
+    /// @tparam CharType The type of character to be checked.
+    /// @param ToCheck The character to be checked.
+    /// @return Returns true if the provided character is unsafe for use in a process command, false otherwise.
+    template<typename CharType>
+    constexpr Mezzanine::Boole IsInvalidProcessCommandChar(const CharType ToCheck)
+    {
+        switch(ToCheck)
+        {
+            case '|': case '>': case '<':
+                return true;
+                break;
+            default:
+                break;
+        }
+        return false;
+    }
+}
+
 namespace Mezzanine
 {
     namespace Testing
@@ -82,22 +121,38 @@ namespace Mezzanine
             return Results;
         }
 
+        Mezzanine::Boole IsUnsafeForFileName(const Mezzanine::StringView Filename)
+        {
+            for(const Mezzanine::StringView::value_type& OneChar : Filename)
+            {
+                if( IsInvalidFileNameChar(OneChar) ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         Mezzanine::String SanitizeFileName(const Mezzanine::StringView OriginalFilename)
         {
             Mezzanine::String Results(OriginalFilename);
             for(Mezzanine::StringView::value_type& OneChar : Results)
             {
-                switch(OneChar)
-                {
-                    case '|': case '>': case '<': case '?': case ':': case '%': case '"': case '=':
-                    case '+': case ',': case '!': case '@': case '[': case ']': case '*': case ';':
-                        OneChar = '_';
-                        break;
-                    default:
-                        break;
+                if( IsInvalidFileNameChar(OneChar) ) {
+                    OneChar = '_';
                 }
             }
             return Results;
+        }
+
+        Mezzanine::Boole IsUnsafeForProcessCommand(const Mezzanine::StringView Process)
+        {
+            for(const Mezzanine::StringView::value_type& OneChar : Process)
+            {
+                if( IsInvalidProcessCommandChar(OneChar) ) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         Mezzanine::String SanitizeProcessCommand(const Mezzanine::StringView OriginalProcess)
@@ -105,13 +160,8 @@ namespace Mezzanine
             Mezzanine::String Results(OriginalProcess);
             for(Mezzanine::StringView::value_type& OneChar : Results)
             {
-                switch(OneChar)
-                {
-                    case '|': case '>': case '<':
-                        OneChar = '_';
-                        break;
-                    default:
-                        break;
+                if( IsInvalidProcessCommandChar(OneChar) ) {
+                    OneChar = '_';
                 }
             }
             return Results;

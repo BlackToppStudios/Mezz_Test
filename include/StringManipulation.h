@@ -64,10 +64,20 @@ namespace Mezzanine
         /// @return for convenience purposes the string is also returned.
         Mezzanine::String MEZZ_LIB AllLower(const Mezzanine::StringView StringToConvert);
 
+        /// @brief Checks to see if a string is safe to use as a file name.
+        /// @param Filename The string to be checked.
+        /// @return Returns true if the provided string contains invalid characters for a file name.
+        Mezzanine::Boole MEZZ_LIB IsUnsafeForFileName(const Mezzanine::StringView Filename);
+
         /// @brief Get a copy of the passed filename with every unsafe character removed.
         /// @param OriginalFilename A string something like the filename you want.
         /// @return A string you can actually use as a file name.
         Mezzanine::String MEZZ_LIB SanitizeFileName(const Mezzanine::StringView OriginalFilename);
+
+        /// @brief Checks to see if a string is safe to use as a process command.
+        /// @param Process The strong to be checked.
+        /// @return Returns true if the provided string contains invalid characters for a process command.
+        Mezzanine::Boole MEZZ_LIB IsUnsafeForProcessCommand(const Mezzanine::StringView Process);
 
         /// @brief Get a copy of the passed possible process command with every unsafe character removed.
         /// @param OriginalProcess A string something like the process you want to launch.

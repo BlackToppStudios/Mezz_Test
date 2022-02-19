@@ -85,6 +85,65 @@ DEFAULT_TEST_GROUP(ProcessTests, Process)
     {//RunCommand w/ ExecutablePath
         // No good way to test this.
     }//RunCommand w/ ExecutablePath
+
+    {//RunCommandInShell
+        Testing::CommandResult HelloResult = Testing::RunCommandInShell("echo Hello");
+        TEST_EQUAL("RunCommandInShell(const_StringView)-Hello-ExitCode",
+                   Integer(0),
+                   HelloResult.ExitCode)
+        TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-Hello-Output",
+                             String("Hello"),
+                             HelloResult.ConsoleOutput)
+
+    #ifdef MEZZ_Windows
+        Testing::CommandResult SystemResult = Testing::RunCommandInShell("echo %SYSTEMROOT%");
+        TEST_EQUAL("RunCommandInShell(const_StringView)-System-ExitCode",
+                   Integer(0),
+                   SystemResult.ExitCode)
+        TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-System-Output",
+                             String("windows"),
+                             Testing::AllLower(SystemResult.ConsoleOutput)) // Windows is not case sensitive
+    #else // MEZZ_Windows
+        Testing::CommandResult SystemResult = Testing::RunCommandInShell("echo $HOME");
+        TEST_EQUAL("RunCommandInShell(const_StringView)-Home-ExitCode",
+                   Integer(0),
+                   SystemResult.ExitCode)
+
+        #ifdef MEZZ_MacOSX
+                TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-Home-Output",
+                                     String("/Users/"),
+                                     SystemResult.ConsoleOutput)
+        #else // MEZZ_MacOSX
+            TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-Home-Output",
+                                 String("/home/"),
+                                 SystemResult.ConsoleOutput)
+         #endif // MEZZ_MacOSX
+    #endif // MEZZ_Windows
+
+        TEST_THROW("RunCommandInShell(const_StringView)-Throw-BadSymbol",
+                   std::runtime_error,
+                   []{ (void)Testing::RunCommandInShell("echo foo > somefile.txt"); })
+    }//RunCommandInShell
+
+    {//RunCommand Checking for malformed quotes
+        #ifdef MEZZ_Windows
+            //put test here
+        #else // MEZZ_Windows
+
+            TEST_THROW("RunCommand-TokenizeSingleQuoteIncomplete",
+                       std::invalid_argument,
+                       []{ Testing::CommandResult ShelloResult = Testing::RunCommand("sh -c 'echo Hello"); } )
+            TEST_THROW("RunCommand-TokenizeDoubleQuoteIncomplete",
+                       std::invalid_argument,
+                       []{ Testing::CommandResult ShelloResult = Testing::RunCommand("sh -c \"echo Hello"); } )
+
+
+        #endif // MEZZ_Windows
+    }
+
+    {//RunCommandInShell w/ ExecutablePath
+        // No good way to test this.
+    }//RunCommandInShell w/ ExecutablePath
 }
 
 #endif
