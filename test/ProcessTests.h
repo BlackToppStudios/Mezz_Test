@@ -108,9 +108,16 @@ DEFAULT_TEST_GROUP(ProcessTests, Process)
         TEST_EQUAL("RunCommandInShell(const_StringView)-Home-ExitCode",
                    Integer(0),
                    SystemResult.ExitCode)
-        TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-Home-Output",
-                             String("/home/"),
-                             SystemResult.ConsoleOutput)
+
+        #ifdef MEZZ_MacOSX
+                TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-Home-Output",
+                                     String("/Users/"),
+                                     SystemResult.ConsoleOutput)
+        #else // MEZZ_MacOSX
+            TEST_STRING_CONTAINS("RunCommandInShell(const_StringView)-Home-Output",
+                                 String("/home/"),
+                                 SystemResult.ConsoleOutput)
+         #endif // MEZZ_MacOSX
     #endif // MEZZ_Windows
 
         TEST_THROW("RunCommandInShell(const_StringView)-Throw-BadSymbol",
