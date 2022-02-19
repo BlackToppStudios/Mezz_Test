@@ -291,18 +291,24 @@ namespace {
         String TempStr;
         for( StringView::iterator StrIt = Arguments.begin() ; StrIt < Arguments.end() ; ++StrIt )
         {
-            auto ConsumeQuote = [&](const Char8 Quote) {
+            auto ConsumeQuoted = [&](const Char8 Quote) {
                 if( (*StrIt) == Quote ) {
-                    ++StrIt;
+                    ++StrIt; // Skip opening quote
                     while( StrIt != Arguments.end() && (*StrIt) != Quote && (*(StrIt-1)) != '\\' ) {
                         TempStr.push_back(*StrIt);
                         ++StrIt;
                     }
-                    ++StrIt;
+                    ++StrIt; // Skip closing quote
                 }
             };
-            ConsumeQuote('\'');
-            ConsumeQuote('"');
+            ConsumeQuoted('\'');
+            ConsumeQuoted('"');
+
+            if (StrIt >= Arguments.end()) {
+                if( !TempStr.empty() )
+                    { ArgVector.push_back(TempStr); }
+                break;
+            }
 
             if( (*StrIt) == ' ' || (*StrIt) == '\t' ) {
                 if( !TempStr.empty() ) {
