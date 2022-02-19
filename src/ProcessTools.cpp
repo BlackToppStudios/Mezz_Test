@@ -300,15 +300,11 @@ namespace {
                     }
                     ++StrIt; // Skip closing quote
                 }
+                if (StrIt > Arguments.end())
+                    { throw std::invalid_argument("Unterminated quote in command to execute: "); }
             };
             ConsumeQuoted('\'');
             ConsumeQuoted('"');
-
-            if (StrIt >= Arguments.end()) {
-                if( !TempStr.empty() )
-                    { ArgVector.push_back(TempStr); }
-                break;
-            }
 
             if( (*StrIt) == ' ' || (*StrIt) == '\t' ) {
                 if( !TempStr.empty() ) {
@@ -367,6 +363,9 @@ namespace {
             throw std::runtime_error("Unable to create pipe for child process.");
         }
 
+        // Tokenizing might throw, so we do it in the parent process to allow graceful error handling.
+        std::vector<Mezzanine::String> ArgVector = TokenizeProcessArguments(Arguments);
+
         std::cout.flush(); // Clean out the pipes before they may be important.
         pid_t ProcessID = ::fork();
         if( ProcessID == 0 ) { // Child
@@ -374,8 +373,6 @@ namespace {
             ::dup2( Pipes[1], 1 ); // Direct cout file descriptor to our pipe.
             //::dup2( Pipes[1], 2 ); // Direct cerr file descriptor to our pipe.
             ::close( Pipes[1] ); // Done mangling pipes.
-
-            std::vector<Mezzanine::String> ArgVector = TokenizeProcessArguments(Arguments);
 
             std::vector<char*> ArgV(ArgVector.size() + 1); // +1 for the nullptr at end.
             for( size_t Idx = 0 ; Idx < ArgVector.size() ; ++Idx )

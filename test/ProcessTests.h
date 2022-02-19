@@ -129,10 +129,15 @@ DEFAULT_TEST_GROUP(ProcessTests, Process)
         #ifdef MEZZ_Windows
             //put test here
         #else // MEZZ_Windows
-            Testing::CommandResult ShelloResult = Testing::RunCommand("sh -c 'echo Hello");
-            TEST_EQUAL("RunCommand-TokenizeQuoteIncomplete",
-                       Integer(0),
-                       ShelloResult.ExitCode)
+
+            TEST_THROW("RunCommand-TokenizeSingleQuoteIncomplete",
+                       std::invalid_argument,
+                       []{ Testing::CommandResult ShelloResult = Testing::RunCommand("sh -c 'echo Hello"); } )
+            TEST_THROW("RunCommand-TokenizeDoubleQuoteIncomplete",
+                       std::invalid_argument,
+                       []{ Testing::CommandResult ShelloResult = Testing::RunCommand("sh -c \"echo Hello"); } )
+
+
         #endif // MEZZ_Windows
     }
 
