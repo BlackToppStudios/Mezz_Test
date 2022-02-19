@@ -125,6 +125,17 @@ DEFAULT_TEST_GROUP(ProcessTests, Process)
                    []{ (void)Testing::RunCommandInShell("echo foo > somefile.txt"); })
     }//RunCommandInShell
 
+    {//RunCommand Checking for malformed quotes
+        #ifdef MEZZ_Windows
+            //put test here
+        #else // MEZZ_Windows
+            Testing::CommandResult ShelloResult = Testing::RunCommand("sh -c 'echo Hello");
+            TEST_EQUAL("RunCommand-TokenizeQuoteIncomplete",
+                       Integer(0),
+                       ShelloResult.ExitCode)
+        #endif // MEZZ_Windows
+    }
+
     {//RunCommandInShell w/ ExecutablePath
         // No good way to test this.
     }//RunCommandInShell w/ ExecutablePath
